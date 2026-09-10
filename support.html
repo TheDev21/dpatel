@@ -75,7 +75,6 @@
     gap: 8px;
     margin-bottom: 16px;
   }
-  .brand-emoji { font-size: 18px; }
   .brand-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.03em; }
   .brand-name span { color: var(--orange); }
 
@@ -149,40 +148,14 @@
     font-weight: 500;
   }
 
-  .custom-box {
-    background: var(--pink-deep);
-    border: 2px solid var(--ink);
-    border-radius: 16px;
-    padding: 14px;
-    margin-top: 10px;
-  }
-  .custom-box .row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 10px;
-  }
-  .custom-box .dollar {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-  }
-  .custom-box input[type="range"] {
-    flex: 1;
-    accent-color: var(--orange);
-  }
-  .custom-box .amount-display {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
-    min-width: 54px;
-    text-align: right;
-  }
-  .custom-box .tier-msg {
-    font-size: 12px;
+  .custom-link {
+    display: block;
+    margin-top: 12px;
+    font-size: 12.5px;
     color: var(--ink-dim);
-    margin-bottom: 12px;
-    min-height: 1.4em;
+    text-decoration: underline;
   }
-  .custom-box .tier-msg span { color: var(--ink); font-weight: 500; }
+  .custom-link:hover { color: var(--orange); }
 
   .wide-btn {
     display: block;
@@ -220,7 +193,6 @@
 <div class="side-text right">CHEERS &middot; THANKS &middot; CHEERS</div>
 <div class="card" style="position:relative; z-index:1;">
   <div class="brand">
-    <span class="brand-emoji">🎮</span>
     <span class="brand-name">Weird&nbsp;<span>Little</span>&nbsp;Games</span>
   </div>
 
@@ -250,15 +222,7 @@
 
   <a class="wide-btn" href="https://venmo.com/u/TheDev21" target="_blank" rel="noopener">or open Venmo instead</a>
 
-  <div class="custom-box">
-    <div class="row">
-      <span class="dollar">$</span>
-      <input type="range" id="customAmount" min="1" max="100" value="10" step="1">
-      <span class="amount-display" id="amountDisplay">$10</span>
-    </div>
-    <div class="tier-msg" id="tierMsg"></div>
-    <a class="wide-btn" id="customBtn" href="https://venmo.com/u/TheDev21" target="_blank" rel="noopener" style="margin-top:0;">Send it</a>
-  </div>
+  <a class="custom-link" href="support-custom.html">or pick a custom amount &rarr;</a>
 
   <a class="back" href="index.html">&larr; nah, back to the games</a>
 </div>
@@ -271,39 +235,6 @@
     colorDark: "#23201d",
     colorLight: "#ffffff"
   });
-
-  var tiers = [
-    { max: 2,   label: "a shot glass" },
-    { max: 5,   label: "a can" },
-    { max: 9,   label: "a pint" },
-    { max: 14,  label: "a pitcher" },
-    { max: 24,  label: "a round for the table" },
-    { max: 49,  label: "top shelf treatment" },
-    { max: 99,  label: "basically my best friend now" },
-    { max: 100, label: "you own a piece of this website, emotionally" }
-  ];
-
-  function tierFor(amount) {
-    for (var i = 0; i < tiers.length; i++) {
-      if (amount <= tiers[i].max) return tiers[i].label;
-    }
-    return tiers[tiers.length - 1].label;
-  }
-
-  var slider = document.getElementById('customAmount');
-  var amountDisplay = document.getElementById('amountDisplay');
-  var tierMsg = document.getElementById('tierMsg');
-  var customBtn = document.getElementById('customBtn');
-
-  function updateCustom() {
-    var amount = parseInt(slider.value, 10);
-    amountDisplay.textContent = '$' + amount;
-    tierMsg.innerHTML = 'That gets you <span>' + tierFor(amount) + '</span>.';
-    customBtn.textContent = 'Send $' + amount;
-  }
-
-  slider.addEventListener('input', updateCustom);
-  updateCustom();
 </script>
 </body>
 </html>
