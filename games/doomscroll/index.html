@@ -19,7 +19,7 @@
     --gold: #c98f00;
     --ink: #23201d;
     --text: #23201d;
-    --text-dim: #766f68;
+    --text-dim: #56504a;
   }
 
   * { box-sizing: border-box; }
@@ -93,7 +93,7 @@
 
   .tagline {
     color: var(--text-dim);
-    font-size: 0.76rem;
+    font-size: 0.88rem;
     margin: 0 0 1rem;
     text-align: center;
   }
@@ -108,7 +108,7 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .hero-sub { font-size: 0.7rem; color: var(--text-dim); margin-top: 6px; }
+  .hero-sub { font-size: 0.82rem; color: var(--text-dim); margin-top: 6px; }
 
   .hero-rule {
     width: 150px; height: 5px; background: var(--pink-deep);
@@ -122,7 +122,7 @@
     transition: width 0.3s ease;
   }
 
-  .apps-lede { font-size: 0.68rem; color: var(--text-dim); }
+  .apps-lede { font-size: 0.8rem; color: var(--text-dim); }
 
   .game-row {
     display: flex;
@@ -131,7 +131,7 @@
     gap: 1.6rem;
   }
 
-  .apps-column { width: 225px; height: 600px; display: flex; align-items: center; }
+  .apps-column { width: 250px; height: 600px; display: flex; align-items: center; }
   .apps-list {
     display: flex; flex-direction: column; gap: 30px; width: 100%;
   }
@@ -162,8 +162,8 @@
     border-radius: 7px; font-weight: 500;
   }
 
-  .app-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; overflow: hidden; }
-  .app-name { font-size: 0.84rem; color: var(--text); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .app-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .app-name { font-size: 0.82rem; color: var(--text); line-height: 1.25; }
   .app-cost { font-size: 0.7rem; color: var(--orange); }
   .app-item:disabled .app-cost { color: var(--text-dim); }
 
@@ -690,7 +690,9 @@
   for (let i = 0; i < 40; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
-    p.style.left = Math.random() * 100 + '%';
+    const leftSide = Math.random() < 0.5;
+    const pos = leftSide ? Math.random() * 30 : 70 + Math.random() * 30;
+    p.style.left = pos + '%';
     const size = 2 + Math.random() * 3;
     p.style.width = size + 'px';
     p.style.height = size + 'px';
