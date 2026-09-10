@@ -210,17 +210,16 @@
   .app-icon svg { width: 46px; height: 46px; }
 
   .app-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .app-name {
-    font-size: 1.05rem; color: var(--text); line-height: 1.25;
-    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
-  }
+  .app-name { font-size: 1.05rem; color: var(--text); line-height: 1.25; }
   .app-owned {
+    display: inline-block;
     font-family: 'DM Mono', monospace;
     font-size: 0.78rem; font-weight: 600;
     color: #241a00; background: var(--gold);
     border: 1.5px solid var(--ink);
     border-radius: 999px; padding: 2px 10px;
     white-space: nowrap;
+    margin-top: 2px;
   }
   .app-cost { font-size: 0.88rem; color: var(--orange); }
   .app-item:disabled .app-cost { color: var(--text-dim); }
@@ -645,7 +644,8 @@
         ${u.icon}
       </div>
       <div class="app-text">
-        <div class="app-name">${u.name}${u.owned > 0 ? `<span class="app-owned">owned &times;${u.owned}</span>` : ''}</div>
+        <div class="app-name">${u.name}</div>
+        ${u.owned > 0 ? `<div class="app-owned">owned &times;${u.owned}</div>` : ''}
         <div class="app-cost">${formatNum(cost)} pts</div>
       </div>
     `;
@@ -696,7 +696,12 @@
       ? `<b>${formatNum(state.clout)}</b> clout &middot; scrolling ${boostPct}% faster forever`
       : `${formatNum(state.clout)} clout &middot; scrolling at normal speed`;
     viralBtn.disabled = available < 1;
-    viralBtn.textContent = available >= 1 ? `go viral (+${formatNum(available)} clout)` : 'go viral';
+    if (available >= 1) {
+      viralBtn.textContent = `go viral (+${formatNum(available)} clout)`;
+    } else {
+      const remaining = Math.max(0, 1000 - state.totalDistance);
+      viralBtn.textContent = `scroll ${formatNum(remaining)}m more to unlock`;
+    }
   }
 
   function goViral() {
