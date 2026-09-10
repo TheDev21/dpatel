@@ -112,13 +112,6 @@
   }
   h1 span { color: var(--orange); }
 
-  .tagline {
-    color: var(--text-dim);
-    font-size: 1.05rem;
-    margin: 0 0 1rem;
-    text-align: center;
-  }
-
   .hero-stat { text-align: center; margin-bottom: 1.1rem; }
 
   .hero-number {
@@ -128,8 +121,6 @@
     color: var(--text);
     font-variant-numeric: tabular-nums;
   }
-
-  .hero-sub { font-size: 1rem; color: var(--text-dim); margin-top: 6px; }
 
   .hero-rule {
     width: 150px; height: 5px; background: var(--pink-deep);
@@ -196,7 +187,6 @@
   .apps-column { width: 310px; height: 800px; display: flex; align-items: center; }
 
   .side-header { text-align: center; margin-bottom: 0.6rem; }
-  .side-header .tagline { margin-bottom: 0.5rem; }
   .side-header .hero-stat { margin-bottom: 0.3rem; }
   .side-header .hero-rule { margin: 6px auto 4px; }
   .side-header .clout-row { margin-top: 6px; gap: 5px; }
@@ -388,15 +378,11 @@
 <div class="stage-panel">
 <div id="fitWrapper">
   <div class="side-header">
-    <p class="tagline">the feed never ends. neither should you.</p>
-
     <div class="hero-stat">
       <div class="hero-number" id="distanceVal">0.0 m</div>
-      <div class="hero-sub" id="milestoneSub">next up: a doorframe</div>
       <div class="hero-rule"><div class="hero-rule-fill" id="milestoneBar"></div></div>
       <div class="apps-lede" id="spLede">you have 0 points to spend</div>
       <div class="clout-row" id="cloutRow">
-        <span id="cloutStatus">0 clout &middot; scrolling at normal speed</span>
         <button class="viral-btn" id="viralBtn" disabled>go viral</button>
       </div>
     </div>
@@ -654,13 +640,11 @@
 
   // ---------- rendering ----------
   const distanceVal = document.getElementById('distanceVal');
-  const milestoneSub = document.getElementById('milestoneSub');
   const milestoneBar = document.getElementById('milestoneBar');
   const spLede = document.getElementById('spLede');
   const appsLeft = document.getElementById('appsLeft');
   const appsRight = document.getElementById('appsRight');
   const screenEl = document.getElementById('phone');
-  const cloutStatus = document.getElementById('cloutStatus');
   const viralBtn = document.getElementById('viralBtn');
 
   function renderAppTile(u) {
@@ -711,18 +695,18 @@
       const prev = state.unlocked === 0 ? 0 : milestones[state.unlocked - 1].m;
       const next = milestones[state.unlocked];
       const pct = Math.min(100, ((state.totalDistance - prev) / (next.m - prev)) * 100);
-      milestoneSub.textContent = `next up: ${next.label}`;
+      milestoneBar.title = `next up: ${next.label}`;
       milestoneBar.style.width = pct + '%';
     } else {
-      milestoneSub.textContent = 'every milestone unlocked.';
+      milestoneBar.title = 'every milestone unlocked';
       milestoneBar.style.width = '100%';
     }
 
     const boostPct = Math.round((cloutMultiplier() - 1) * 100);
     const available = cloutAvailable();
-    cloutStatus.innerHTML = boostPct > 0
-      ? `<b>${formatNum(state.clout)}</b> clout &middot; scrolling ${boostPct}% faster forever`
-      : `${formatNum(state.clout)} clout &middot; scrolling at normal speed`;
+    viralBtn.title = boostPct > 0
+      ? `${formatNum(state.clout)} clout, scrolling ${boostPct}% faster forever`
+      : `${formatNum(state.clout)} clout`;
     viralBtn.disabled = available < 1;
     viralBtn.classList.toggle('ready', available >= 1);
     viralBtn.textContent = 'go viral';
