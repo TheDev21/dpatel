@@ -96,6 +96,24 @@
     50% { box-shadow: 6px 7px 0 rgba(255,45,85,0.5), 0 0 0 10px rgba(255,45,85,0); }
   }
 
+  .card.spinning { background: var(--pink-deep); }
+  .spin-symbol {
+    font-size: 3.4rem;
+    animation: spinPop 0.09s ease-out;
+  }
+  @keyframes spinPop {
+    0% { transform: scale(0.7) rotate(-8deg); opacity: 0.4; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .card.landed {
+    animation: landPop 0.3s ease-out;
+  }
+  @keyframes landPop {
+    0% { transform: scale(0.92); }
+    60% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+  }
+
   .rarity-badge {
     position: absolute;
     top: -14px;
@@ -149,8 +167,9 @@
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .pull-btn:hover { background: var(--orange); transform: translateY(-2px); box-shadow: 3px 4px 0 rgba(35,32,29,0.18); }
-  .pull-btn:active { transform: translateY(0); }
+  .pull-btn:hover:not(:disabled) { background: var(--orange); transform: translateY(-2px); box-shadow: 3px 4px 0 rgba(35,32,29,0.18); }
+  .pull-btn:active:not(:disabled) { transform: translateY(0); }
+  .pull-btn:disabled { background: var(--common); cursor: default; }
 
   .log-toggle {
     display: inline-block;
@@ -335,7 +354,29 @@
     `).join('');
   }
 
+  const spinSymbols = ['🎲', '💰', '📈', '🦄', '🚀', '💸', '🤖', '🐂'];
+
   function pull() {
+    if (pullBtn.disabled) return;
+    pullBtn.disabled = true;
+    pullBtn.textContent = 'spinning...';
+    card.className = 'card spinning';
+
+    const totalTicks = 16;
+    function spinStep(tick) {
+      const sym = spinSymbols[Math.floor(Math.random() * spinSymbols.length)];
+      card.innerHTML = `<div class="spin-symbol">${sym}</div>`;
+      if (tick >= totalTicks) {
+        reveal();
+        return;
+      }
+      const delay = 70 + tick * tick * 2.2;
+      setTimeout(() => spinStep(tick + 1), delay);
+    }
+    spinStep(0);
+  }
+
+  function reveal() {
     const rarity = rollRarity();
     const name = generateCompanyName();
     const pitch = generatePitch(rarity);
@@ -350,13 +391,16 @@
     renderStats();
     renderLog();
 
-    card.className = 'card' + (rarity !== 'common' ? ' rarity-' + rarity : '');
+    card.className = 'card landed' + (rarity !== 'common' ? ' rarity-' + rarity : '');
     card.innerHTML = `
       <div class="rarity-badge ${rarity}">${rarity}</div>
       <div class="company-name">${name}</div>
       <div class="pitch-line">${pitch}</div>
       <div class="valuation">valued at ${valuation}</div>
     `;
+
+    pullBtn.disabled = false;
+    pullBtn.textContent = '🎰 pull the lever';
   }
 
   pullBtn.addEventListener('click', pull);
