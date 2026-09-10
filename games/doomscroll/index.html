@@ -146,6 +146,37 @@
   .apps-lede { font-size: 1.15rem; color: var(--text); font-weight: 500; }
   .apps-lede b { color: var(--orange); }
 
+  .clout-row {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .clout-row span {
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+  .clout-row span b { color: var(--red); }
+  .viral-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.78rem;
+    font-weight: 500;
+    color: #fff;
+    background: var(--red);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 7px 18px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .viral-btn:hover:not(:disabled) { background: var(--orange); transform: translateY(-1px); }
+  .viral-btn:disabled {
+    background: var(--pink-deep);
+    color: var(--text-dim);
+    cursor: default;
+  }
+
   .game-row {
     display: flex;
     align-items: flex-start;
@@ -336,6 +367,10 @@
     <div class="hero-sub" id="milestoneSub">next up: a doorframe</div>
     <div class="hero-rule"><div class="hero-rule-fill" id="milestoneBar"></div></div>
     <div class="apps-lede" id="spLede">you have 0 points to spend</div>
+    <div class="clout-row" id="cloutRow">
+      <span id="cloutStatus">0 clout &middot; scrolling at normal speed</span>
+      <button class="viral-btn" id="viralBtn" disabled>go viral</button>
+    </div>
   </div>
 
   <div class="game-row">
@@ -495,7 +530,7 @@
   ];
 
   // ---------- state ----------
-  let state = { totalDistance: 0, sp: 0, unlocked: 0 };
+  let state = { totalDistance: 0, sp: 0, unlocked: 0, clout: 0 };
 
   function loadState() {
     try {
@@ -504,6 +539,7 @@
         state.totalDistance = saved.totalDistance || 0;
         state.sp = saved.sp || 0;
         state.unlocked = saved.unlocked || 0;
+        state.clout = saved.clout || 0;
         upgrades.forEach(u => { u.owned = (saved.upgrades && saved.upgrades[u.id]) || 0; });
       }
     } catch (e) {}
@@ -516,11 +552,21 @@
       totalDistance: state.totalDistance,
       sp: state.sp,
       unlocked: state.unlocked,
+      clout: state.clout,
       upgrades: upgradesOwned
     }));
   }
 
   loadState();
+
+  // ---------- prestige ("going viral") ----------
+  function cloutMultiplier() {
+    return 1 + state.clout * 0.02;
+  }
+
+  function cloutAvailable() {
+    return Math.floor(Math.sqrt(state.totalDistance / 1000));
+  }
 
   // ---------- helpers ----------
   function formatNum(n) {
@@ -537,13 +583,14 @@
   }
 
   function passiveRate() {
-    return upgrades.filter(u => u.type === 'passive').reduce((sum, u) => sum + u.value * u.owned, 0);
+    const base = upgrades.filter(u => u.type === 'passive').reduce((sum, u) => sum + u.value * u.owned, 0);
+    return base * cloutMultiplier();
   }
 
   function clickPower() {
     const base = 0.15;
     const bonus = upgrades.filter(u => u.type === 'click').reduce((sum, u) => sum + u.value * u.owned, 0);
-    return base + bonus;
+    return (base + bonus) * cloutMultiplier();
   }
 
   function upgradeCost(u) {
@@ -583,6 +630,8 @@
   const appsRight = document.getElementById('appsRight');
   const tapHint = document.getElementById('tapHint');
   const screenEl = document.getElementById('phone');
+  const cloutStatus = document.getElementById('cloutStatus');
+  const viralBtn = document.getElementById('viralBtn');
 
   function renderAppTile(u) {
     const cost = upgradeCost(u);
@@ -639,6 +688,31 @@
       milestoneSub.textContent = 'every milestone unlocked.';
       milestoneBar.style.width = '100%';
     }
+
+    const boostPct = Math.round((cloutMultiplier() - 1) * 100);
+    const available = cloutAvailable();
+    cloutStatus.innerHTML = boostPct > 0
+      ? `<b>${formatNum(state.clout)}</b> clout &middot; scrolling ${boostPct}% faster forever`
+      : `${formatNum(state.clout)} clout &middot; scrolling at normal speed`;
+    viralBtn.disabled = available < 1;
+    viralBtn.textContent = available >= 1 ? `go viral (+${formatNum(available)} clout)` : 'go viral';
+  }
+
+  function goViral() {
+    const gained = cloutAvailable();
+    if (gained < 1) return;
+    if (!confirm(`Reset your scroll and upgrades for +${gained} clout (permanent +${gained * 2}% speed)?`)) return;
+    state.clout += gained;
+    state.totalDistance = 0;
+    state.sp = 0;
+    state.unlocked = 0;
+    upgrades.forEach(u => u.owned = 0);
+    feedOffset = 0;
+    applyFeedTransform();
+    renderStats();
+    renderApps();
+    saveState();
+    showToast(`you went viral. +${gained} clout, forever.`);
   }
 
   // ---------- feed motion ----------
@@ -691,6 +765,11 @@
 
   setInterval(() => { renderStats(); renderApps(); saveState(); }, 500);
   window.addEventListener('beforeunload', saveState);
+
+  viralBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    goViral();
+  });
 
   // ---------- ambient particles ----------
   const particleContainer = document.getElementById('bgParticles');

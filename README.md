@@ -6,7 +6,7 @@ backend, no build step.
 ## Structure
 
 - `index.html` — homepage, grid of game cards
-- `support.html` / `support-custom.html` — tip jar page
+- `support.html` — tip jar page (presets, custom amount, QR popup)
 - `privacy.html` — privacy policy
 - `games/<game-name>/` — each game is fully self-contained in its own
   folder, so new games can be added without touching existing ones
@@ -15,7 +15,9 @@ backend, no build step.
 
 - **Doomscroll** (`games/doomscroll/`) — idle clicker satirizing infinite
   scroll. Progress saves to `localStorage`, Cookie Clicker style, so it
-  carries over between visits.
+  carries over between visits. Includes a prestige loop ("go viral"):
+  reset your run once you've scrolled far enough for permanent, stacking
+  scroll-speed bonuses ("clout").
 - Perfect Excuse, Daily Vibe Check, Stack the Nonsense — planned, not yet
   built.
 
