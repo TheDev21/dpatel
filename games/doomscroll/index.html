@@ -702,7 +702,6 @@
   function goViral() {
     const gained = cloutAvailable();
     if (gained < 1) return;
-    if (!confirm(`Reset your scroll and upgrades for +${gained} clout (permanent +${gained * 2}% speed)?`)) return;
     state.clout += gained;
     state.totalDistance = 0;
     state.sp = 0;
