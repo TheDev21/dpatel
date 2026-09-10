@@ -14,8 +14,8 @@ backend, no build step.
 ## Games
 
 - **Doomscroll** (`games/doomscroll/`) — idle clicker satirizing infinite
-  scroll. Progress is session-only (not saved to `localStorage`), so it
-  resets whenever you leave.
+  scroll. Progress saves to `localStorage`, Cookie Clicker style, so it
+  carries over between visits.
 - Perfect Excuse, Daily Vibe Check, Stack the Nonsense — planned, not yet
   built.
 
