@@ -195,6 +195,12 @@
   .apps-column-right { height: 800px; display: flex; align-items: center; }
 
   .side-header { text-align: center; margin-bottom: 32px; }
+  .side-header h1 { font-size: 2.1rem; margin-bottom: 4px; }
+  .side-header .tagline { font-size: 0.8rem; margin-bottom: 0.9rem; line-height: 1.4; }
+  .side-header .hero-number { font-size: 2.2rem; }
+  .side-header .hero-sub { font-size: 0.78rem; }
+  .side-header .apps-lede { font-size: 0.92rem; }
+  .side-header .hero-rule { width: 120px; }
   .apps-list {
     display: flex; flex-direction: column; gap: 34px; width: 100%;
   }
@@ -323,7 +329,6 @@
   }
   .tap-ripple.pop { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 
-  .tap-hint { margin-top: 0.7rem; text-align: center; font-size: 0.9rem; color: var(--text-dim); }
 
   .toast {
     position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
@@ -399,7 +404,6 @@
           </div>
         </div>
       </div>
-      <div class="tap-hint" id="tapHint">tap to scroll</div>
     </div>
 
     <div class="apps-column apps-column-right">
@@ -642,7 +646,6 @@
   const spLede = document.getElementById('spLede');
   const appsLeft = document.getElementById('appsLeft');
   const appsRight = document.getElementById('appsRight');
-  const tapHint = document.getElementById('tapHint');
   const screenEl = document.getElementById('phone');
   const cloutStatus = document.getElementById('cloutStatus');
   const viralBtn = document.getElementById('viralBtn');
@@ -689,8 +692,6 @@
 
   function renderStats() {
     distanceVal.textContent = formatDistance(state.totalDistance);
-    const rate = passiveRate();
-    tapHint.textContent = rate > 0 ? 'scrolling itself now. tap for more.' : 'tap to scroll';
     spLede.innerHTML = `you have <b>${formatNum(state.sp)}</b> point${state.sp >= 2 ? 's' : ''} to spend`;
 
     if (state.unlocked < milestones.length) {
