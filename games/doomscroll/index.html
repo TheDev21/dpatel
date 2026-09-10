@@ -161,22 +161,18 @@
   .viral-btn {
     position: relative;
     font-family: 'DM Mono', monospace;
-    font-size: 0.78rem;
+    font-size: 1rem;
     font-weight: 500;
-    color: var(--text-dim);
-    background:
-      linear-gradient(to right, var(--orange) var(--fill, 0%), transparent var(--fill, 0%)),
-      var(--pink-deep);
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    padding: 7px 18px;
-    cursor: default;
-    overflow: hidden;
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .viral-btn.ready {
     color: #fff;
     background: var(--red);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 11px 28px;
+    cursor: default;
+    box-shadow: 0 0 0 var(--spread, 0px) rgba(255,45,85, var(--glow, 0));
+    transition: transform 0.15s ease, box-shadow 0.2s ease;
+  }
+  .viral-btn.ready {
     cursor: pointer;
     animation: viralGlow 1.4s ease-in-out infinite;
   }
@@ -184,7 +180,7 @@
 
   @keyframes viralGlow {
     0%, 100% { box-shadow: 0 0 0 0 rgba(255,45,85,0.5); }
-    50% { box-shadow: 0 0 0 8px rgba(255,45,85,0); }
+    50% { box-shadow: 0 0 0 10px rgba(255,45,85,0); }
   }
 
   .game-row {
@@ -707,14 +703,14 @@
       : `${formatNum(state.clout)} clout &middot; scrolling at normal speed`;
     viralBtn.disabled = available < 1;
     viralBtn.classList.toggle('ready', available >= 1);
+    viralBtn.textContent = 'go viral';
     if (available >= 1) {
-      viralBtn.style.removeProperty('--fill');
-      viralBtn.textContent = `go viral (+${formatNum(available)} clout)`;
+      viralBtn.style.removeProperty('--glow');
+      viralBtn.style.removeProperty('--spread');
     } else {
-      const progressPct = Math.min(100, (state.totalDistance / 1000) * 100);
-      viralBtn.style.setProperty('--fill', progressPct + '%');
-      const remaining = Math.max(0, 1000 - state.totalDistance);
-      viralBtn.textContent = `scroll ${formatNum(remaining)}m more to unlock`;
+      const progress = Math.min(1, state.totalDistance / 1000);
+      viralBtn.style.setProperty('--glow', (progress * 0.55).toFixed(2));
+      viralBtn.style.setProperty('--spread', (progress * 8).toFixed(1) + 'px');
     }
   }
 
