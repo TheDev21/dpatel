@@ -151,12 +151,6 @@
   .win-banner .display { font-size: 26px; margin-bottom: 6px; }
   .win-banner p { margin: 0; font-size: 12.5px; opacity: 0.95; }
 
-  .day-tag {
-    text-align: center;
-    font-size: 10.5px;
-    color: var(--ink-dim);
-    margin-top: 28px;
-  }
 </style>
 </head>
 <body>
@@ -164,7 +158,7 @@
 
   <div class="top"><a href="../../index.html">&larr; back to games</a></div>
   <h1>Perfect <span>Excuse</span></h1>
-  <p class="tagline">write an excuse. the rules disagree with each other. good luck.</p>
+  <p class="tagline">lie to your boss, but make it grammatically compliant.</p>
 
   <div id="picker">
     <div class="scenario-grid" id="scenarioGrid"></div>
@@ -184,7 +178,6 @@
     </div>
   </div>
 
-  <div class="day-tag" id="dayTag"></div>
 </div>
 
 <script>
@@ -483,8 +476,6 @@
   }
 
   box.addEventListener('input', evaluate);
-
-  document.getElementById('dayTag').textContent = "today's rules: " + todayStr() + ' — resets at midnight';
 </script>
 </body>
 </html>
