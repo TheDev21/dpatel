@@ -4,451 +4,681 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Doomscroll</title>
-<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap');
-
   :root {
-    --bg: #0a0a0a;
-    --bg2: #08080a;
-    --panel: #101010;
+    --bg: #08080a;
+    --phone-shell: #131316;
+    --screen-dark: #0d0d10;
+    --panel-2: #1a1a1e;
     --orange: #ff5a1f;
     --red: #ff2d55;
-    --text: #e8e6e1;
-    --text-dim: #8a8880;
-    --border: #232323;
+    --gold: #ffcf6b;
+    --text: #f2f0eb;
+    --text-dim: #8a8a8f;
   }
+
   * { box-sizing: border-box; }
+
   html, body {
-    margin: 0; padding: 0;
+    margin: 0;
+    height: 100%;
     background: var(--bg);
     color: var(--text);
     font-family: 'DM Mono', monospace;
-    overflow-x: hidden;
-  }
-  h1, h2, h3, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
-  a { color: inherit; }
-
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 14px 20px;
-    border-bottom: 1px solid var(--border);
-    background: var(--bg2);
-  }
-  .topbar a.back {
-    color: var(--text-dim);
-    font-size: 12px;
-    text-decoration: none;
-    letter-spacing: 0.05em;
-  }
-  .topbar a.back:hover { color: var(--orange); }
-  .topbar h1 { margin: 0; font-size: 24px; }
-  .topbar h1 span { color: var(--orange); }
-  .reset-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 6px 10px;
-    cursor: pointer;
-  }
-  .reset-btn:hover { border-color: var(--red); color: var(--red); }
-
-  .wrap {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 24px 20px 80px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 28px;
-  }
-  @media (max-width: 760px) {
-    .wrap { grid-template-columns: 1fr; }
-  }
-
-  .panel {
-    border: 1px solid var(--border);
-    background: var(--panel);
-    padding: 20px;
-  }
-
-  /* Left: phone + landmark */
-  .stage {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 18px;
-  }
-
-  .landmark {
-    text-align: center;
-  }
-  .landmark .label {
-    font-size: 11px;
-    color: var(--text-dim);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .landmark .name {
-    font-size: 30px;
-    color: var(--orange);
-    margin: 2px 0;
-  }
-  .landmark .progress-bar {
-    width: 100%;
-    height: 6px;
-    background: #1a1a1a;
-    border: 1px solid var(--border);
-    margin-top: 8px;
-    position: relative;
     overflow: hidden;
   }
-  .landmark .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--red), var(--orange));
-    width: 0%;
-    transition: width 0.2s ease;
-  }
 
-  .phone {
-    width: 160px;
-    height: 320px;
-    border: 3px solid #2a2a2a;
-    border-radius: 24px;
-    background: #050505;
-    position: relative;
-    cursor: pointer;
-    user-select: none;
+  body {
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    box-shadow: 0 0 0 1px #000 inset;
-  }
-  .phone:active { transform: scale(0.98); }
-  .phone .notch {
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 44px;
-    height: 6px;
-    border-radius: 4px;
-    background: #1a1a1a;
-  }
-  .phone .hint {
-    color: var(--text-dim);
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    text-align: center;
-    padding: 0 14px;
-  }
-  .phone .flash {
-    position: absolute;
-    inset: 0;
-    background: rgba(255, 90, 31, 0.18);
-    opacity: 0;
-    pointer-events: none;
   }
 
-  .stats {
-    text-align: center;
-  }
-  .stats .distance {
-    font-size: 44px;
-    color: var(--text);
-  }
-  .stats .distance span { color: var(--orange); }
-  .stats .rate {
-    font-size: 12px;
-    color: var(--text-dim);
-  }
-
-  /* Right: upgrades */
-  .upgrades h2 {
-    font-size: 22px;
-    margin: 0 0 4px;
-  }
-  .upgrades .sub {
-    font-size: 12px;
-    color: var(--text-dim);
-    margin: 0 0 16px;
-  }
-
-  .upgrade {
+  #fitWrapper {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 12px;
-    border: 1px solid var(--border);
-    margin-bottom: 10px;
-    background: var(--bg2);
-    cursor: pointer;
-    transition: border-color 0.12s ease, opacity 0.12s ease;
-  }
-  .upgrade:hover:not(.locked) { border-color: var(--orange); }
-  .upgrade.locked {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
-  .upgrade .info { flex: 1; }
-  .upgrade .name {
-    font-size: 16px;
-    font-family: 'Bebas Neue', sans-serif;
-    letter-spacing: 0.02em;
-  }
-  .upgrade .desc {
-    font-size: 11px;
-    color: var(--text-dim);
-    margin-top: 2px;
-  }
-  .upgrade .owned {
-    font-size: 11px;
-    color: var(--red);
-    margin-top: 2px;
-  }
-  .upgrade .cost {
-    font-size: 14px;
-    color: var(--orange);
-    white-space: nowrap;
-    text-align: right;
-    min-width: 70px;
+    transform-origin: center center;
+    position: relative;
+    z-index: 1;
   }
 
-  footer.note {
-    text-align: center;
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.6rem, 8vw, 3.6rem);
+    letter-spacing: 0.05em;
+    color: var(--text);
+    margin: 0 0 0.15rem;
+  }
+
+  .tagline {
     color: var(--text-dim);
-    font-size: 11px;
-    padding: 20px;
+    font-size: 0.76rem;
+    margin: 0 0 1rem;
+    text-align: center;
+  }
+
+  .hero-stat { text-align: center; margin-bottom: 1.1rem; }
+
+  .hero-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.6rem, 7vw, 3.4rem);
+    line-height: 1;
+    color: var(--text);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .hero-sub { font-size: 0.7rem; color: var(--text-dim); margin-top: 6px; }
+
+  .hero-rule {
+    width: 150px; height: 3px; background: #202024;
+    margin: 10px auto 8px; border-radius: 2px; overflow: hidden; position: relative;
+  }
+
+  .hero-rule-fill {
+    position: absolute; inset: 0; width: 0%;
+    background: var(--orange);
+    transition: width 0.3s ease;
+  }
+
+  .apps-lede { font-size: 0.68rem; color: var(--text-dim); }
+
+  .game-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1.6rem;
+  }
+
+  .apps-column { width: 175px; height: 600px; display: flex; align-items: center; }
+  .apps-list {
+    display: flex; flex-direction: column; gap: 26px; width: 100%;
+  }
+
+  .app-item {
+    display: flex; align-items: center; gap: 10px; width: 100%;
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Mono', monospace; padding: 5px; border-radius: 8px;
+    text-align: left; transition: background 0.15s ease;
+    position: relative; z-index: 1;
+  }
+
+  .app-item:not(:disabled):hover { background: rgba(255,255,255,0.06); }
+  .app-item:disabled { cursor: default; opacity: 0.4; }
+
+  .app-icon {
+    position: relative; width: 56px; height: 56px; border-radius: 15px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .app-icon svg { width: 28px; height: 28px; }
+
+  .app-badge {
+    position: absolute; top: -6px; right: -6px; background: var(--gold);
+    color: #241a00; font-size: 0.56rem; line-height: 1; padding: 2px 5px;
+    border-radius: 7px; font-weight: 500;
+  }
+
+  .app-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .app-name { font-size: 0.72rem; color: var(--text); line-height: 1.2; }
+  .app-cost { font-size: 0.62rem; color: var(--orange); }
+  .app-item:disabled .app-cost { color: var(--text-dim); }
+
+  .phone-column { display: flex; flex-direction: column; align-items: center; }
+  .stage { position: relative; }
+
+  .stage::before {
+    content: ""; position: absolute; width: 480px; height: 480px;
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(255, 90, 31, 0.22), transparent 70%);
+    filter: blur(10px); z-index: 0;
+  }
+
+  .phone {
+    position: relative; z-index: 1; width: 300px; height: 600px;
+    background: var(--phone-shell); border-radius: 42px;
+    border: 2px solid #26262b;
+    padding: 12px;
+  }
+
+  .screen {
+    position: relative; width: 100%; height: 100%;
+    background: var(--screen-dark); border-radius: 27px;
+    overflow: hidden; cursor: pointer; user-select: none; touch-action: manipulation;
+  }
+
+  .notch {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 80px; height: 18px; background: var(--phone-shell);
+    border-radius: 0 0 11px 11px; z-index: 3;
+  }
+
+  .home-indicator {
+    position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%);
+    width: 100px; height: 4px; border-radius: 2px;
+    background: rgba(255,255,255,0.18); z-index: 3;
+  }
+
+  .feed {
+    position: absolute; top: 18px; left: 0; right: 0; padding: 10px;
+    display: flex; flex-direction: column; gap: 9px; will-change: transform;
+  }
+
+  .post { background: var(--panel-2); border-radius: 9px; padding: 8px; flex-shrink: 0; }
+
+  .post-head { display: flex; align-items: center; gap: 6px; margin-bottom: 6px; }
+  .avatar { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; }
+  .avatar.small { width: 13px; height: 13px; }
+  .handle { font-size: 0.6rem; color: var(--text-dim); }
+  .caption { font-size: 0.66rem; color: var(--text); line-height: 1.3; }
+
+  .media { height: 54px; border-radius: 7px; margin-bottom: 5px; }
+  .media.tall { height: 86px; display: flex; align-items: center; justify-content: center; position: relative; }
+
+  .play-icon {
+    width: 0; height: 0;
+    border-left: 11px solid rgba(255,255,255,0.85);
+    border-top: 7px solid transparent; border-bottom: 7px solid transparent;
+  }
+
+  .duration {
+    position: absolute; bottom: 5px; right: 6px;
+    background: rgba(0,0,0,0.55); color: #fff;
+    font-size: 0.54rem; padding: 1px 4px; border-radius: 4px;
+  }
+
+  .eng-row { display: flex; gap: 10px; margin-top: 6px; }
+  .eng-row span { font-size: 0.58rem; color: var(--text-dim); }
+
+  .quote-mark {
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; color: var(--orange);
+    line-height: 1; margin-bottom: 2px;
+  }
+  .quote-text { font-size: 0.7rem; color: var(--text); line-height: 1.35; }
+
+  .poll-row { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; }
+  .poll-label { font-size: 0.56rem; color: var(--text-dim); width: 56px; flex-shrink: 0; }
+  .poll-pct { font-size: 0.56rem; color: var(--orange); width: 28px; text-align: right; flex-shrink: 0; }
+  .poll-bar { flex: 1; height: 8px; border-radius: 4px; background: #232327; overflow: hidden; }
+  .poll-fill { height: 100%; background: var(--orange); }
+
+  .tap-ripple {
+    position: absolute; border-radius: 50%;
+    background: rgba(255, 90, 31, 0.35);
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 1; pointer-events: none; z-index: 4;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+  }
+  .tap-ripple.pop { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+
+  .tap-hint { margin-top: 0.7rem; text-align: center; font-size: 0.68rem; color: var(--text-dim); }
+
+  .logoff { margin-top: 0.6rem; text-align: center; }
+  .logoff button {
+    background: none; border: none; color: var(--text-dim);
+    font-family: 'DM Mono', monospace; font-size: 0.66rem;
+    text-decoration: underline; cursor: pointer;
+  }
+
+  .toast {
+    position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
+    background: #1a1a1e; border: 1px solid var(--gold); color: var(--gold);
+    padding: 0.6rem 1.1rem; border-radius: 8px; font-size: 0.74rem;
+    opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 10; text-align: center; max-width: 90vw;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  .bg-particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .particle {
+    position: absolute;
+    bottom: -10px;
+    width: 3px;
+    height: 3px;
+    border-radius: 50%;
+    background: var(--orange);
+    opacity: 0;
+    animation: floatUp linear infinite;
+  }
+
+  @keyframes floatUp {
+    0%   { transform: translateY(0); opacity: 0; }
+    8%   { opacity: 0.55; }
+    92%  { opacity: 0.4; }
+    100% { transform: translateY(-100vh); opacity: 0; }
   }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <a class="back" href="../../">&larr; all games</a>
-  <h1>Doom<span>scroll</span></h1>
-  <button class="reset-btn" id="resetBtn">reset save</button>
-</div>
+<div class="bg-particles" id="bgParticles"></div>
 
-<div class="wrap">
-  <div class="panel stage">
-    <div class="landmark">
-      <div class="label">Current landmark</div>
-      <div class="name" id="landmarkName">Doorframe</div>
-      <div class="progress-bar"><div class="progress-fill" id="landmarkFill"></div></div>
-    </div>
+<div id="fitWrapper">
+  <h1>Doomscroll</h1>
+  <p class="tagline">the feed never ends. neither should you.</p>
 
-    <div class="phone" id="phone">
-      <div class="notch"></div>
-      <div class="flash" id="flash"></div>
-      <div class="hint">tap to<br>scroll</div>
-    </div>
-
-    <div class="stats">
-      <div class="distance" id="distance">0<span> cm</span></div>
-      <div class="rate" id="rate">0 cm / sec, automatically</div>
-    </div>
+  <div class="hero-stat">
+    <div class="hero-number" id="distanceVal">0.0 m</div>
+    <div class="hero-sub" id="milestoneSub">next up: a doorframe</div>
+    <div class="hero-rule"><div class="hero-rule-fill" id="milestoneBar"></div></div>
+    <div class="apps-lede" id="spLede">you have 0 points to spend</div>
   </div>
 
-  <div class="panel upgrades">
-    <h2>Upgrades</h2>
-    <p class="sub">Automate the scroll. Never stop.</p>
-    <div id="upgradeList"></div>
+  <div class="game-row">
+    <div class="apps-column">
+      <div class="apps-list" id="appsLeft"></div>
+    </div>
+
+    <div class="phone-column">
+      <div class="stage">
+        <div class="phone">
+          <div class="screen" id="phone">
+            <div class="notch"></div>
+            <div class="feed" id="feed"></div>
+            <div class="home-indicator"></div>
+          </div>
+        </div>
+      </div>
+      <div class="tap-hint" id="tapHint">tap to scroll</div>
+      <div class="logoff"><button id="resetBtn">log off (reset progress)</button></div>
+    </div>
+
+    <div class="apps-column">
+      <div class="apps-list" id="appsRight"></div>
+    </div>
   </div>
 </div>
 
-<footer class="note">Progress saves automatically to this browser. It will not save your attention span.</footer>
+<div class="toast" id="toast"></div>
 
 <script>
-(function () {
-  'use strict';
-
-  var SAVE_KEY = 'doomscroll_save_v1';
-
-  var LANDMARKS = [
-    { name: 'Doorframe', cm: 200 },
-    { name: 'Giraffe', cm: 550 },
-    { name: 'Telephone Pole', cm: 900 },
-    { name: 'Statue of Liberty', cm: 9300 },
-    { name: 'Eiffel Tower', cm: 33000 },
-    { name: 'Burj Khalifa', cm: 82800 },
-    { name: 'Mount Everest', cm: 884900 },
-    { name: 'Cruising Altitude', cm: 1097280 },
-    { name: 'The Kármán Line', cm: 10000000 },
-    { name: 'International Space Station', cm: 40800000 },
-    { name: 'The Moon', cm: 38440000000 }
-  ];
-
-  var UPGRADES = [
-    { id: 'ghost', name: 'Ghost Scroll', desc: 'A faint, unfelt momentum.', baseCost: 15, cps: 0.5 },
-    { id: 'thumb', name: 'Thumbzilla', desc: 'A thumb the size of a building.', baseCost: 100, cps: 3 },
-    { id: 'bot', name: 'Swipe Bot 3000', desc: 'Swipes on a loop, forever.', baseCost: 600, cps: 12 },
-    { id: 'sweatshop', name: 'Scroll Sweatshop', desc: 'A room of thumbs, working in shifts.', baseCost: 4000, cps: 55 },
-    { id: 'algorithm', name: 'The Algorithm', desc: 'It knows what keeps you here.', baseCost: 25000, cps: 260 },
-    { id: 'singularity', name: 'The Singularity', desc: 'Content generating content, unattended.', baseCost: 180000, cps: 1400 }
-  ];
-
-  var state = {
-    distance: 0,
-    clickPower: 1,
-    owned: {}
+  // ---------- icons: flat solid squares, simple line-art (no gradients) ----------
+  const icons = {
+    ghost: `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 20V10a6 6 0 0112 0v10l-2-1.6L14 20l-2-1.6L10 20l-2-1.6L6 20z"/>
+      <circle cx="9.3" cy="10.5" r="0.9" fill="#fff" stroke="none"/>
+      <circle cx="14.7" cy="10.5" r="0.9" fill="#fff" stroke="none"/>
+    </svg>`,
+    bolt: `<svg viewBox="0 0 24 24" fill="#fff" stroke="none">
+      <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/>
+    </svg>`,
+    robot: `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="9" width="14" height="10" rx="2.2"/>
+      <line x1="12" y1="9" x2="12" y2="5"/>
+      <circle cx="12" cy="3.6" r="1.1" fill="#fff" stroke="none"/>
+      <circle cx="9" cy="13.5" r="1" fill="#fff" stroke="none"/>
+      <circle cx="15" cy="13.5" r="1" fill="#fff" stroke="none"/>
+    </svg>`,
+    factory: `<svg viewBox="0 0 24 24" fill="#fff" stroke="none">
+      <path d="M4 21V13.2l4 2.5v-2.5l4 2.5v-2.5l4 2.5V9h2v12H4z"/>
+    </svg>`,
+    eye: `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7-10-7-10-7z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>`,
+    infinity: `<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M6 9a3 3 0 100 6 3 3 0 002.5-1.3L12 10l3.5 3.7A3 3 0 1018 8a3 3 0 00-2.5 1.3L12 14 8.5 10.3A3 3 0 006 9z"/>
+    </svg>`
   };
-  UPGRADES.forEach(function (u) { state.owned[u.id] = 0; });
 
-  function load() {
+  // ---------- feed content: flat solid colors, no gradients ----------
+  const avatarColors = ['#ff5a1f', '#4361ee', '#00c2a8', '#e0b400', '#a855f7'];
+
+  const postsData = [
+    { type: 'text',  user: '@night_owl_42',    caption: "day 47 of pretending to work" , likes: '842',  comments: '31' },
+    { type: 'image', user: '@snacksandregret', caption: "my plant looked better before I ‘helped’ it", likes: '2.1K', comments: '88' },
+    { type: 'video', user: '@sleepdeprived',   caption: "POV: it's monday and you already regret everything", duration: '0:38', likes: '5.4K', comments: '210' },
+    { type: 'quote', user: '@notyourbestie',   text: "if you're reading this, it's already too late to go to bed on time." },
+    { type: 'poll',  question: "is cereal a soup?", optA: 'yes', pctA: 62, optB: 'no', pctB: 38 },
+    { type: 'text',  user: '@feralthoughts',   caption: "she said ‘we need to talk’ and now I'm feral", likes: '1.3K', comments: '64' },
+    { type: 'video', user: '@zerobudget',      caption: "just spent $40 on stuff I didn't need, we thriving", duration: '1:02', likes: '760', comments: '19' },
+    { type: 'image', user: '@catlaw',          caption: "my cat judged me today. accurate.", likes: '3.8K', comments: '145' },
+    { type: 'poll',  question: "pineapple on pizza?", optA: 'yes', pctA: 44, optB: 'absolutely not', pctB: 56 },
+    { type: 'text',  user: '@nothoughtshead',  caption: "rating my life choices: 2 out of 10, no thoughts just vibes", likes: '509', comments: '22' },
+    { type: 'quote', user: '@askingnicely',    text: "asked the universe for one thing today. got zero things." },
+    { type: 'image', user: '@vibecheck',       caption: "why does my coffee cost more than my rent", likes: '6.7K', comments: '301' }
+  ];
+
+  function avatarHtml(i) {
+    return `<div class="avatar" style="background:${avatarColors[i % avatarColors.length]}"></div>`;
+  }
+
+  function renderPost(d, i) {
+    if (d.type === 'text') {
+      return `<div class="post">
+        <div class="post-head">${avatarHtml(i)}<div class="handle">${d.user}</div></div>
+        <div class="caption">${d.caption}</div>
+        <div class="eng-row"><span>&#9825; ${d.likes}</span><span>&#9998; ${d.comments}</span></div>
+      </div>`;
+    }
+    if (d.type === 'image') {
+      return `<div class="post">
+        <div class="post-head">${avatarHtml(i)}<div class="handle">${d.user}</div></div>
+        <div class="caption" style="margin-bottom:5px;">${d.caption}</div>
+        <div class="media" style="background:${avatarColors[i % avatarColors.length]}"></div>
+        <div class="eng-row"><span>&#9825; ${d.likes}</span><span>&#9998; ${d.comments}</span></div>
+      </div>`;
+    }
+    if (d.type === 'video') {
+      return `<div class="post">
+        <div class="post-head">${avatarHtml(i)}<div class="handle">${d.user}</div></div>
+        <div class="caption" style="margin-bottom:5px;">${d.caption}</div>
+        <div class="media tall" style="background:${avatarColors[i % avatarColors.length]}">
+          <div class="play-icon"></div>
+          <div class="duration">${d.duration}</div>
+        </div>
+        <div class="eng-row"><span>&#9825; ${d.likes}</span><span>&#9998; ${d.comments}</span></div>
+      </div>`;
+    }
+    if (d.type === 'quote') {
+      return `<div class="post">
+        <div class="quote-mark">&ldquo;</div>
+        <div class="quote-text">${d.text}</div>
+        <div class="post-head" style="margin-top:8px;">${avatarHtml(i).replace('avatar', 'avatar small')}<div class="handle" style="font-size:0.56rem;">${d.user}</div></div>
+      </div>`;
+    }
+    if (d.type === 'poll') {
+      return `<div class="post">
+        <div class="post-head">${avatarHtml(i)}<div class="handle">poll</div></div>
+        <div class="caption" style="margin-bottom:7px;">${d.question}</div>
+        <div class="poll-row"><span class="poll-label">${d.optA}</span><div class="poll-bar"><div class="poll-fill" style="width:${d.pctA}%"></div></div><span class="poll-pct">${d.pctA}%</span></div>
+        <div class="poll-row"><span class="poll-label">${d.optB}</span><div class="poll-bar"><div class="poll-fill" style="width:${d.pctB}%"></div></div><span class="poll-pct">${d.pctB}%</span></div>
+      </div>`;
+    }
+  }
+
+  const singleSetHtml = postsData.map((d, i) => renderPost(d, i)).join('');
+  const feedEl = document.getElementById('feed');
+  feedEl.innerHTML = singleSetHtml + singleSetHtml;
+
+  let singleSetHeight = feedEl.scrollHeight / 2;
+  let clickStepPx = singleSetHeight / postsData.length;
+
+  // ---------- milestones ----------
+  const milestones = [
+    { m: 2,          label: "a doorframe" },
+    { m: 10,         label: "a school bus, end to end" },
+    { m: 93,         label: "the Statue of Liberty" },
+    { m: 330,        label: "the Eiffel Tower" },
+    { m: 828,        label: "the Burj Khalifa" },
+    { m: 3776,       label: "Mount Fuji" },
+    { m: 8849,       label: "Mount Everest, base to peak" },
+    { m: 42195,      label: "a full marathon, sideways" },
+    { m: 100000,     label: "the Kármán line, the edge of space" },
+    { m: 408000,     label: "higher than the ISS orbits" },
+    { m: 384400000,  label: "the Moon" },
+    { m: 1000000000, label: "one million kilometers. please log off." }
+  ];
+
+  // ---------- upgrades ----------
+  const upgrades = [
+    { id: 'thumb',       icon: icons.ghost,    color: 'var(--red)',    name: 'Ghost Scroll',      desc: '+0.1 m/s',   type: 'passive', value: 0.1,  baseCost: 15,    owned: 0, side: 'left'  },
+    { id: 'click',       icon: icons.bolt,     color: 'var(--red)',    name: 'Thumbzilla',        desc: '+0.1 m/tap', type: 'click',   value: 0.1,  baseCost: 60,    owned: 0, side: 'left'  },
+    { id: 'bot',         icon: icons.robot,    color: 'var(--red)',    name: 'Swipe Bot 3000',    desc: '+0.8 m/s',   type: 'passive', value: 0.8,  baseCost: 100,   owned: 0, side: 'left'  },
+    { id: 'farm',        icon: icons.factory,  color: 'var(--red)',    name: 'Scroll Sweatshop',  desc: '+5 m/s',     type: 'passive', value: 5,    baseCost: 600,   owned: 0, side: 'right' },
+    { id: 'ai',          icon: icons.eye,      color: 'var(--red)',    name: 'The Algorithm',     desc: '+30 m/s',    type: 'passive', value: 30,   baseCost: 4000,  owned: 0, side: 'right' },
+    { id: 'singularity', icon: icons.infinity, color: '#14141a',       name: 'The Singularity',   desc: '+150 m/s',   type: 'passive', value: 150,  baseCost: 20000, owned: 0, side: 'right' }
+  ];
+
+  // ---------- state ----------
+  let state = { totalDistance: 0, sp: 0, unlocked: 0 };
+
+  function loadState() {
     try {
-      var raw = localStorage.getItem(SAVE_KEY);
-      if (!raw) return;
-      var parsed = JSON.parse(raw);
-      if (typeof parsed.distance === 'number') state.distance = parsed.distance;
-      if (parsed.owned) {
-        UPGRADES.forEach(function (u) {
-          if (typeof parsed.owned[u.id] === 'number') state.owned[u.id] = parsed.owned[u.id];
-        });
+      const saved = JSON.parse(localStorage.getItem('doomscroll-save'));
+      if (saved) {
+        state.totalDistance = saved.totalDistance || 0;
+        state.sp = saved.sp || 0;
+        state.unlocked = saved.unlocked || 0;
+        upgrades.forEach(u => { u.owned = (saved.upgrades && saved.upgrades[u.id]) || 0; });
       }
-    } catch (e) { /* ignore corrupt save */ }
+    } catch (e) {}
   }
 
-  function save() {
-    try {
-      localStorage.setItem(SAVE_KEY, JSON.stringify({ distance: state.distance, owned: state.owned }));
-    } catch (e) { /* storage unavailable */ }
+  function saveState() {
+    const upgradesOwned = {};
+    upgrades.forEach(u => upgradesOwned[u.id] = u.owned);
+    localStorage.setItem('doomscroll-save', JSON.stringify({
+      totalDistance: state.totalDistance,
+      sp: state.sp,
+      unlocked: state.unlocked,
+      upgrades: upgradesOwned
+    }));
   }
 
-  function costFor(upgrade) {
-    var n = state.owned[upgrade.id];
-    return Math.ceil(upgrade.baseCost * Math.pow(1.15, n));
+  loadState();
+
+  // ---------- helpers ----------
+  function formatNum(n) {
+    if (n < 1000) return n.toFixed(n < 10 ? 2 : 1);
+    const units = ['K','M','B','T','Qa','Qi'];
+    let u = -1, num = n;
+    while (num >= 1000 && u < units.length - 1) { num /= 1000; u++; }
+    return num.toFixed(2) + units[u];
   }
 
-  function totalCps() {
-    var total = 0;
-    UPGRADES.forEach(function (u) { total += u.cps * state.owned[u.id]; });
-    return total;
+  function formatDistance(m) {
+    if (m < 1000) return m.toFixed(1) + ' m';
+    return formatNum(m / 1000) + ' km';
   }
 
-  function formatNumber(n) {
-    if (n < 1000) return Math.floor(n).toString();
-    var units = ['K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp'];
-    var unitIndex = -1;
-    var v = n;
-    while (v >= 1000 && unitIndex < units.length - 1) {
-      v /= 1000;
-      unitIndex++;
+  function passiveRate() {
+    return upgrades.filter(u => u.type === 'passive').reduce((sum, u) => sum + u.value * u.owned, 0);
+  }
+
+  function clickPower() {
+    const base = 0.15;
+    const bonus = upgrades.filter(u => u.type === 'click').reduce((sum, u) => sum + u.value * u.owned, 0);
+    return base + bonus;
+  }
+
+  function upgradeCost(u) {
+    return Math.ceil(u.baseCost * Math.pow(1.15, u.owned));
+  }
+
+  // ---------- toast ----------
+  const toastEl = document.getElementById('toast');
+  let toastTimer = null;
+  function showToast(text) {
+    toastEl.textContent = text;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove('show'), 3200);
+  }
+
+  function gain(amount) {
+    if (amount <= 0) return;
+    state.totalDistance += amount;
+    state.sp += amount;
+    checkMilestones();
+  }
+
+  function checkMilestones() {
+    while (state.unlocked < milestones.length && state.totalDistance >= milestones[state.unlocked].m) {
+      showToast(`you've scrolled the length of ${milestones[state.unlocked].label}.`);
+      state.unlocked++;
     }
-    return v.toFixed(2) + units[unitIndex];
   }
 
-  function currentLandmark() {
-    for (var i = 0; i < LANDMARKS.length; i++) {
-      if (state.distance < LANDMARKS[i].cm) return { index: i, prev: i === 0 ? 0 : LANDMARKS[i - 1].cm, landmark: LANDMARKS[i] };
-    }
-    var last = LANDMARKS[LANDMARKS.length - 1];
-    return { index: LANDMARKS.length - 1, prev: last.cm, landmark: last };
+  // ---------- rendering ----------
+  const distanceVal = document.getElementById('distanceVal');
+  const milestoneSub = document.getElementById('milestoneSub');
+  const milestoneBar = document.getElementById('milestoneBar');
+  const spLede = document.getElementById('spLede');
+  const appsLeft = document.getElementById('appsLeft');
+  const appsRight = document.getElementById('appsRight');
+  const tapHint = document.getElementById('tapHint');
+  const screenEl = document.getElementById('phone');
+
+  function renderAppTile(u) {
+    const cost = upgradeCost(u);
+    const canAfford = state.sp >= cost;
+    const tile = document.createElement('button');
+    tile.className = 'app-item';
+    tile.disabled = !canAfford;
+    tile.innerHTML = `
+      <div class="app-icon" style="background:${u.color}">
+        ${u.icon}
+        ${u.owned > 0 ? `<div class="app-badge">${u.owned}</div>` : ''}
+      </div>
+      <div class="app-text">
+        <div class="app-name">${u.name}</div>
+        <div class="app-cost">${formatNum(cost)} pts</div>
+      </div>
+    `;
+    tile.addEventListener('click', (e) => { e.stopPropagation(); buyUpgrade(u.id); });
+    return tile;
   }
 
-  var distanceEl = document.getElementById('distance');
-  var rateEl = document.getElementById('rate');
-  var landmarkNameEl = document.getElementById('landmarkName');
-  var landmarkFillEl = document.getElementById('landmarkFill');
-  var upgradeListEl = document.getElementById('upgradeList');
-  var phoneEl = document.getElementById('phone');
-  var flashEl = document.getElementById('flash');
-  var resetBtn = document.getElementById('resetBtn');
-
-  function renderUpgrades() {
-    upgradeListEl.innerHTML = '';
-    UPGRADES.forEach(function (u) {
-      var cost = costFor(u);
-      var owned = state.owned[u.id];
-      var locked = state.distance < cost;
-
-      var row = document.createElement('div');
-      row.className = 'upgrade' + (locked ? ' locked' : '');
-
-      var info = document.createElement('div');
-      info.className = 'info';
-      info.innerHTML =
-        '<div class="name">' + u.name + '</div>' +
-        '<div class="desc">' + u.desc + ' &middot; +' + formatNumber(u.cps) + ' cm/s each</div>' +
-        (owned > 0 ? '<div class="owned">owned: ' + owned + '</div>' : '');
-
-      var costEl = document.createElement('div');
-      costEl.className = 'cost';
-      costEl.textContent = formatNumber(cost) + ' cm';
-
-      row.appendChild(info);
-      row.appendChild(costEl);
-      row.addEventListener('click', function () { buy(u); });
-      upgradeListEl.appendChild(row);
+  function renderApps() {
+    appsLeft.innerHTML = '';
+    appsRight.innerHTML = '';
+    upgrades.forEach(u => {
+      const tile = renderAppTile(u);
+      (u.side === 'left' ? appsLeft : appsRight).appendChild(tile);
     });
   }
 
-  function buy(upgrade) {
-    var cost = costFor(upgrade);
-    if (state.distance < cost) return;
-    state.distance -= cost;
-    state.owned[upgrade.id]++;
-    render();
-    save();
+  function buyUpgrade(id) {
+    const u = upgrades.find(x => x.id === id);
+    const cost = upgradeCost(u);
+    if (state.sp < cost) return;
+    state.sp -= cost;
+    u.owned++;
+    renderApps();
+    renderStats();
+    saveState();
   }
 
-  function render() {
-    distanceEl.innerHTML = formatNumber(state.distance) + '<span> cm</span>';
-    var cps = totalCps();
-    rateEl.textContent = formatNumber(cps) + ' cm / sec, automatically';
+  function renderStats() {
+    distanceVal.textContent = formatDistance(state.totalDistance);
+    const rate = passiveRate();
+    tapHint.textContent = rate > 0 ? 'scrolling itself now. tap for more.' : 'tap to scroll';
+    spLede.textContent = `you have ${formatNum(state.sp)} point${state.sp >= 2 ? 's' : ''} to spend`;
 
-    var lm = currentLandmark();
-    landmarkNameEl.textContent = lm.landmark.name;
-    var span = lm.landmark.cm - lm.prev;
-    var into = Math.max(0, state.distance - lm.prev);
-    var pct = span > 0 ? Math.min(100, (into / span) * 100) : 100;
-    landmarkFillEl.style.width = pct + '%';
-
-    renderUpgrades();
+    if (state.unlocked < milestones.length) {
+      const prev = state.unlocked === 0 ? 0 : milestones[state.unlocked - 1].m;
+      const next = milestones[state.unlocked];
+      const pct = Math.min(100, ((state.totalDistance - prev) / (next.m - prev)) * 100);
+      milestoneSub.textContent = `next up: ${next.label}`;
+      milestoneBar.style.width = pct + '%';
+    } else {
+      milestoneSub.textContent = 'every milestone unlocked.';
+      milestoneBar.style.width = '100%';
+    }
   }
 
-  function tap(e) {
-    state.distance += state.clickPower;
-    flashEl.style.transition = 'none';
-    flashEl.style.opacity = '1';
-    requestAnimationFrame(function () {
-      flashEl.style.transition = 'opacity 0.25s ease';
-      flashEl.style.opacity = '0';
-    });
-    render();
+  // ---------- feed motion ----------
+  let feedOffset = 0;
+  const FEED_SCALE = 26;
+
+  function applyFeedTransform() {
+    const wrapped = feedOffset % singleSetHeight;
+    feedEl.style.transform = `translateY(-${wrapped}px)`;
   }
 
-  phoneEl.addEventListener('click', tap);
-  phoneEl.addEventListener('touchstart', function (e) { e.preventDefault(); tap(e); }, { passive: false });
+  function spawnRipple(x, y) {
+    const power = clickPower();
+    const size = 26 + power * 170;
+    const ripple = document.createElement('div');
+    ripple.className = 'tap-ripple';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    ripple.style.width = size + 'px';
+    ripple.style.height = size + 'px';
+    screenEl.appendChild(ripple);
+    requestAnimationFrame(() => ripple.classList.add('pop'));
+    setTimeout(() => ripple.remove(), 550);
+  }
 
-  resetBtn.addEventListener('click', function () {
-    if (!confirm('Reset all progress? This cannot be undone.')) return;
-    state.distance = 0;
-    UPGRADES.forEach(function (u) { state.owned[u.id] = 0; });
-    save();
-    render();
+  screenEl.addEventListener('click', (e) => {
+    const rect = screenEl.getBoundingClientRect();
+    spawnRipple(e.clientX - rect.left, e.clientY - rect.top);
+
+    gain(clickPower());
+    feedOffset += clickStepPx;
+    applyFeedTransform();
+    renderStats();
+    renderApps();
+    saveState();
   });
 
-  var TICK_MS = 200;
-  setInterval(function () {
-    var cps = totalCps();
-    if (cps > 0) {
-      state.distance += cps * (TICK_MS / 1000);
-      render();
+  let lastTick = performance.now();
+  function loop(now) {
+    const dt = (now - lastTick) / 1000;
+    lastTick = now;
+    const rate = passiveRate();
+    if (rate > 0) {
+      gain(rate * dt);
+      feedOffset += rate * FEED_SCALE * dt;
+      applyFeedTransform();
     }
-  }, TICK_MS);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
 
-  setInterval(save, 5000);
-  window.addEventListener('beforeunload', save);
+  setInterval(() => { renderStats(); renderApps(); saveState(); }, 500);
 
-  load();
-  render();
-})();
+  document.getElementById('resetBtn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    localStorage.removeItem('doomscroll-save');
+    state = { totalDistance: 0, sp: 0, unlocked: 0 };
+    upgrades.forEach(u => u.owned = 0);
+    feedOffset = 0;
+    applyFeedTransform();
+    renderStats();
+    renderApps();
+    showToast('progress reset.');
+  });
+
+  // ---------- ambient particles ----------
+  const particleContainer = document.getElementById('bgParticles');
+  for (let i = 0; i < 16; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    p.style.left = Math.random() * 100 + '%';
+    const size = 2 + Math.random() * 3;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.animationDuration = (14 + Math.random() * 16) + 's';
+    p.style.animationDelay = (Math.random() * 20) + 's';
+    if (Math.random() > 0.6) p.style.background = 'var(--gold)';
+    particleContainer.appendChild(p);
+  }
+
+  // ---------- init ----------
+  checkMilestones();
+  applyFeedTransform();
+  renderStats();
+  renderApps();
+
+  // ---------- scale the whole composition to fit any window ----------
+  const fitWrapper = document.getElementById('fitWrapper');
+  function fitToScreen() {
+    fitWrapper.style.transform = 'scale(1)';
+    const rect = fitWrapper.getBoundingClientRect();
+    const margin = 40;
+    const scaleX = (window.innerWidth - margin * 2) / rect.width;
+    const scaleY = (window.innerHeight - margin * 2) / rect.height;
+    const scale = Math.min(scaleX, scaleY, 1.1);
+    fitWrapper.style.transform = `scale(${scale})`;
+  }
+  window.addEventListener('resize', fitToScreen);
+  window.addEventListener('orientationchange', fitToScreen);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitToScreen);
+  }
+  fitToScreen();
 </script>
 
 </body>
