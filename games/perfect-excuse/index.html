@@ -210,8 +210,9 @@
   ];
 
   // ---------- daily-seeded flavor ----------
-  var seed = dateSeed(todayStr());
-  var rng = mulberry32(seed);
+  // each scenario gets its own seed (today's date + scenario id), so
+  // switching scenarios rolls a genuinely different rule set/boss/banned
+  // word instead of reusing the same one.
   var bossNames = ['Gary', 'Karen', 'Chad', 'Debbie', 'Randy', 'Sheila', 'Doug', 'Big Steve'];
   var bannedWords = ['traffic', 'sorry', 'literally', 'basically', 'tired', 'busy'];
   var colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'gray', 'pink'];
@@ -219,8 +220,6 @@
   var weathers = ['rain', 'snow', 'sun', 'fog', 'hail', 'wind', 'storm', 'drizzle'];
   var countries = ['france', 'japan', 'canada', 'brazil', 'kenya', 'norway', 'peru', 'egypt'];
 
-  var bossName = pick(bossNames, rng);
-  var bannedWord = pick(bannedWords, rng);
   var todayWeekday = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
   var triviaFacts = [
@@ -235,7 +234,6 @@
     { answer: 'venus', clue: 'the hottest planet in the solar system' },
     { answer: 'antarctica', clue: 'the driest continent on Earth' }
   ];
-  var dailyTrivia = pick(triviaFacts, rng);
 
   var fruits = ['apple', 'banana', 'mango', 'grape', 'kiwi', 'peach', 'lemon', 'pear'];
   var bodyParts = ['elbow', 'knee', 'thumb', 'shoulder', 'ankle', 'wrist'];
@@ -246,7 +244,8 @@
 
   // ---------- rule pool ----------
   // each rule: id, text (string shown to player), check(text) -> bool
-  var rulePool = [
+  function buildRulePool(bossName, bannedWord, dailyTrivia) {
+  return [
     {
       id: 'len8',
       text: 'Must be at least 8 words long.',
@@ -465,6 +464,7 @@
       check: function (t) { return spelledNumbers.some(function (n) { return new RegExp('\\b' + n + '\\b', 'i').test(t); }); }
     }
   ];
+  }
 
   function wordCount(t) { return (t.trim().match(/\S+/g) || []).length; }
   function isPrime(n) {
@@ -498,8 +498,17 @@
     return animals[(year - 4) % 12];
   }
 
-  // daily set: shuffle pool with the day's seed, take first 16, keep that order
-  var dailyRules = shuffle(rulePool, rng).slice(0, 16);
+  // build a full day+scenario-specific challenge: its own rng, boss name,
+  // banned word, trivia fact, and a shuffled slice of the rule pool.
+  var dailyRules = [];
+  function buildChallenge(scenarioId) {
+    var rng = mulberry32(dateSeed(todayStr() + '|' + scenarioId));
+    var bossName = pick(bossNames, rng);
+    var bannedWord = pick(bannedWords, rng);
+    var dailyTrivia = pick(triviaFacts, rng);
+    var rulePool = buildRulePool(bossName, bannedWord, dailyTrivia);
+    return shuffle(rulePool, rng).slice(0, 16);
+  }
 
   // ---------- save/load ----------
   var SAVE_KEY = 'perfect-excuse-save';
@@ -546,6 +555,7 @@
 
   function startGame(scenarioId) {
     currentScenario = scenarios.find(function (s) { return s.id === scenarioId; });
+    dailyRules = buildChallenge(scenarioId);
     picker.style.display = 'none';
     gameEl.classList.add('show');
     revealedCount = 1;
@@ -553,9 +563,7 @@
     winBanner.classList.remove('show');
 
     var saved = loadSave();
-    if (saved && saved.scenario === scenarioId) {
-      box.value = saved.text;
-    }
+    box.value = (saved && saved.scenario === scenarioId) ? saved.text : '';
     evaluate();
   }
 
