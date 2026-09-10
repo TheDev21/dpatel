@@ -59,8 +59,7 @@
     transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
   }
   .scenario-btn:hover { transform: translateY(-3px); box-shadow: 5px 7px 0 rgba(35,32,29,0.18); background: #fff; }
-  .scenario-emoji { font-size: 46px; margin-bottom: 12px; }
-  .scenario-label { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 0.02em; }
+  .scenario-label { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 0.02em; }
 
   /* ---- game ---- */
   #game { display: none; }
@@ -203,10 +202,10 @@
 
   // ---------- scenarios ----------
   var scenarios = [
-    { id: 'work',    emoji: '⏰', label: 'Late to Work',      target: 'your boss',        intro: 'explain to' },
-    { id: 'deadline',emoji: '📄', label: 'Missed Deadline',   target: 'your manager',     intro: 'explain to' },
-    { id: 'text',    emoji: '👻', label: 'Ghosted a Text',    target: 'your friend',      intro: 'explain to' },
-    { id: 'gym',     emoji: '🏋️', label: 'Skipped the Gym',   target: 'your gym buddy',   intro: 'explain to' }
+    { id: 'work',     label: 'Late to Work',    target: 'your boss',      intro: 'explain to' },
+    { id: 'deadline', label: 'Missed Deadline', target: 'your manager',   intro: 'explain to' },
+    { id: 'text',     label: 'Ghosted a Text',  target: 'your friend',    intro: 'explain to' },
+    { id: 'gym',      label: 'Skipped the Gym', target: 'your gym buddy', intro: 'explain to' }
   ];
 
   // ---------- daily-seeded flavor ----------
@@ -566,7 +565,7 @@
   scenarios.forEach(function (s) {
     var btn = document.createElement('div');
     btn.className = 'scenario-btn';
-    btn.innerHTML = '<div class="scenario-emoji">' + s.emoji + '</div><div class="scenario-label">' + s.label + '</div>';
+    btn.innerHTML = '<div class="scenario-label">' + s.label + '</div>';
     btn.addEventListener('click', function () { startGame(s.id); });
     scenarioGrid.appendChild(btn);
   });
