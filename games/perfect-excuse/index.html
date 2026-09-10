@@ -353,6 +353,16 @@
       id: 'exclaim',
       text: 'Must contain an exclamation point.',
       check: function (t) { return t.includes('!'); }
+    },
+    {
+      id: 'zodiac',
+      text: 'Must mention today\'s zodiac sign (' + capitalize(zodiacSign(new Date())) + ').',
+      check: function (t) { return t.toLowerCase().includes(zodiacSign(new Date())); }
+    },
+    {
+      id: 'dayOfYear',
+      text: 'Must contain the number ' + dayOfYear(new Date()) + ' (today\'s day-of-year).',
+      check: function (t) { return new RegExp('\\b' + dayOfYear(new Date()) + '\\b').test(t); }
     }
   ];
 
@@ -363,6 +373,24 @@
     return true;
   }
   function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function zodiacSign(date) {
+    var m = date.getMonth() + 1, d = date.getDate();
+    var signs = [
+      [1, 20, 'capricorn'], [2, 19, 'aquarius'], [3, 20, 'pisces'], [4, 20, 'aries'],
+      [5, 21, 'taurus'], [6, 21, 'gemini'], [7, 22, 'cancer'], [8, 23, 'leo'],
+      [9, 23, 'virgo'], [10, 23, 'libra'], [11, 22, 'scorpio'], [12, 21, 'sagittarius'],
+      [12, 31, 'capricorn']
+    ];
+    for (var i = 0; i < signs.length; i++) {
+      if (m === signs[i][0] && d <= signs[i][1]) return signs[i][2];
+    }
+    return 'sagittarius';
+  }
+  function dayOfYear(date) {
+    var start = new Date(date.getFullYear(), 0, 0);
+    var diff = date - start;
+    return Math.floor(diff / 86400000);
+  }
 
   // daily set: shuffle pool with the day's seed, take first 20, keep that order
   var dailyRules = shuffle(rulePool, rng).slice(0, 20);
