@@ -194,10 +194,9 @@
 
   .apps-column { width: 310px; }
   .apps-column-left { display: flex; flex-direction: column; }
-  .apps-column-right { height: 800px; display: flex; align-items: center; }
+  .apps-column-right { display: flex; flex-direction: column; }
 
   .side-header { text-align: center; margin-bottom: 32px; }
-  .side-header h1 { font-size: 2.1rem; margin-bottom: 4px; }
   .side-header .tagline { font-size: 0.8rem; margin-bottom: 0.9rem; line-height: 1.4; }
   .side-header .hero-number { font-size: 2.2rem; }
   .side-header .hero-sub { font-size: 0.78rem; }
@@ -349,6 +348,19 @@
     z-index: 0;
   }
 
+  .watermark {
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-6deg);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: min(24vw, 340px);
+    letter-spacing: 0.03em;
+    color: rgba(35,32,29,0.045);
+    white-space: nowrap;
+    pointer-events: none;
+    z-index: 0;
+  }
+
   .particle {
     position: absolute;
     bottom: -10px;
@@ -371,6 +383,7 @@
 <body>
 
 <div class="bg-particles" id="bgParticles"></div>
+<div class="watermark">DOOMSCROLL</div>
 
 <a class="back-link" href="../../index.html">&larr; all games</a>
 
@@ -379,7 +392,6 @@
   <div class="game-row">
     <div class="apps-column apps-column-left">
       <div class="side-header">
-        <h1>Doom<span>scroll</span></h1>
         <p class="tagline">the feed never ends. neither should you.</p>
 
         <div class="hero-stat">
@@ -820,6 +832,17 @@
   applyFeedTransform();
   renderStats();
   renderApps();
+
+  // align the right column's list with the left column's (which has the header above it)
+  function syncColumnAlignment() {
+    const sideHeader = document.querySelector('.side-header');
+    const appsColumnRight = document.querySelector('.apps-column-right');
+    if (sideHeader && appsColumnRight) {
+      appsColumnRight.style.paddingTop = sideHeader.offsetHeight + 'px';
+    }
+  }
+  syncColumnAlignment();
+  window.addEventListener('resize', syncColumnAlignment);
 
   // ---------- scale the whole composition to fit any window ----------
   const fitWrapper = document.querySelector('.stage-panel');
