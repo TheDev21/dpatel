@@ -70,7 +70,7 @@
     display: block;
     margin: 24px auto 0;
     background: none; border: none; text-decoration: underline;
-    color: var(--ink-dim); font-family: 'DM Mono', monospace; font-size: 11.5px;
+    color: var(--ink-dim); font-family: 'DM Mono', monospace; font-size: 14px;
     cursor: pointer; padding: 0;
   }
   .switch-btn:hover { color: var(--orange); }
@@ -364,8 +364,8 @@
   }
   function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 
-  // daily set: shuffle pool with the day's seed, take first 14, keep that order
-  var dailyRules = shuffle(rulePool, rng).slice(0, 14);
+  // daily set: shuffle pool with the day's seed, take first 20, keep that order
+  var dailyRules = shuffle(rulePool, rng).slice(0, 20);
 
   // ---------- save/load ----------
   var SAVE_KEY = 'perfect-excuse-save';
