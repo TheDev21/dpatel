@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perfect Excuse — Weird Little Games</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #f3e2c8;
+    --pink-deep: #ecd4ae;
+    --ink: #23201d;
+    --ink-dim: #6b5e48;
+    --card-bg: #fffaf0;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --green: #3a8a4a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    padding: 32px 18px 80px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; }
+
+  .wrap { max-width: 560px; margin: 0 auto; }
+
+  .top { text-align: center; margin-bottom: 22px; }
+  .top a { font-size: 11.5px; color: var(--ink-dim); text-decoration: underline; }
+  .top a:hover { color: var(--orange); }
+  h1 { font-size: clamp(2.2rem, 7vw, 3rem); margin: 10px 0 2px; }
+  h1 span { color: var(--red); }
+  .tagline { text-align: center; font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 26px; }
+
+  /* ---- scenario picker ---- */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .scenario-btn {
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 20px 14px;
+    text-align: center;
+    cursor: pointer;
+    font-family: 'DM Mono', monospace;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.14);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  }
+  .scenario-btn:hover { transform: translateY(-3px); box-shadow: 5px 7px 0 rgba(35,32,29,0.18); background: #fff; }
+  .scenario-emoji { font-size: 30px; margin-bottom: 8px; }
+  .scenario-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.02em; }
+
+  /* ---- game ---- */
+  #game { display: none; }
+  #game.show { display: block; }
+
+  .brief {
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 14px 18px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  .brief b { color: var(--red); }
+  .brief .switch-btn {
+    background: none; border: none; text-decoration: underline;
+    color: var(--ink-dim); font-family: 'DM Mono', monospace; font-size: 11.5px;
+    cursor: pointer; padding: 0; margin-top: 6px;
+  }
+  .brief .switch-btn:hover { color: var(--orange); }
+
+  textarea {
+    width: 100%;
+    min-height: 100px;
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    color: var(--ink);
+    resize: vertical;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.14);
+  }
+  textarea:focus { outline: none; border-color: var(--orange); }
+
+  .meta-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-dim);
+    margin: 6px 4px 18px;
+  }
+
+  .rules { display: flex; flex-direction: column; gap: 8px; }
+  .rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: var(--card-bg);
+    border: 2.5px solid var(--ink);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: ruleIn 0.35s ease forwards;
+  }
+  @keyframes ruleIn { to { opacity: 1; transform: translateY(0); } }
+  .rule.pass { border-color: var(--green); background: #f1faf0; }
+  .rule.fail { border-color: var(--red); background: #fff0f2; }
+  .rule .mark {
+    flex: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    background: #fff;
+  }
+  .rule.pass .mark { background: var(--green); border-color: var(--green); color: #fff; }
+  .rule.fail .mark { background: var(--red); border-color: var(--red); color: #fff; }
+
+  .win-banner {
+    display: none;
+    text-align: center;
+    background: var(--green);
+    color: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 18px;
+    margin-top: 16px;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.2);
+  }
+  .win-banner.show { display: block; }
+  .win-banner .display { font-size: 26px; margin-bottom: 6px; }
+  .win-banner p { margin: 0; font-size: 12.5px; opacity: 0.95; }
+
+  .day-tag {
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--ink-dim);
+    margin-top: 28px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top"><a href="../../index.html">&larr; back to games</a></div>
+  <h1>Perfect <span>Excuse</span></h1>
+  <p class="tagline">write an excuse. the rules disagree with each other. good luck.</p>
+
+  <div id="picker">
+    <div class="scenario-grid" id="scenarioGrid"></div>
+  </div>
+
+  <div id="game">
+    <div class="brief" id="brief"></div>
+    <textarea id="excuseBox" placeholder="type your excuse here..." spellcheck="false"></textarea>
+    <div class="meta-row">
+      <span id="wordCount">0 words</span>
+      <span id="charCount">0 characters</span>
+    </div>
+    <div class="rules" id="rules"></div>
+    <div class="win-banner" id="winBanner">
+      <div class="display">✔ excuse accepted.</div>
+      <p id="winText"></p>
+    </div>
+  </div>
+
+  <div class="day-tag" id="dayTag"></div>
+</div>
+
+<script>
+  // ---------- seeded RNG (same for everyone, same day) ----------
+  function mulberry32(seed) {
+    return function () {
+      seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+      var t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+  function dateSeed(dateStr) {
+    var h = 0;
+    for (var i = 0; i < dateStr.length; i++) { h = (h * 31 + dateStr.charCodeAt(i)) | 0; }
+    return h;
+  }
+  function todayStr() {
+    var d = new Date();
+    return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+  }
+  function shuffle(arr, rng) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(rng() * (i + 1));
+      var tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+  function pick(arr, rng) { return arr[Math.floor(rng() * arr.length)]; }
+
+  // ---------- scenarios ----------
+  var scenarios = [
+    { id: 'work',    emoji: '⏰', label: 'Late to Work',      target: 'your boss',        intro: 'explain to' },
+    { id: 'deadline',emoji: '📄', label: 'Missed Deadline',   target: 'your manager',     intro: 'explain to' },
+    { id: 'text',    emoji: '👻', label: 'Ghosted a Text',    target: 'your friend',      intro: 'explain to' },
+    { id: 'gym',     emoji: '🏋️', label: 'Skipped the Gym',   target: 'your gym buddy',   intro: 'explain to' }
+  ];
+
+  // ---------- daily-seeded flavor ----------
+  var seed = dateSeed(todayStr());
+  var rng = mulberry32(seed);
+  var bossNames = ['Gary', 'Linda', 'Marcus', 'Priya', 'Dale', 'Wanda', 'Trevor', 'Yuki'];
+  var bannedWords = ['traffic', 'sorry', 'literally', 'basically', 'tired', 'busy'];
+  var colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'gray', 'pink'];
+  var animals = ['dog', 'cat', 'raccoon', 'goose', 'squirrel', 'pigeon', 'llama', 'otter'];
+  var weathers = ['rain', 'snow', 'sun', 'fog', 'hail', 'wind', 'storm', 'drizzle'];
+  var countries = ['france', 'japan', 'canada', 'brazil', 'kenya', 'norway', 'peru', 'egypt'];
+
+  var bossName = pick(bossNames, rng);
+  var bannedWord = pick(bannedWords, rng);
+  var todayWeekday = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+
+  // ---------- rule pool ----------
+  // each rule: id, text (string shown to player), check(text) -> bool
+  var rulePool = [
+    {
+      id: 'len8',
+      text: 'Must be at least 8 words long.',
+      check: function (t) { return wordCount(t) >= 8; }
+    },
+    {
+      id: 'hasNumber',
+      text: 'Must contain a number.',
+      check: function (t) { return /\d/.test(t); }
+    },
+    {
+      id: 'div7',
+      text: 'That number (or one of them) must be divisible by 7.',
+      check: function (t) {
+        var nums = t.match(/\d+/g) || [];
+        return nums.some(function (n) { return parseInt(n, 10) % 7 === 0 && parseInt(n, 10) !== 0; });
+      }
+    },
+    {
+      id: 'animal',
+      text: 'Must mention an animal (dog, cat, raccoon, goose, squirrel, pigeon, llama, or otter).',
+      check: function (t) { return animals.some(function (a) { return t.toLowerCase().includes(a); }); }
+    },
+    {
+      id: 'noBanned',
+      text: 'Must NOT contain the word "' + bannedWord + '".',
+      check: function (t) { return !new RegExp('\\b' + bannedWord + '\\b', 'i').test(t); }
+    },
+    {
+      id: 'bossName',
+      text: 'Must address ' + bossName + ' by name.',
+      check: function (t) { return new RegExp('\\b' + bossName + '\\b', 'i').test(t); }
+    },
+    {
+      id: 'question',
+      text: 'Must end in a question mark.',
+      check: function (t) { return /\?\s*$/.test(t.trim()); }
+    },
+    {
+      id: 'oneComma',
+      text: 'Must contain exactly one comma.',
+      check: function (t) { return (t.match(/,/g) || []).length === 1; }
+    },
+    {
+      id: 'weekday',
+      text: 'Must mention today\'s day of the week (' + capitalize(todayWeekday) + ').',
+      check: function (t) { return t.toLowerCase().includes(todayWeekday); }
+    },
+    {
+      id: 'primeWords',
+      text: 'Total word count must be a prime number.',
+      check: function (t) { return isPrime(wordCount(t)); }
+    },
+    {
+      id: 'color',
+      text: 'Must contain a color (red, blue, green, yellow, purple, orange, gray, or pink).',
+      check: function (t) { return colors.some(function (c) { return t.toLowerCase().includes(c); }); }
+    },
+    {
+      id: 'emoji',
+      text: 'Must include an emoji.',
+      check: function (t) { return /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/u.test(t); }
+    },
+    {
+      id: 'weather',
+      text: 'Must mention weather (rain, snow, sun, fog, hail, wind, storm, or drizzle).',
+      check: function (t) { return weathers.some(function (w) { return t.toLowerCase().includes(w); }); }
+    },
+    {
+      id: 'roman',
+      text: 'Must contain a Roman numeral (I, V, X, L, C, D, or M — as its own word).',
+      check: function (t) { return /\b[IVXLCDM]{1,}\b/.test(t); }
+    },
+    {
+      id: 'startLook',
+      text: 'Must start with the word "Look".',
+      check: function (t) { return /^\s*look\b/i.test(t); }
+    },
+    {
+      id: 'percentage',
+      text: 'Must include a percentage, like "40%".',
+      check: function (t) { return /\d+%/.test(t); }
+    },
+    {
+      id: 'noVowelStart',
+      text: 'The first word must have more vowels than consonants.',
+      check: function (t) {
+        var w = (t.trim().split(/\s+/)[0] || '').toLowerCase().replace(/[^a-z]/g, '');
+        if (!w) return false;
+        var vowels = (w.match(/[aeiou]/g) || []).length;
+        return vowels > (w.length - vowels);
+      }
+    },
+    {
+      id: 'country',
+      text: 'Must contain a country name (france, japan, canada, brazil, kenya, norway, peru, or egypt).',
+      check: function (t) { return countries.some(function (c) { return t.toLowerCase().includes(c); }); }
+    },
+    {
+      id: 'time',
+      text: 'Must mention a specific time, like "3:45" or "3 o\'clock".',
+      check: function (t) { return /\d{1,2}:\d{2}/.test(t) || /\d{1,2}\s*o'?clock/i.test(t); }
+    },
+    {
+      id: 'evenChars',
+      text: 'Total character count must be an even number.',
+      check: function (t) { return t.trim().length % 2 === 0 && t.trim().length > 0; }
+    },
+    {
+      id: 'noE',
+      text: 'Must not contain the letter "e" more than twice.',
+      check: function (t) { return (t.match(/e/gi) || []).length <= 2; }
+    },
+    {
+      id: 'allCapsWord',
+      text: 'Must contain one word in ALL CAPS.',
+      check: function (t) { return /\b[A-Z]{2,}\b/.test(t); }
+    },
+    {
+      id: 'brackets',
+      text: 'Must contain a word in (parentheses).',
+      check: function (t) { return /\([^)]+\)/.test(t); }
+    },
+    {
+      id: 'exclaim',
+      text: 'Must contain an exclamation point.',
+      check: function (t) { return t.includes('!'); }
+    }
+  ];
+
+  function wordCount(t) { return (t.trim().match(/\S+/g) || []).length; }
+  function isPrime(n) {
+    if (n < 2) return false;
+    for (var i = 2; i * i <= n; i++) { if (n % i === 0) return false; }
+    return true;
+  }
+  function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+  // daily set: shuffle pool with the day's seed, take first 14, keep that order
+  var dailyRules = shuffle(rulePool, rng).slice(0, 14);
+
+  // ---------- save/load ----------
+  var SAVE_KEY = 'perfect-excuse-save';
+  function loadSave() {
+    try {
+      var raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return null;
+      var s = JSON.parse(raw);
+      if (s.date !== todayStr()) return null;
+      return s;
+    } catch (e) { return null; }
+  }
+  function saveState(scenarioId, text) {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ date: todayStr(), scenario: scenarioId, text: text }));
+    } catch (e) {}
+  }
+
+  // ---------- picker ----------
+  var scenarioGrid = document.getElementById('scenarioGrid');
+  var picker = document.getElementById('picker');
+  var gameEl = document.getElementById('game');
+  var briefEl = document.getElementById('brief');
+  var box = document.getElementById('excuseBox');
+  var rulesEl = document.getElementById('rules');
+  var winBanner = document.getElementById('winBanner');
+  var winText = document.getElementById('winText');
+  var wordCountEl = document.getElementById('wordCount');
+  var charCountEl = document.getElementById('charCount');
+  var revealedCount = 0;
+  var currentScenario = null;
+
+  scenarios.forEach(function (s) {
+    var btn = document.createElement('div');
+    btn.className = 'scenario-btn';
+    btn.innerHTML = '<div class="scenario-emoji">' + s.emoji + '</div><div class="scenario-label">' + s.label + '</div>';
+    btn.addEventListener('click', function () { startGame(s.id); });
+    scenarioGrid.appendChild(btn);
+  });
+
+  function startGame(scenarioId) {
+    currentScenario = scenarios.find(function (s) { return s.id === scenarioId; });
+    picker.style.display = 'none';
+    gameEl.classList.add('show');
+    briefEl.innerHTML =
+      'You need to <b>' + currentScenario.intro + ' ' + currentScenario.target + '</b> why you did the thing. ' +
+      'Write an excuse below. Rules will appear as you go — once a rule shows up, it has to stay true.<br>' +
+      '<button class="switch-btn" id="switchBtn">switch scenario</button>';
+    document.getElementById('switchBtn').addEventListener('click', function () {
+      picker.style.display = 'block';
+      gameEl.classList.remove('show');
+    });
+
+    revealedCount = 1;
+    rulesEl.innerHTML = '';
+    winBanner.classList.remove('show');
+
+    var saved = loadSave();
+    if (saved && saved.scenario === scenarioId) {
+      box.value = saved.text;
+    }
+    evaluate();
+  }
+
+  function renderRules(text) {
+    // reveal rules one at a time, in order, as each prior rule is satisfied.
+    // once a rule has been revealed it stays visible even if broken again.
+    var results = dailyRules.map(function (r) { return { rule: r, pass: r.check(text) }; });
+
+    var consecPass = 0;
+    while (consecPass < results.length && results[consecPass].pass) consecPass++;
+    var desired = Math.min(dailyRules.length, consecPass + 1);
+    if (desired > revealedCount) revealedCount = desired;
+
+    rulesEl.innerHTML = '';
+    for (var j = 0; j < revealedCount; j++) {
+      var r = results[j];
+      var div = document.createElement('div');
+      div.className = 'rule ' + (r.pass ? 'pass' : 'fail');
+      div.style.animationDelay = '0s';
+      div.innerHTML = '<span class="mark">' + (r.pass ? '✓' : '✕') + '</span><span>' + r.rule.text + '</span>';
+      rulesEl.appendChild(div);
+    }
+
+    var allPass = revealedCount === dailyRules.length && results.every(function (r) { return r.pass; });
+    if (allPass) {
+      winBanner.classList.add('show');
+      winText.textContent = 'all ' + dailyRules.length + ' rules satisfied. ' + currentScenario.target + ' is (probably) convinced.';
+    } else {
+      winBanner.classList.remove('show');
+    }
+  }
+
+  function evaluate() {
+    var text = box.value;
+    wordCountEl.textContent = wordCount(text) + ' words';
+    charCountEl.textContent = text.trim().length + ' characters';
+    renderRules(text);
+    if (currentScenario) saveState(currentScenario.id, text);
+  }
+
+  box.addEventListener('input', evaluate);
+
+  document.getElementById('dayTag').textContent = "today's rules: " + todayStr() + ' — resets at midnight';
+</script>
+</body>
+</html>

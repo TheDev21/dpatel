@@ -23,8 +23,15 @@ backend, no build step.
   tier (common/rare/legendary/mythic). Three-reel spin with near-miss
   tension and WebAudio-generated sound effects (no audio files). Lifetime
   pull stats and pitch history saved to `localStorage`.
-- Perfect Excuse, Daily Vibe Check, Stack the Nonsense — planned, not yet
-  built.
+- **Perfect Excuse** (`games/perfect-excuse/`) — Password-Game-style:
+  pick a scenario, then write an excuse that has to satisfy an
+  increasing list of contradictory rules revealed one at a time. Rules
+  stay live once shown, so editing earlier text can break one you
+  already passed. The day's exact rule set is deterministically seeded
+  from today's date, so it's the same challenge for everyone until it
+  resets at midnight. In-progress excuse saved to `localStorage` for the
+  day.
+- Daily Vibe Check, Stack the Nonsense — planned, not yet built.
 
 ## Style
 
