@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Doomscroll</title>
+<link rel="icon" href="data:,">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --bg2: #08080a;
+    --panel: #101010;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --text: #e8e6e1;
+    --text-dim: #8a8880;
+    --border: #232323;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+  }
+  h1, h2, h3, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .topbar a.back {
+    color: var(--text-dim);
+    font-size: 12px;
+    text-decoration: none;
+    letter-spacing: 0.05em;
+  }
+  .topbar a.back:hover { color: var(--orange); }
+  .topbar h1 { margin: 0; font-size: 24px; }
+  .topbar h1 span { color: var(--orange); }
+  .reset-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 6px 10px;
+    cursor: pointer;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+  @media (max-width: 760px) {
+    .wrap { grid-template-columns: 1fr; }
+  }
+
+  .panel {
+    border: 1px solid var(--border);
+    background: var(--panel);
+    padding: 20px;
+  }
+
+  /* Left: phone + landmark */
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+  }
+
+  .landmark {
+    text-align: center;
+  }
+  .landmark .label {
+    font-size: 11px;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .landmark .name {
+    font-size: 30px;
+    color: var(--orange);
+    margin: 2px 0;
+  }
+  .landmark .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #1a1a1a;
+    border: 1px solid var(--border);
+    margin-top: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .landmark .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--red), var(--orange));
+    width: 0%;
+    transition: width 0.2s ease;
+  }
+
+  .phone {
+    width: 160px;
+    height: 320px;
+    border: 3px solid #2a2a2a;
+    border-radius: 24px;
+    background: #050505;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px #000 inset;
+  }
+  .phone:active { transform: scale(0.98); }
+  .phone .notch {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 44px;
+    height: 6px;
+    border-radius: 4px;
+    background: #1a1a1a;
+  }
+  .phone .hint {
+    color: var(--text-dim);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+    text-align: center;
+    padding: 0 14px;
+  }
+  .phone .flash {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 90, 31, 0.18);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .stats {
+    text-align: center;
+  }
+  .stats .distance {
+    font-size: 44px;
+    color: var(--text);
+  }
+  .stats .distance span { color: var(--orange); }
+  .stats .rate {
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  /* Right: upgrades */
+  .upgrades h2 {
+    font-size: 22px;
+    margin: 0 0 4px;
+  }
+  .upgrades .sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin: 0 0 16px;
+  }
+
+  .upgrade {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+    background: var(--bg2);
+    cursor: pointer;
+    transition: border-color 0.12s ease, opacity 0.12s ease;
+  }
+  .upgrade:hover:not(.locked) { border-color: var(--orange); }
+  .upgrade.locked {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .upgrade .info { flex: 1; }
+  .upgrade .name {
+    font-size: 16px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.02em;
+  }
+  .upgrade .desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .upgrade .owned {
+    font-size: 11px;
+    color: var(--red);
+    margin-top: 2px;
+  }
+  .upgrade .cost {
+    font-size: 14px;
+    color: var(--orange);
+    white-space: nowrap;
+    text-align: right;
+    min-width: 70px;
+  }
+
+  footer.note {
+    text-align: center;
+    color: var(--text-dim);
+    font-size: 11px;
+    padding: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="back" href="../../">&larr; all games</a>
+  <h1>Doom<span>scroll</span></h1>
+  <button class="reset-btn" id="resetBtn">reset save</button>
+</div>
+
+<div class="wrap">
+  <div class="panel stage">
+    <div class="landmark">
+      <div class="label">Current landmark</div>
+      <div class="name" id="landmarkName">Doorframe</div>
+      <div class="progress-bar"><div class="progress-fill" id="landmarkFill"></div></div>
+    </div>
+
+    <div class="phone" id="phone">
+      <div class="notch"></div>
+      <div class="flash" id="flash"></div>
+      <div class="hint">tap to<br>scroll</div>
+    </div>
+
+    <div class="stats">
+      <div class="distance" id="distance">0<span> cm</span></div>
+      <div class="rate" id="rate">0 cm / sec, automatically</div>
+    </div>
+  </div>
+
+  <div class="panel upgrades">
+    <h2>Upgrades</h2>
+    <p class="sub">Automate the scroll. Never stop.</p>
+    <div id="upgradeList"></div>
+  </div>
+</div>
+
+<footer class="note">Progress saves automatically to this browser. It will not save your attention span.</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var SAVE_KEY = 'doomscroll_save_v1';
+
+  var LANDMARKS = [
+    { name: 'Doorframe', cm: 200 },
+    { name: 'Giraffe', cm: 550 },
+    { name: 'Telephone Pole', cm: 900 },
+    { name: 'Statue of Liberty', cm: 9300 },
+    { name: 'Eiffel Tower', cm: 33000 },
+    { name: 'Burj Khalifa', cm: 82800 },
+    { name: 'Mount Everest', cm: 884900 },
+    { name: 'Cruising Altitude', cm: 1097280 },
+    { name: 'The Kármán Line', cm: 10000000 },
+    { name: 'International Space Station', cm: 40800000 },
+    { name: 'The Moon', cm: 38440000000 }
+  ];
+
+  var UPGRADES = [
+    { id: 'ghost', name: 'Ghost Scroll', desc: 'A faint, unfelt momentum.', baseCost: 15, cps: 0.5 },
+    { id: 'thumb', name: 'Thumbzilla', desc: 'A thumb the size of a building.', baseCost: 100, cps: 3 },
+    { id: 'bot', name: 'Swipe Bot 3000', desc: 'Swipes on a loop, forever.', baseCost: 600, cps: 12 },
+    { id: 'sweatshop', name: 'Scroll Sweatshop', desc: 'A room of thumbs, working in shifts.', baseCost: 4000, cps: 55 },
+    { id: 'algorithm', name: 'The Algorithm', desc: 'It knows what keeps you here.', baseCost: 25000, cps: 260 },
+    { id: 'singularity', name: 'The Singularity', desc: 'Content generating content, unattended.', baseCost: 180000, cps: 1400 }
+  ];
+
+  var state = {
+    distance: 0,
+    clickPower: 1,
+    owned: {}
+  };
+  UPGRADES.forEach(function (u) { state.owned[u.id] = 0; });
+
+  function load() {
+    try {
+      var raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      var parsed = JSON.parse(raw);
+      if (typeof parsed.distance === 'number') state.distance = parsed.distance;
+      if (parsed.owned) {
+        UPGRADES.forEach(function (u) {
+          if (typeof parsed.owned[u.id] === 'number') state.owned[u.id] = parsed.owned[u.id];
+        });
+      }
+    } catch (e) { /* ignore corrupt save */ }
+  }
+
+  function save() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ distance: state.distance, owned: state.owned }));
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  function costFor(upgrade) {
+    var n = state.owned[upgrade.id];
+    return Math.ceil(upgrade.baseCost * Math.pow(1.15, n));
+  }
+
+  function totalCps() {
+    var total = 0;
+    UPGRADES.forEach(function (u) { total += u.cps * state.owned[u.id]; });
+    return total;
+  }
+
+  function formatNumber(n) {
+    if (n < 1000) return Math.floor(n).toString();
+    var units = ['K', 'M', 'B', 'T', 'Qa', 'Qi', 'Sx', 'Sp'];
+    var unitIndex = -1;
+    var v = n;
+    while (v >= 1000 && unitIndex < units.length - 1) {
+      v /= 1000;
+      unitIndex++;
+    }
+    return v.toFixed(2) + units[unitIndex];
+  }
+
+  function currentLandmark() {
+    for (var i = 0; i < LANDMARKS.length; i++) {
+      if (state.distance < LANDMARKS[i].cm) return { index: i, prev: i === 0 ? 0 : LANDMARKS[i - 1].cm, landmark: LANDMARKS[i] };
+    }
+    var last = LANDMARKS[LANDMARKS.length - 1];
+    return { index: LANDMARKS.length - 1, prev: last.cm, landmark: last };
+  }
+
+  var distanceEl = document.getElementById('distance');
+  var rateEl = document.getElementById('rate');
+  var landmarkNameEl = document.getElementById('landmarkName');
+  var landmarkFillEl = document.getElementById('landmarkFill');
+  var upgradeListEl = document.getElementById('upgradeList');
+  var phoneEl = document.getElementById('phone');
+  var flashEl = document.getElementById('flash');
+  var resetBtn = document.getElementById('resetBtn');
+
+  function renderUpgrades() {
+    upgradeListEl.innerHTML = '';
+    UPGRADES.forEach(function (u) {
+      var cost = costFor(u);
+      var owned = state.owned[u.id];
+      var locked = state.distance < cost;
+
+      var row = document.createElement('div');
+      row.className = 'upgrade' + (locked ? ' locked' : '');
+
+      var info = document.createElement('div');
+      info.className = 'info';
+      info.innerHTML =
+        '<div class="name">' + u.name + '</div>' +
+        '<div class="desc">' + u.desc + ' &middot; +' + formatNumber(u.cps) + ' cm/s each</div>' +
+        (owned > 0 ? '<div class="owned">owned: ' + owned + '</div>' : '');
+
+      var costEl = document.createElement('div');
+      costEl.className = 'cost';
+      costEl.textContent = formatNumber(cost) + ' cm';
+
+      row.appendChild(info);
+      row.appendChild(costEl);
+      row.addEventListener('click', function () { buy(u); });
+      upgradeListEl.appendChild(row);
+    });
+  }
+
+  function buy(upgrade) {
+    var cost = costFor(upgrade);
+    if (state.distance < cost) return;
+    state.distance -= cost;
+    state.owned[upgrade.id]++;
+    render();
+    save();
+  }
+
+  function render() {
+    distanceEl.innerHTML = formatNumber(state.distance) + '<span> cm</span>';
+    var cps = totalCps();
+    rateEl.textContent = formatNumber(cps) + ' cm / sec, automatically';
+
+    var lm = currentLandmark();
+    landmarkNameEl.textContent = lm.landmark.name;
+    var span = lm.landmark.cm - lm.prev;
+    var into = Math.max(0, state.distance - lm.prev);
+    var pct = span > 0 ? Math.min(100, (into / span) * 100) : 100;
+    landmarkFillEl.style.width = pct + '%';
+
+    renderUpgrades();
+  }
+
+  function tap(e) {
+    state.distance += state.clickPower;
+    flashEl.style.transition = 'none';
+    flashEl.style.opacity = '1';
+    requestAnimationFrame(function () {
+      flashEl.style.transition = 'opacity 0.25s ease';
+      flashEl.style.opacity = '0';
+    });
+    render();
+  }
+
+  phoneEl.addEventListener('click', tap);
+  phoneEl.addEventListener('touchstart', function (e) { e.preventDefault(); tap(e); }, { passive: false });
+
+  resetBtn.addEventListener('click', function () {
+    if (!confirm('Reset all progress? This cannot be undone.')) return;
+    state.distance = 0;
+    UPGRADES.forEach(function (u) { state.owned[u.id] = 0; });
+    save();
+    render();
+  });
+
+  var TICK_MS = 200;
+  setInterval(function () {
+    var cps = totalCps();
+    if (cps > 0) {
+      state.distance += cps * (TICK_MS / 1000);
+      render();
+    }
+  }, TICK_MS);
+
+  setInterval(save, 5000);
+  window.addEventListener('beforeunload', save);
+
+  load();
+  render();
+})();
+</script>
+
+</body>
+</html>
