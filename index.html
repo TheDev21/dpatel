@@ -259,28 +259,39 @@
     gap: 10px;
     flex-wrap: wrap;
   }
-  .about .links a {
+  .about .beer-link {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
-    border: 2px solid var(--ink);
+    gap: 8px;
+    padding: 10px 20px;
+    border: 2px solid transparent;
     border-radius: 999px;
-    background: var(--card-bg);
+    background: transparent;
     font-size: 12px;
     letter-spacing: 0.02em;
-    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+    color: var(--ink-dim);
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   }
-  .about .links a:hover {
-    background: var(--orange);
-    color: #fff;
-    border-color: var(--orange);
+  .about .beer-emoji {
+    font-size: 26px;
+    line-height: 1;
+    transition: transform 0.2s ease;
+  }
+  .about .beer-link:hover {
+    background: var(--card-bg);
+    border-color: var(--ink);
+    color: var(--ink);
     transform: translateY(-2px);
   }
-  .about .links a.secondary:hover {
-    background: var(--ink);
-    border-color: var(--ink);
+  .about .beer-link:hover .beer-emoji {
+    transform: rotate(-10deg) scale(1.15);
   }
+
+  footer a {
+    color: var(--ink-dim);
+    text-decoration: underline;
+  }
+  footer a:hover { color: var(--orange); }
 </style>
 </head>
 <body>
@@ -347,15 +358,14 @@
 
   <div class="about">
     <div class="about-avatar">🕹️</div>
-    <p>Hi! I'm [Your Name]. This is where I make stuff on the web.<br>Obligatory links:</p>
+    <p>Hi, I'm [Your Name]. I make weird little things instead of sleeping.<br>This is most of them. No investors were harmed.</p>
     <div class="links">
-      <a href="https://venmo.com/u/yourname" target="_blank" rel="noopener">🍺 Buy me a beer</a>
-      <a class="secondary" href="privacy.html">Privacy policy</a>
+      <a class="beer-link" href="https://venmo.com/u/yourname" target="_blank" rel="noopener"><span class="beer-emoji">🍺</span> buy me a beer</a>
     </div>
   </div>
 
   <footer>
-    New games show up whenever one is actually finished. Nothing here tracks you.
+    New games show up whenever one is actually finished. Nothing here tracks you. <a href="privacy.html">privacy policy</a>
   </footer>
 </div>
 </body>
