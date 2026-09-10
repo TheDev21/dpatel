@@ -36,12 +36,12 @@
 
   .card {
     width: 100%;
-    max-width: 380px;
+    max-width: 560px;
     background: var(--card-bg);
     border: 3px solid var(--ink);
     border-radius: 22px;
     box-shadow: 6px 7px 0 rgba(35,32,29,0.12);
-    padding: 32px 28px 28px;
+    padding: 40px 44px 36px;
     text-align: center;
   }
 
@@ -56,30 +56,30 @@
   .brand-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.03em; }
   .brand-name span { color: var(--orange); }
 
-  h1 { font-size: 34px; margin: 0 0 4px; }
-  .subtitle { font-size: 13px; color: var(--ink-dim); margin: 0 0 24px; }
+  h1 { font-size: 44px; margin: 0 0 6px; }
+  .subtitle { font-size: 14.5px; color: var(--ink-dim); margin: 0 0 28px; }
 
   .tiers {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 22px;
+    gap: 14px;
+    margin-bottom: 26px;
   }
   .tier {
     display: block;
     background: var(--orange);
     color: #fff;
     border: 2px solid var(--ink);
-    border-radius: 14px;
-    padding: 14px 6px;
+    border-radius: 16px;
+    padding: 18px 8px;
   }
   .tier .amount {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 26px;
+    font-size: 34px;
     line-height: 1;
   }
   .tier .label {
-    font-size: 10.5px;
+    font-size: 12px;
     opacity: 0.95;
     margin-top: 4px;
   }
@@ -115,9 +115,9 @@
     border-radius: 10px;
     overflow: hidden;
     background: #fff;
-    width: 160px;
-    height: 160px;
-    padding: 10px;
+    width: 220px;
+    height: 220px;
+    padding: 12px;
     border: 2px solid var(--ink);
   }
   .qr-wrap .qr-label {
@@ -241,8 +241,8 @@
 <script>
   new QRCode(document.getElementById("qrcode"), {
     text: "https://venmo.com/u/TheDev21",
-    width: 140,
-    height: 140,
+    width: 196,
+    height: 196,
     colorDark: "#23201d",
     colorLight: "#ffffff"
   });
