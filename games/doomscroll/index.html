@@ -8,15 +8,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #08080a;
+    --bg: #fbeae4;
+    --pink-deep: #f6dcd3;
+    --card-bg: #fffaf7;
     --phone-shell: #131316;
     --screen-dark: #0d0d10;
     --panel-2: #1a1a1e;
     --orange: #ff5a1f;
     --red: #ff2d55;
-    --gold: #ffcf6b;
-    --text: #f2f0eb;
-    --text-dim: #8a8a8f;
+    --gold: #c98f00;
+    --ink: #23201d;
+    --text: #23201d;
+    --text-dim: #766f68;
   }
 
   * { box-sizing: border-box; }
@@ -36,7 +39,7 @@
     justify-content: center;
     position: relative;
     background-image:
-      radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+      radial-gradient(circle, rgba(35,32,29,0.07) 1px, transparent 1px);
     background-size: 28px 28px;
   }
 
@@ -64,23 +67,15 @@
     background: radial-gradient(circle, rgba(255,90,31,0.16), transparent 70%);
   }
 
-  .wordmark-bg {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    pointer-events: none;
-  }
-  .wordmark-bg span {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: min(38vw, 520px);
-    color: rgba(255,255,255,0.025);
-    white-space: nowrap;
-    letter-spacing: 0.02em;
-    transform: rotate(-6deg);
+  .stage-panel {
+    position: relative;
+    z-index: 1;
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 28px;
+    box-shadow: 7px 8px 0 rgba(35,32,29,0.12);
+    padding: 2.2rem 2.8rem 2rem;
+    transform-origin: center center;
   }
 
   #fitWrapper {
@@ -99,6 +94,7 @@
     color: var(--text);
     margin: 0 0 0.15rem;
   }
+  h1 span { color: var(--orange); }
 
   .tagline {
     color: var(--text-dim);
@@ -120,8 +116,9 @@
   .hero-sub { font-size: 0.7rem; color: var(--text-dim); margin-top: 6px; }
 
   .hero-rule {
-    width: 150px; height: 3px; background: #202024;
-    margin: 10px auto 8px; border-radius: 2px; overflow: hidden; position: relative;
+    width: 150px; height: 5px; background: var(--pink-deep);
+    margin: 10px auto 8px; border-radius: 3px; overflow: hidden; position: relative;
+    border: 1.5px solid var(--ink);
   }
 
   .hero-rule-fill {
@@ -152,13 +149,14 @@
     position: relative; z-index: 1;
   }
 
-  .app-item:not(:disabled):hover { background: rgba(255,255,255,0.06); }
+  .app-item:not(:disabled):hover { background: var(--pink-deep); }
   .app-item:disabled { cursor: default; opacity: 0.4; }
 
   .app-icon {
     position: relative; width: 56px; height: 56px; border-radius: 15px;
     display: flex; align-items: center; justify-content: center;
     flex-shrink: 0;
+    border: 2px solid var(--ink);
   }
 
   .app-icon svg { width: 28px; height: 28px; }
@@ -309,10 +307,10 @@
 <body>
 
 <div class="bg-particles" id="bgParticles"></div>
-<div class="wordmark-bg"><span>DOOMSCROLL DOOMSCROLL</span></div>
 
+<div class="stage-panel">
 <div id="fitWrapper">
-  <h1>Doomscroll</h1>
+  <h1>Doom<span>scroll</span></h1>
   <p class="tagline">the feed never ends. neither should you.</p>
 
   <div class="hero-stat">
@@ -345,6 +343,7 @@
       <div class="apps-list" id="appsRight"></div>
     </div>
   </div>
+</div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -711,14 +710,14 @@
   renderApps();
 
   // ---------- scale the whole composition to fit any window ----------
-  const fitWrapper = document.getElementById('fitWrapper');
+  const fitWrapper = document.querySelector('.stage-panel');
   function fitToScreen() {
     fitWrapper.style.transform = 'scale(1)';
     const rect = fitWrapper.getBoundingClientRect();
     const margin = 40;
     const scaleX = (window.innerWidth - margin * 2) / rect.width;
     const scaleY = (window.innerHeight - margin * 2) / rect.height;
-    const scale = Math.min(scaleX, scaleY, 1.6);
+    const scale = Math.min(scaleX, scaleY, 1.4);
     fitWrapper.style.transform = `scale(${scale})`;
   }
   window.addEventListener('resize', fitToScreen);

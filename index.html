@@ -120,7 +120,6 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    border-bottom: 3px solid var(--ink);
   }
   .thumb .word {
     font-family: 'Bebas Neue', sans-serif;
@@ -187,39 +186,6 @@
   .thumb.stack .b3 { width: 42px; height: 16px; bottom: 36%; left: 30%; background: var(--red); transform: rotate(-5deg); }
   .thumb.stack .b4 { width: 30px; height: 16px; bottom: 47%; left: 36%; background: var(--card-bg); transform: rotate(7deg); }
 
-  .card-foot {
-    padding: 14px 16px;
-    display: flex;
-  }
-
-  .play-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 14px;
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    color: var(--ink);
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    background: var(--pink);
-    transition: background 0.15s ease, transform 0.15s ease;
-  }
-  .play-btn::after { content: '\2192'; }
-  .card:hover .play-btn { background: var(--orange); color: #fff; border-color: var(--orange); transform: translateX(2px); }
-
-  .soon {
-    display: inline-block;
-    padding: 7px 14px;
-    border: 2px dashed var(--ink-dim);
-    border-radius: 999px;
-    color: var(--ink-dim);
-    font-size: 11px;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-
   footer {
     margin-top: 56px;
     text-align: center;
@@ -262,29 +228,40 @@
   .about .beer-link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 20px;
-    border: 2px solid transparent;
+    gap: 10px;
+    padding: 6px 20px 6px 6px;
+    border: 2px solid var(--ink);
     border-radius: 999px;
-    background: transparent;
+    background: var(--card-bg);
     font-size: 12px;
     letter-spacing: 0.02em;
-    color: var(--ink-dim);
-    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    color: var(--ink);
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .about .beer-emoji {
-    font-size: 26px;
-    line-height: 1;
+  .about .beer-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--orange);
+    border: 2px solid var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
     transition: transform 0.2s ease;
   }
-  .about .beer-link:hover {
-    background: var(--card-bg);
-    border-color: var(--ink);
-    color: var(--ink);
-    transform: translateY(-2px);
+  .about .beer-emoji {
+    font-size: 22px;
+    line-height: 1;
   }
-  .about .beer-link:hover .beer-emoji {
-    transform: rotate(-10deg) scale(1.15);
+  .about .beer-link:hover {
+    background: var(--orange);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.18);
+  }
+  .about .beer-link:hover .beer-circle {
+    transform: rotate(-10deg) scale(1.08);
   }
 
   footer a {
@@ -313,46 +290,7 @@
         <div class="phone-shape"></div>
         <div class="word">DOOM<br>SCROLL</div>
       </div>
-      <div class="card-foot">
-        <span class="play-btn">Play</span>
-      </div>
     </a>
-
-    <div class="card disabled">
-      <div class="thumb excuse">
-        <div class="bubble">sorry I'm late&hellip;</div>
-        <div class="bubble2">nice try</div>
-        <div class="word">PERFECT<br>EXCUSE</div>
-      </div>
-      <div class="card-foot">
-        <span class="soon">Coming soon</span>
-      </div>
-    </div>
-
-    <div class="card disabled">
-      <div class="thumb vibe">
-        <span class="star s1"></span><span class="star s2"></span>
-        <span class="star s3"></span><span class="star s4"></span>
-        <div class="orb"></div>
-        <div class="word">DAILY VIBE<br>CHECK</div>
-      </div>
-      <div class="card-foot">
-        <span class="soon">Coming soon</span>
-      </div>
-    </div>
-
-    <div class="card disabled">
-      <div class="thumb stack">
-        <div class="word" style="position:absolute; top:14%; left:50%; transform:translateX(-50%);">STACK THE<br>NONSENSE</div>
-        <div class="block b1"></div>
-        <div class="block b2"></div>
-        <div class="block b3"></div>
-        <div class="block b4"></div>
-      </div>
-      <div class="card-foot">
-        <span class="soon">Coming soon</span>
-      </div>
-    </div>
 
   </div>
 
@@ -360,12 +298,13 @@
     <div class="about-avatar">🕹️</div>
     <p>Hi, I'm [Your Name]. I make weird little things instead of sleeping.<br>This is most of them. No investors were harmed.</p>
     <div class="links">
-      <a class="beer-link" href="https://venmo.com/u/yourname" target="_blank" rel="noopener"><span class="beer-emoji">🍺</span> buy me a beer</a>
+      <a class="beer-link" href="https://venmo.com/u/yourname" target="_blank" rel="noopener"><span class="beer-circle"><span class="beer-emoji">🍺</span></span> buy me a beer</a>
     </div>
   </div>
 
   <footer>
-    New games show up whenever one is actually finished. Nothing here tracks you. <a href="privacy.html">privacy policy</a>
+    New games show up whenever one is actually finished. Nothing here tracks you.<br>
+    <a href="privacy.html">privacy policy</a>
   </footer>
 </div>
 </body>
