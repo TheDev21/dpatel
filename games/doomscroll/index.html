@@ -73,6 +73,27 @@
     transform-origin: center center;
   }
 
+  .back-link {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    z-index: 5;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    text-decoration: none;
+    padding: 6px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--card-bg);
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+  .back-link:hover {
+    background: var(--orange);
+    color: #fff;
+    border-color: var(--orange);
+    transform: translateY(-1px);
+  }
+
   #fitWrapper {
     display: flex;
     flex-direction: column;
@@ -93,7 +114,7 @@
 
   .tagline {
     color: var(--text-dim);
-    font-size: 0.88rem;
+    font-size: 1.05rem;
     margin: 0 0 1rem;
     text-align: center;
   }
@@ -108,7 +129,7 @@
     font-variant-numeric: tabular-nums;
   }
 
-  .hero-sub { font-size: 0.82rem; color: var(--text-dim); margin-top: 6px; }
+  .hero-sub { font-size: 1rem; color: var(--text-dim); margin-top: 6px; }
 
   .hero-rule {
     width: 150px; height: 5px; background: var(--pink-deep);
@@ -256,14 +277,7 @@
   }
   .tap-ripple.pop { transform: translate(-50%, -50%) scale(1); opacity: 0; }
 
-  .tap-hint { margin-top: 0.7rem; text-align: center; font-size: 0.68rem; color: var(--text-dim); }
-
-  .logoff { margin-top: 0.6rem; text-align: center; }
-  .logoff button {
-    background: none; border: none; color: var(--text-dim);
-    font-family: 'DM Mono', monospace; font-size: 0.66rem;
-    text-decoration: underline; cursor: pointer;
-  }
+  .tap-hint { margin-top: 0.7rem; text-align: center; font-size: 0.9rem; color: var(--text-dim); }
 
   .toast {
     position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-20px);
@@ -305,6 +319,8 @@
 
 <div class="bg-particles" id="bgParticles"></div>
 
+<a class="back-link" href="../../index.html">&larr; all games</a>
+
 <div class="stage-panel">
 <div id="fitWrapper">
   <h1>Doom<span>scroll</span></h1>
@@ -333,7 +349,6 @@
         </div>
       </div>
       <div class="tap-hint" id="tapHint">tap to scroll</div>
-      <div class="logoff"><button id="resetBtn">log off (reset progress)</button></div>
     </div>
 
     <div class="apps-column">
@@ -475,32 +490,8 @@
   ];
 
   // ---------- state ----------
+  // Deliberately not persisted: progress resets when you leave or reload.
   let state = { totalDistance: 0, sp: 0, unlocked: 0 };
-
-  function loadState() {
-    try {
-      const saved = JSON.parse(localStorage.getItem('doomscroll-save'));
-      if (saved) {
-        state.totalDistance = saved.totalDistance || 0;
-        state.sp = saved.sp || 0;
-        state.unlocked = saved.unlocked || 0;
-        upgrades.forEach(u => { u.owned = (saved.upgrades && saved.upgrades[u.id]) || 0; });
-      }
-    } catch (e) {}
-  }
-
-  function saveState() {
-    const upgradesOwned = {};
-    upgrades.forEach(u => upgradesOwned[u.id] = u.owned);
-    localStorage.setItem('doomscroll-save', JSON.stringify({
-      totalDistance: state.totalDistance,
-      sp: state.sp,
-      unlocked: state.unlocked,
-      upgrades: upgradesOwned
-    }));
-  }
-
-  loadState();
 
   // ---------- helpers ----------
   function formatNum(n) {
@@ -601,7 +592,6 @@
     u.owned++;
     renderApps();
     renderStats();
-    saveState();
   }
 
   function renderStats() {
@@ -654,7 +644,6 @@
     applyFeedTransform();
     renderStats();
     renderApps();
-    saveState();
   });
 
   let lastTick = performance.now();
@@ -671,19 +660,7 @@
   }
   requestAnimationFrame(loop);
 
-  setInterval(() => { renderStats(); renderApps(); saveState(); }, 500);
-
-  document.getElementById('resetBtn').addEventListener('click', (e) => {
-    e.stopPropagation();
-    localStorage.removeItem('doomscroll-save');
-    state = { totalDistance: 0, sp: 0, unlocked: 0 };
-    upgrades.forEach(u => u.owned = 0);
-    feedOffset = 0;
-    applyFeedTransform();
-    renderStats();
-    renderApps();
-    showToast('progress reset.');
-  });
+  setInterval(() => { renderStats(); renderApps(); }, 500);
 
   // ---------- ambient particles ----------
   const particleContainer = document.getElementById('bgParticles');
