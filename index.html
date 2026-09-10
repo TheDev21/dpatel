@@ -135,6 +135,16 @@
   .thumb.doom .a2 { top: 40%; left: 22%; transform: rotate(8deg); opacity: 0.7; }
   .thumb.doom .a3 { bottom: 20%; left: 12%; transform: rotate(-4deg); opacity: 0.5; }
 
+  /* Unicorn Machine thumb */
+  .thumb.unicorn { background: linear-gradient(160deg, #ffe0d0, #ffcfb0); }
+  .thumb.unicorn .word { color: #7a2a0a; font-size: clamp(26px, 5.5vw, 36px); }
+  .thumb.unicorn .unicorn-stack { display: flex; flex-direction: column; align-items: center; }
+  .thumb.unicorn .unicorn-emoji { font-size: 46px; margin-bottom: 6px; }
+  .thumb.unicorn .spark { position: absolute; color: var(--red); font-size: 16px; opacity: 0.8; }
+  .thumb.unicorn .s1 { top: 16%; left: 14%; }
+  .thumb.unicorn .s2 { top: 24%; right: 18%; font-size: 12px; }
+  .thumb.unicorn .s3 { bottom: 18%; left: 22%; font-size: 12px; opacity: 0.6; }
+
   /* Perfect Excuse thumb */
   .thumb.excuse { background: linear-gradient(160deg, #f3e2c8, #ecd4ae); }
   .thumb.excuse .word { color: #4a2f14; }
@@ -258,6 +268,18 @@
         <span class="arrow a3">&#8593;</span>
         <div class="phone-shape"></div>
         <div class="word">DOOM<br>SCROLL</div>
+      </div>
+    </a>
+
+    <a class="card" href="games/unicorn-machine/">
+      <div class="thumb unicorn">
+        <span class="spark s1">✦</span>
+        <span class="spark s2">✦</span>
+        <span class="spark s3">✦</span>
+        <div class="unicorn-stack">
+          <div class="unicorn-emoji">🦄</div>
+          <div class="word">UNICORN<br>MACHINE</div>
+        </div>
       </div>
     </a>
 

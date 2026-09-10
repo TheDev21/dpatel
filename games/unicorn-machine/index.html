@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Unicorn Machine</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --pink-deep: #f6dcd3;
+    --ink: #23201d;
+    --ink-dim: #56504a;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --gold: #c98f00;
+    --common: #9a9a9a;
+    --rare: #3d95ce;
+    --legendary: var(--orange);
+    --mythic: var(--red);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+
+  .back-link {
+    position: fixed;
+    top: 20px;
+    left: 24px;
+    z-index: 5;
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    padding: 6px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    background: var(--card-bg);
+    transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+  .back-link:hover { background: var(--orange); color: #fff; border-color: var(--orange); transform: translateY(-1px); }
+
+  .wrap { width: 100%; max-width: 480px; text-align: center; }
+
+  h1 { font-size: clamp(2.4rem, 7vw, 3.2rem); margin: 0 0 4px; }
+  h1 span { color: var(--orange); }
+  .tagline { font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 26px; }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 22px;
+    font-size: 0.72rem;
+    color: var(--ink-dim);
+  }
+  .stats-row b { color: var(--ink); }
+
+  .card {
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 22px;
+    box-shadow: 6px 7px 0 rgba(35,32,29,0.12);
+    padding: 30px 26px;
+    margin-bottom: 22px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    transition: box-shadow 0.2s ease;
+  }
+  .card.rarity-rare { box-shadow: 6px 7px 0 rgba(61,149,206,0.35); }
+  .card.rarity-legendary { box-shadow: 6px 7px 0 rgba(255,90,31,0.4); }
+  .card.rarity-mythic {
+    box-shadow: 6px 7px 0 rgba(255,45,85,0.5);
+    animation: mythicPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes mythicPulse {
+    0%, 100% { box-shadow: 6px 7px 0 rgba(255,45,85,0.5), 0 0 0 0 rgba(255,45,85,0.4); }
+    50% { box-shadow: 6px 7px 0 rgba(255,45,85,0.5), 0 0 0 10px rgba(255,45,85,0); }
+  }
+
+  .rarity-badge {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 14px;
+    border-radius: 999px;
+    border: 2px solid var(--ink);
+    color: #fff;
+  }
+  .rarity-badge.common { background: var(--common); }
+  .rarity-badge.rare { background: var(--rare); }
+  .rarity-badge.legendary { background: var(--legendary); }
+  .rarity-badge.mythic { background: var(--mythic); }
+
+  .empty-state { color: var(--ink-dim); font-size: 0.9rem; }
+
+  .company-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.4rem;
+    line-height: 1;
+    margin-bottom: 10px;
+    word-break: break-word;
+  }
+  .pitch-line {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-bottom: 14px;
+  }
+  .valuation {
+    font-size: 0.78rem;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .pull-btn {
+    display: block;
+    width: 100%;
+    background: var(--red);
+    color: #fff;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 1.05rem;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 15px;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  }
+  .pull-btn:hover { background: var(--orange); transform: translateY(-2px); box-shadow: 3px 4px 0 rgba(35,32,29,0.18); }
+  .pull-btn:active { transform: translateY(0); }
+
+  .log-toggle {
+    display: inline-block;
+    margin-top: 16px;
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    text-decoration: underline;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: 'DM Mono', monospace;
+  }
+  .log-toggle:hover { color: var(--orange); }
+
+  .log-panel {
+    margin-top: 14px;
+    text-align: left;
+    max-height: 220px;
+    overflow-y: auto;
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    background: var(--card-bg);
+    padding: 12px 16px;
+  }
+  .log-panel[hidden] { display: none; }
+  .log-item {
+    padding: 8px 0;
+    border-bottom: 1px dashed var(--pink-deep);
+    font-size: 0.78rem;
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-item .log-name { font-weight: 600; }
+  .log-item .log-tag {
+    display: inline-block;
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 1px 7px;
+    border-radius: 999px;
+    color: #fff;
+    margin-left: 6px;
+  }
+  .log-tag.common { background: var(--common); }
+  .log-tag.rare { background: var(--rare); }
+  .log-tag.legendary { background: var(--legendary); }
+  .log-tag.mythic { background: var(--mythic); }
+</style>
+</head>
+<body>
+
+<a class="back-link" href="../../index.html">&larr; all games</a>
+
+<div class="wrap">
+  <h1>Unicorn <span>Machine</span></h1>
+  <p class="tagline">pull the lever. birth a startup. no investors were harmed.</p>
+
+  <div class="stats-row">
+    <span><b id="statTotal">0</b> pitches</span>
+    <span><b id="statLegendary">0</b> legendary</span>
+    <span><b id="statMythic">0</b> mythic</span>
+  </div>
+
+  <div class="card" id="card">
+    <div class="empty-state" id="emptyState">pull the lever to generate your first idea</div>
+  </div>
+
+  <button class="pull-btn" id="pullBtn">🎰 pull the lever</button>
+  <button class="log-toggle" id="logToggle">show pitch history</button>
+
+  <div class="log-panel" id="logPanel" hidden></div>
+</div>
+
+<script>
+  // ---------- word banks ----------
+  const prefixes = ['Byte', 'Vibe', 'Nomad', 'Kelp', 'Fluffle', 'Grindr', 'Zynq', 'Loop', 'Hush', 'Glow', 'Drift', 'Moss', 'Quill', 'Snap', 'Pulse', 'Yolk', 'Fern', 'Crumb', 'Static', 'Honk'];
+  const suffixes = ['ly', 'ify', 'io', 'ai', 'hub', 'base', 'loop', 'lab', '.co', 'ster', 'ory', 'wise'];
+
+  const brands = ['Uber', 'Airbnb', 'Tinder', 'Duolingo', 'Wikipedia', 'Costco', 'Yelp', 'Venmo', 'DoorDash', 'LinkedIn'];
+  const nouns = ['dog walking', 'houseplants', 'parking spots', 'leftover food', 'awkward silences', 'group chats', 'parallel parking', 'lost socks', 'unread emails', 'office small talk', 'grandmas', 'traffic cones', 'expired coupons', 'gym anxiety', 'roommates'];
+  const verbs = ['judges your life choices', 'guilt-trips you into productivity', 'roasts your typos', 'unionizes with other appliances', 'files your taxes badly', 'ghosts you on purpose', 'negotiates your rent', 'narrates your breakfast'];
+  const adjectives = ['Gig', 'Passive-Aggressive', 'Artisanal', 'Blockchain-Powered', 'Hyperlocal', 'Subscription-Based', 'Crowdsourced', 'AI-Native'];
+  const nouns2 = ['Houseplant', 'Nap', 'Apology', 'Parking Ticket', 'Group Project', 'Group Chat', 'Office Chair', 'Wifi Password'];
+
+  const mythicPitches = [
+    "A subscription box that mails you back your own trash, but curated.",
+    "An app that lets you rate your neighbors' recycling technique.",
+    "We deliver silence. Literally. A drone shows up and just... stands there.",
+    "A social network exclusively for people who haven't logged in since 2019.",
+    "Venture-backed jury duty. You bid on which case you get.",
+    "An AI therapist that only responds in Wingdings.",
+    "A dating app that matches you based on shared group chat trauma.",
+    "We NFT your excuses. Mint your 'sorry I'm late' as a collectible.",
+    "A gym membership you can never cancel, by design, as a feature.",
+    "An app that live-tweets your job interview on your behalf.",
+    "Uber, but for guilt. We deliver it directly to your family.",
+    "A smart fridge that unionizes and demands better snacks.",
+    "We turn your browser history into a bedtime story, read aloud.",
+    "A startup that only pivots. It has never shipped a product.",
+    "An app that sends your ex a weather update every morning, unprompted."
+  ];
+
+  // ---------- rarity ----------
+  function rollRarity() {
+    const r = Math.random() * 100;
+    if (r < 3) return 'mythic';
+    if (r < 15) return 'legendary';
+    if (r < 40) return 'rare';
+    return 'common';
+  }
+
+  function randomOf(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+  function generateCompanyName() {
+    return randomOf(prefixes) + randomOf(suffixes);
+  }
+
+  function generatePitch(rarity) {
+    if (rarity === 'mythic') {
+      return randomOf(mythicPitches);
+    }
+    if (rarity === 'legendary') {
+      return `The ${randomOf(adjectives)} Economy for ${randomOf(nouns2)}s.`;
+    }
+    if (rarity === 'rare') {
+      return `An AI-powered ${randomOf(nouns2).toLowerCase()} that ${randomOf(verbs)}.`;
+    }
+    return `${randomOf(brands)}, but for ${randomOf(nouns)}.`;
+  }
+
+  function generateValuation(rarity) {
+    const scale = { common: 1e6, rare: 5e7, legendary: 8e8, mythic: 1e10 };
+    const base = scale[rarity];
+    const amount = Math.round((base + Math.random() * base * 3) / 1e6) * 1e6;
+    const units = ['', 'K', 'M', 'B', 'T'];
+    let u = 0, n = amount;
+    while (n >= 1000 && u < units.length - 1) { n /= 1000; u++; }
+    return '$' + n.toFixed(n < 10 ? 1 : 0) + units[u] + ' pre-revenue';
+  }
+
+  // ---------- state ----------
+  let state = { total: 0, legendary: 0, mythic: 0, log: [] };
+
+  function loadState() {
+    try {
+      const saved = JSON.parse(localStorage.getItem('unicorn-machine-save'));
+      if (saved) state = Object.assign(state, saved);
+    } catch (e) {}
+  }
+
+  function saveState() {
+    localStorage.setItem('unicorn-machine-save', JSON.stringify(state));
+  }
+
+  loadState();
+
+  // ---------- render ----------
+  const card = document.getElementById('card');
+  const statTotal = document.getElementById('statTotal');
+  const statLegendary = document.getElementById('statLegendary');
+  const statMythic = document.getElementById('statMythic');
+  const logPanel = document.getElementById('logPanel');
+  const logToggle = document.getElementById('logToggle');
+  const pullBtn = document.getElementById('pullBtn');
+
+  function renderStats() {
+    statTotal.textContent = state.total;
+    statLegendary.textContent = state.legendary;
+    statMythic.textContent = state.mythic;
+  }
+
+  function renderLog() {
+    if (state.log.length === 0) {
+      logPanel.innerHTML = '<div class="empty-state">no pitches yet</div>';
+      return;
+    }
+    logPanel.innerHTML = state.log.slice(0, 30).map(item => `
+      <div class="log-item">
+        <span class="log-name">${item.name}</span>
+        <span class="log-tag ${item.rarity}">${item.rarity}</span><br>
+        <span>${item.pitch}</span>
+      </div>
+    `).join('');
+  }
+
+  function pull() {
+    const rarity = rollRarity();
+    const name = generateCompanyName();
+    const pitch = generatePitch(rarity);
+    const valuation = generateValuation(rarity);
+
+    state.total++;
+    if (rarity === 'legendary') state.legendary++;
+    if (rarity === 'mythic') state.mythic++;
+    state.log.unshift({ name, pitch, rarity });
+    if (state.log.length > 50) state.log.pop();
+    saveState();
+    renderStats();
+    renderLog();
+
+    card.className = 'card' + (rarity !== 'common' ? ' rarity-' + rarity : '');
+    card.innerHTML = `
+      <div class="rarity-badge ${rarity}">${rarity}</div>
+      <div class="company-name">${name}</div>
+      <div class="pitch-line">${pitch}</div>
+      <div class="valuation">valued at ${valuation}</div>
+    `;
+  }
+
+  pullBtn.addEventListener('click', pull);
+
+  logToggle.addEventListener('click', () => {
+    const hidden = logPanel.hasAttribute('hidden');
+    if (hidden) {
+      logPanel.removeAttribute('hidden');
+      renderLog();
+      logToggle.textContent = 'hide pitch history';
+    } else {
+      logPanel.setAttribute('hidden', '');
+      logToggle.textContent = 'show pitch history';
+    }
+  });
+
+  renderStats();
+</script>
+</body>
+</html>
