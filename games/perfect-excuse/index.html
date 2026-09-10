@@ -223,6 +223,27 @@
   var bannedWord = pick(bannedWords, rng);
   var todayWeekday = new Date().toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
 
+  var triviaFacts = [
+    { answer: 'green', clue: 'rarest natural human eye color' },
+    { answer: 'ab negative', clue: 'rarest human blood type' },
+    { answer: 'brown', clue: 'most common human eye color' },
+    { answer: 'pacific', clue: 'largest ocean on Earth' },
+    { answer: 'everest', clue: 'tallest mountain on Earth' },
+    { answer: 'nile', clue: 'longest river on Earth' },
+    { answer: 'honey', clue: 'a food that never spoils' },
+    { answer: 'octopus', clue: 'an animal with three hearts' },
+    { answer: 'venus', clue: 'the hottest planet in the solar system' },
+    { answer: 'antarctica', clue: 'the driest continent on Earth' }
+  ];
+  var dailyTrivia = pick(triviaFacts, rng);
+
+  var fruits = ['apple', 'banana', 'mango', 'grape', 'kiwi', 'peach', 'lemon', 'pear'];
+  var bodyParts = ['elbow', 'knee', 'thumb', 'shoulder', 'ankle', 'wrist'];
+  var directions = ['north', 'south', 'east', 'west', 'up', 'down', 'left', 'right'];
+  var units = ['mile', 'kilogram', 'inch', 'liter', 'gallon', 'meter'];
+  var techWords = ['wifi', 'printer', 'gps', 'alarm', 'battery', 'bluetooth'];
+  var spelledNumbers = ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+
   // ---------- rule pool ----------
   // each rule: id, text (string shown to player), check(text) -> bool
   var rulePool = [
@@ -363,6 +384,85 @@
       id: 'dayOfYear',
       text: 'Must contain the number ' + dayOfYear(new Date()) + ' (today\'s day-of-year).',
       check: function (t) { return new RegExp('\\b' + dayOfYear(new Date()) + '\\b').test(t); }
+    },
+    {
+      id: 'leapYear',
+      text: 'Must state whether ' + new Date().getFullYear() + ' is a leap year (it ' + (isLeapYear(new Date().getFullYear()) ? 'is' : 'is not') + ').',
+      check: function (t) {
+        var word = isLeapYear(new Date().getFullYear()) ? 'is a leap year' : 'is not a leap year';
+        return t.toLowerCase().includes(word) || t.toLowerCase().includes('leap year');
+      }
+    },
+    {
+      id: 'weekendWeekday',
+      text: 'Must mention whether today is a weekday or the weekend (today is a ' + (isWeekend(new Date()) ? 'weekend' : 'weekday') + ').',
+      check: function (t) {
+        var word = isWeekend(new Date()) ? 'weekend' : 'weekday';
+        return t.toLowerCase().includes(word);
+      }
+    },
+    {
+      id: 'chineseZodiac',
+      text: 'Must mention this year\'s Chinese zodiac animal (' + chineseZodiac(new Date().getFullYear()) + ').',
+      check: function (t) { return t.toLowerCase().includes(chineseZodiac(new Date().getFullYear())); }
+    },
+    {
+      id: 'trivia',
+      text: 'Must mention "' + dailyTrivia.answer + '" (' + dailyTrivia.clue + ').',
+      check: function (t) { return t.toLowerCase().includes(dailyTrivia.answer); }
+    },
+    {
+      id: 'fruit',
+      text: 'Must contain a fruit (apple, banana, mango, grape, kiwi, peach, lemon, or pear).',
+      check: function (t) { return fruits.some(function (f) { return t.toLowerCase().includes(f); }); }
+    },
+    {
+      id: 'bodyPart',
+      text: 'Must contain a body part (elbow, knee, thumb, shoulder, ankle, or wrist).',
+      check: function (t) { return bodyParts.some(function (b) { return t.toLowerCase().includes(b); }); }
+    },
+    {
+      id: 'noBecause',
+      text: 'Must NOT contain the word "because".',
+      check: function (t) { return !/\bbecause\b/i.test(t); }
+    },
+    {
+      id: 'palindrome',
+      text: 'Must contain a palindrome word (reads the same backwards, like "level" or "noon").',
+      check: function (t) {
+        var words = t.toLowerCase().match(/[a-z]+/g) || [];
+        return words.some(function (w) { return w.length >= 3 && w === w.split('').reverse().join(''); });
+      }
+    },
+    {
+      id: 'multipleOf5',
+      text: 'Total word count must be a multiple of 5.',
+      check: function (t) { return wordCount(t) > 0 && wordCount(t) % 5 === 0; }
+    },
+    {
+      id: 'currentYear',
+      text: 'Must contain the current year (' + new Date().getFullYear() + ').',
+      check: function (t) { return t.includes(String(new Date().getFullYear())); }
+    },
+    {
+      id: 'direction',
+      text: 'Must contain a direction (north, south, east, west, up, down, left, or right).',
+      check: function (t) { return directions.some(function (d) { return t.toLowerCase().includes(d); }); }
+    },
+    {
+      id: 'unit',
+      text: 'Must contain a unit of measurement (mile, kilogram, inch, liter, gallon, or meter).',
+      check: function (t) { return units.some(function (u) { return t.toLowerCase().includes(u); }); }
+    },
+    {
+      id: 'techWord',
+      text: 'Must contain a "tech excuse" word (wifi, printer, GPS, alarm, battery, or bluetooth).',
+      check: function (t) { return techWords.some(function (w) { return t.toLowerCase().includes(w); }); }
+    },
+    {
+      id: 'spelledNumber',
+      text: 'Must contain a number spelled out as a word (one through ten).',
+      check: function (t) { return spelledNumbers.some(function (n) { return new RegExp('\\b' + n + '\\b', 'i').test(t); }); }
     }
   ];
 
@@ -391,9 +491,15 @@
     var diff = date - start;
     return Math.floor(diff / 86400000);
   }
+  function isLeapYear(y) { return (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0; }
+  function isWeekend(date) { var d = date.getDay(); return d === 0 || d === 6; }
+  function chineseZodiac(year) {
+    var animals = ['rat', 'ox', 'tiger', 'rabbit', 'dragon', 'snake', 'horse', 'goat', 'monkey', 'rooster', 'dog', 'pig'];
+    return animals[(year - 4) % 12];
+  }
 
-  // daily set: shuffle pool with the day's seed, take first 20, keep that order
-  var dailyRules = shuffle(rulePool, rng).slice(0, 20);
+  // daily set: shuffle pool with the day's seed, take first 16, keep that order
+  var dailyRules = shuffle(rulePool, rng).slice(0, 16);
 
   // ---------- save/load ----------
   var SAVE_KEY = 'perfect-excuse-save';
