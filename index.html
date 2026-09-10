@@ -136,14 +136,25 @@
   .thumb.doom .a3 { bottom: 20%; left: 12%; transform: rotate(-4deg); opacity: 0.5; }
 
   /* Startup Slot Machine thumb */
-  .thumb.unicorn { background: linear-gradient(160deg, #ffe0d0, #ffcfb0); }
-  .thumb.unicorn .word { color: #7a2a0a; font-size: clamp(24px, 5vw, 32px); }
-  .thumb.unicorn .unicorn-stack { display: flex; flex-direction: column; align-items: center; }
-  .thumb.unicorn .unicorn-emoji { font-size: 46px; margin-bottom: 6px; }
-  .thumb.unicorn .spark { position: absolute; color: var(--red); font-size: 16px; opacity: 0.8; }
-  .thumb.unicorn .s1 { top: 16%; left: 14%; }
-  .thumb.unicorn .s2 { top: 24%; right: 18%; font-size: 12px; }
-  .thumb.unicorn .s3 { bottom: 18%; left: 22%; font-size: 12px; opacity: 0.6; }
+  .thumb.unicorn { background: linear-gradient(160deg, #2a1a4a, #1a1030 65%, #100a1f); }
+  .thumb.unicorn .word { color: #35e6ff; font-size: clamp(16px, 3.6vw, 21px); text-shadow: 0 0 6px rgba(53,230,255,0.7); margin-top: 8px; }
+  .thumb.unicorn .mini-cabinet {
+    display: flex; flex-direction: column; align-items: center;
+  }
+  .thumb.unicorn .mini-lights { display: flex; gap: 4px; margin-bottom: 5px; }
+  .thumb.unicorn .mini-bulb {
+    width: 4px; height: 4px; border-radius: 50%;
+    background: #ffd15c; box-shadow: 0 0 4px 1px rgba(255,209,92,0.8);
+  }
+  .thumb.unicorn .mini-reels {
+    display: flex; gap: 4px;
+    background: #100a1f; border: 1.5px solid #8b82a0;
+    border-radius: 8px; padding: 5px;
+  }
+  .thumb.unicorn .mini-reel {
+    width: 16px; height: 16px; border-radius: 4px;
+    background: linear-gradient(160deg, #fff, #d6cee6);
+  }
 
   /* Perfect Excuse thumb */
   .thumb.excuse { background: linear-gradient(160deg, #f3e2c8, #ecd4ae); }
@@ -273,11 +284,14 @@
 
     <a class="card" href="games/startup-slot-machine/">
       <div class="thumb unicorn">
-        <span class="spark s1">✦</span>
-        <span class="spark s2">✦</span>
-        <span class="spark s3">✦</span>
-        <div class="unicorn-stack">
-          <div class="unicorn-emoji">🎰</div>
+        <div class="mini-cabinet">
+          <div class="mini-lights">
+            <span class="mini-bulb"></span><span class="mini-bulb"></span><span class="mini-bulb"></span>
+            <span class="mini-bulb"></span><span class="mini-bulb"></span>
+          </div>
+          <div class="mini-reels">
+            <span class="mini-reel"></span><span class="mini-reel"></span><span class="mini-reel"></span>
+          </div>
           <div class="word">STARTUP<br>SLOT MACHINE</div>
         </div>
       </div>

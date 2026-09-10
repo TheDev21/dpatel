@@ -17,11 +17,15 @@
     --orange: #ff5a1f;
     --red: #ff2d55;
     --gold: #c98f00;
-    --gold-bright: #ffcf6b;
+    --gold-bright: #ffd15c;
     --common: #9a9a9a;
     --rare: #3d95ce;
     --legendary: var(--orange);
     --mythic: var(--red);
+    --neon-pink: #ff2ea0;
+    --neon-cyan: #35e6ff;
+    --cabinet-dark: #1a1030;
+    --cabinet-darker: #100a1f;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
@@ -71,145 +75,119 @@
   }
   .stats-row b { color: var(--ink); }
 
-  /* ---------- the cabinet ---------- */
+  /* ---------- the cabinet (deliberately breaks from the site's pastel
+     system -- a slot machine needs to actually look like a casino
+     machine: chrome, neon, dark glass, not soft pink) ---------- */
   .cabinet-wrap {
     position: relative;
-    padding-right: 54px;
+    padding-right: 58px;
     margin-bottom: 20px;
+    user-select: none;
   }
 
   .cabinet {
-    background: linear-gradient(160deg, var(--red), #c81f42);
-    border: 4px solid var(--ink);
+    background:
+      linear-gradient(160deg, #2a1a4a, var(--cabinet-dark) 60%, var(--cabinet-darker));
+    border: 4px solid #c9c0d8;
+    border-image: linear-gradient(160deg, #f4f1fa, #8b82a0, #f4f1fa) 1;
     border-radius: 26px;
-    box-shadow: 7px 9px 0 rgba(35,32,29,0.18);
+    box-shadow: 7px 9px 0 rgba(35,32,29,0.25), inset 0 0 30px rgba(255,46,160,0.08);
     padding: 16px 16px 20px;
   }
 
-  .marquee {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    margin-bottom: 12px;
-  }
+  .marquee { display: flex; justify-content: center; gap: 7px; margin-bottom: 12px; }
   .bulb {
-    width: 8px;
-    height: 8px;
+    width: 9px; height: 9px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.35);
-    border: 1px solid rgba(35,32,29,0.4);
+    background: #3a3050;
+    border: 1px solid #16102a;
     transition: background 0.15s ease, box-shadow 0.15s ease;
   }
-  .bulb.lit {
-    background: var(--gold-bright);
-    box-shadow: 0 0 6px 2px rgba(255,207,107,0.8);
-  }
+  .bulb.lit { background: var(--gold-bright); box-shadow: 0 0 8px 3px rgba(255,209,92,0.9); }
 
   .cabinet-title {
     font-family: 'Bebas Neue', sans-serif;
-    color: #fff;
-    font-size: 1rem;
-    letter-spacing: 0.15em;
+    color: var(--neon-cyan);
+    font-size: 1.05rem;
+    letter-spacing: 0.18em;
     text-align: center;
     margin-bottom: 10px;
-    text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+    text-shadow: 0 0 8px rgba(53,230,255,0.8), 0 0 2px #fff;
   }
 
   .reel-window {
-    background: #1a1418;
-    border: 3px solid var(--ink);
+    background: var(--cabinet-darker);
+    border: 3px solid #4a3d6b;
     border-radius: 16px;
     padding: 14px;
-    position: relative;
+    box-shadow: inset 0 4px 14px rgba(0,0,0,0.6);
   }
   .reels { display: flex; gap: 10px; justify-content: center; }
   .reel {
-    width: 74px;
-    height: 74px;
-    border: 2.5px solid var(--ink);
+    width: 76px; height: 76px;
     border-radius: 14px;
-    background: var(--card-bg);
+    background: linear-gradient(160deg, #fff, #e9e4f2 60%, #d6cee6);
+    border: 2.5px solid #8b82a0;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 2.2rem;
     overflow: hidden;
+    box-shadow: inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.15);
   }
-  .reel.stopped { background: #fff; }
+  .reel.stopped { box-shadow: inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.15), 0 0 10px 1px rgba(255,209,92,0.5); }
   .reel-symbol { animation: spinPop 0.08s ease-out; }
   @keyframes spinPop {
     0% { transform: scale(0.7) rotate(-8deg); opacity: 0.4; }
     100% { transform: scale(1) rotate(0deg); opacity: 1; }
   }
-  .payline {
-    position: absolute;
-    left: 10px; right: 10px; top: 50%;
-    height: 2px;
-    background: rgba(255,45,85,0.6);
-    transform: translateY(-1px);
-    pointer-events: none;
-  }
 
-  /* ---------- lever ---------- */
+  /* ---------- lever (drag it down to spin) ---------- */
   .lever-wrap {
     position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 54px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    top: 0; right: 0; bottom: 0;
+    width: 58px;
   }
   .lever-base {
     position: absolute;
-    right: 6px;
-    top: 20%;
-    bottom: 20%;
-    width: 12px;
-    background: var(--ink);
+    right: 10px; top: 14%; bottom: 14%;
+    width: 10px;
+    background: linear-gradient(90deg, #6b6178, #d8d3ce, #6b6178);
+    border: 1.5px solid var(--ink);
     border-radius: 6px;
   }
-  .lever {
+  .lever-track {
     position: absolute;
-    right: 2px;
-    top: 20%;
-    width: 20px;
-    height: 60%;
-    cursor: pointer;
-    background: none;
-    border: none;
-    padding: 0;
-    display: block;
+    right: 2px; top: 14%;
+    width: 26px; height: 72%;
+    touch-action: none;
+    cursor: grab;
   }
+  .lever-track.dragging { cursor: grabbing; }
   .lever-rod {
     position: absolute;
-    left: 50%;
-    top: 0;
-    bottom: 26px;
+    left: 50%; top: 0; bottom: 30px;
     width: 6px;
-    background: linear-gradient(90deg, #8a8580, #d8d3ce, #8a8580);
+    background: linear-gradient(90deg, #6b6178, #f4f1fa, #6b6178);
     border: 1.5px solid var(--ink);
     border-radius: 3px;
     transform: translateX(-50%);
     transform-origin: bottom center;
-    transition: transform 0.15s ease-out;
+  }
+  .lever-track:not(.dragging) .lever-rod,
+  .lever-track:not(.dragging) .lever-knob {
+    transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
   .lever-knob {
     position: absolute;
-    left: 50%;
-    top: -6px;
-    width: 30px;
-    height: 30px;
+    left: 50%; top: -6px;
+    width: 32px; height: 32px;
     border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #ff7a4d, var(--red) 70%);
+    background: radial-gradient(circle at 35% 28%, #ff8f6b, var(--red) 65%, #b3123a);
     border: 2.5px solid var(--ink);
     transform: translateX(-50%);
-    transition: transform 0.15s ease-out;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.3);
   }
-  .lever:hover .lever-knob:not(.pulling) { transform: translateX(-50%) scale(1.06); }
-  .lever.pulling .lever-rod { transform: translateX(-50%) rotate(24deg); }
-  .lever.pulling .lever-knob { transform: translateX(-50%) translate(16px, 34px); }
 
   .card {
     background: var(--card-bg);
@@ -326,7 +304,7 @@
 
 <div class="wrap">
   <h1>Startup Slot <span>Machine</span></h1>
-  <p class="tagline">pull the lever. birth a startup. no investors were harmed.</p>
+  <p class="tagline">drag the lever down. birth a startup. no investors were harmed.</p>
 
   <div class="stats-row">
     <span><b id="statTotal">0</b> pitches</span>
@@ -348,20 +326,19 @@
           <div class="reel" id="reel2">🎲</div>
           <div class="reel" id="reel3">🎲</div>
         </div>
-        <div class="payline"></div>
       </div>
     </div>
 
     <div class="lever-wrap">
       <div class="lever-base"></div>
-      <button class="lever" id="lever" aria-label="pull the lever">
+      <div class="lever-track" id="leverTrack" aria-label="drag down to pull the lever">
         <div class="lever-rod" id="leverRod"></div>
         <div class="lever-knob" id="leverKnob"></div>
-      </button>
+      </div>
     </div>
   </div>
 
-  <p class="hint" id="hint">grab the <b>lever</b> and pull down to spin</p>
+  <p class="hint" id="hint">grab the <b>lever</b> and drag it down to spin</p>
 
   <div class="card" id="card">
     <div class="empty-state" id="emptyState">no pitch yet. give it a pull.</div>
@@ -457,7 +434,6 @@
   const statMythic = document.getElementById('statMythic');
   const logPanel = document.getElementById('logPanel');
   const logToggle = document.getElementById('logToggle');
-  const lever = document.getElementById('lever');
   const marquee = document.getElementById('marquee');
   const hint = document.getElementById('hint');
 
@@ -482,8 +458,7 @@
   }
 
   function setBulbs(litCount) {
-    const bulbs = marquee.querySelectorAll('.bulb');
-    bulbs.forEach((b, i) => b.classList.toggle('lit', i < litCount));
+    marquee.querySelectorAll('.bulb').forEach((b, i) => b.classList.toggle('lit', i < litCount));
   }
   let marqueeTimer = null;
   function chaseBulbs() {
@@ -606,12 +581,9 @@
   function pull() {
     if (spinning) return;
     spinning = true;
-    lever.classList.add('pulling');
     playLeverClunk();
     hint.textContent = 'spinning...';
     chaseBulbs();
-
-    setTimeout(() => { lever.classList.remove('pulling'); }, 260);
 
     const rarity = rollRarity();
     const targetSymbol = tierSymbols[rarity];
@@ -662,10 +634,54 @@
     `;
 
     spinning = false;
-    hint.innerHTML = 'grab the <b>lever</b> and pull down to spin';
+    hint.innerHTML = 'grab the <b>lever</b> and drag it down to spin';
   }
 
-  lever.addEventListener('click', pull);
+  // ---------- lever drag ----------
+  const leverTrack = document.getElementById('leverTrack');
+  const leverRod = document.getElementById('leverRod');
+  const leverKnob = document.getElementById('leverKnob');
+  const MAX_DRAG = 74;
+  const PULL_THRESHOLD = 0.68;
+  let dragging = false;
+  let dragStartY = 0;
+
+  function setLeverPos(dist) {
+    const pct = dist / MAX_DRAG;
+    leverKnob.style.transform = `translateX(-50%) translateY(${dist}px)`;
+    leverRod.style.transform = `translateX(-50%) rotate(${pct * 22}deg)`;
+  }
+
+  function onPointerDown(e) {
+    if (spinning) return;
+    dragging = true;
+    leverTrack.classList.add('dragging');
+    dragStartY = e.clientY;
+    leverTrack.setPointerCapture(e.pointerId);
+    ensureAudio();
+  }
+
+  function onPointerMove(e) {
+    if (!dragging) return;
+    const dist = Math.max(0, Math.min(MAX_DRAG, e.clientY - dragStartY));
+    setLeverPos(dist);
+  }
+
+  function onPointerUp(e) {
+    if (!dragging) return;
+    dragging = false;
+    leverTrack.classList.remove('dragging');
+    const dist = Math.max(0, Math.min(MAX_DRAG, e.clientY - dragStartY));
+    setLeverPos(0);
+    if (dist / MAX_DRAG >= PULL_THRESHOLD) {
+      pull();
+    }
+  }
+
+  leverTrack.addEventListener('pointerdown', onPointerDown);
+  leverTrack.addEventListener('pointermove', onPointerMove);
+  leverTrack.addEventListener('pointerup', onPointerUp);
+  leverTrack.addEventListener('pointercancel', onPointerUp);
 
   const muteToggle = document.getElementById('muteToggle');
   muteToggle.addEventListener('click', () => {
