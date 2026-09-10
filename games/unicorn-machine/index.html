@@ -97,10 +97,22 @@
   }
 
   .card.spinning { background: var(--pink-deep); }
-  .spin-symbol {
-    font-size: 3.4rem;
-    animation: spinPop 0.09s ease-out;
+
+  .reels { display: flex; gap: 12px; justify-content: center; }
+  .reel {
+    width: 76px;
+    height: 76px;
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.3rem;
+    overflow: hidden;
   }
+  .reel.stopped { background: #fff; }
+  .reel-symbol { animation: spinPop 0.08s ease-out; }
   @keyframes spinPop {
     0% { transform: scale(0.7) rotate(-8deg); opacity: 0.4; }
     100% { transform: scale(1) rotate(0deg); opacity: 1; }
@@ -238,6 +250,7 @@
 
   <button class="pull-btn" id="pullBtn">🎰 pull the lever</button>
   <button class="log-toggle" id="logToggle">show pitch history</button>
+  <button class="log-toggle" id="muteToggle">🔊 sound on</button>
 
   <div class="log-panel" id="logPanel" hidden></div>
 </div>
@@ -354,30 +367,127 @@
     `).join('');
   }
 
-  const spinSymbols = ['🎲', '💰', '📈', '🦄', '🚀', '💸', '🤖', '🐂'];
+  // ---------- sound (WebAudio, no files) ----------
+  let audioCtx = null;
+  let soundOn = true;
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function playTick(landed) {
+    if (!soundOn) return;
+    ensureAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = landed ? 520 : 220 + Math.random() * 90;
+    gain.gain.value = 0.05;
+    osc.connect(gain).connect(audioCtx.destination);
+    const t = audioCtx.currentTime;
+    osc.start(t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.08);
+    osc.stop(t + 0.09);
+  }
+  function playWinChime(rarity) {
+    if (!soundOn) return;
+    ensureAudio();
+    const chords = {
+      mythic: [523, 659, 784, 1046],
+      legendary: [523, 659, 784],
+      rare: [440, 554],
+      common: [392]
+    };
+    const freqs = chords[rarity] || chords.common;
+    freqs.forEach((f, i) => {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = f;
+      osc.connect(gain).connect(audioCtx.destination);
+      const t = audioCtx.currentTime + i * 0.09;
+      osc.start(t);
+      gain.gain.setValueAtTime(0.09, t);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
+      osc.stop(t + 0.31);
+    });
+  }
+  function playNearMiss() {
+    if (!soundOn) return;
+    ensureAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(500, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(180, audioCtx.currentTime + 0.25);
+    gain.gain.value = 0.05;
+    osc.connect(gain).connect(audioCtx.destination);
+    const t = audioCtx.currentTime;
+    osc.start(t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
+    osc.stop(t + 0.27);
+  }
+
+  // ---------- reel spin ----------
+  const tierOrder = ['common', 'rare', 'legendary', 'mythic'];
+  const tierSymbols = { common: '🎲', rare: '💎', legendary: '👑', mythic: '🦄' };
+
+  function spinReel(el, ticks, finalSymbol, nearMissIdx, onDone) {
+    let tick = 0;
+    function step() {
+      if (tick >= ticks) {
+        el.innerHTML = `<span class="reel-symbol">${finalSymbol}</span>`;
+        el.classList.add('stopped');
+        playTick(true);
+        onDone();
+        return;
+      }
+      let sym;
+      if (nearMissIdx !== undefined && tick === ticks - 2 && nearMissIdx < 3 && Math.random() < 0.45) {
+        sym = tierSymbols[tierOrder[nearMissIdx + 1]];
+        playNearMiss();
+      } else {
+        sym = tierSymbols[tierOrder[Math.floor(Math.random() * tierOrder.length)]];
+        playTick(false);
+      }
+      el.innerHTML = `<span class="reel-symbol">${sym}</span>`;
+      tick++;
+      const delay = 55 + tick * tick * 1.6;
+      setTimeout(step, delay);
+    }
+    step();
+  }
 
   function pull() {
     if (pullBtn.disabled) return;
     pullBtn.disabled = true;
     pullBtn.textContent = 'spinning...';
-    card.className = 'card spinning';
 
-    const totalTicks = 16;
-    function spinStep(tick) {
-      const sym = spinSymbols[Math.floor(Math.random() * spinSymbols.length)];
-      card.innerHTML = `<div class="spin-symbol">${sym}</div>`;
-      if (tick >= totalTicks) {
-        reveal();
-        return;
-      }
-      const delay = 70 + tick * tick * 2.2;
-      setTimeout(() => spinStep(tick + 1), delay);
-    }
-    spinStep(0);
+    const rarity = rollRarity();
+    const targetSymbol = tierSymbols[rarity];
+    const targetIdx = tierOrder.indexOf(rarity);
+
+    card.className = 'card spinning';
+    card.innerHTML = `
+      <div class="reels">
+        <div class="reel" id="reel1"></div>
+        <div class="reel" id="reel2"></div>
+        <div class="reel" id="reel3"></div>
+      </div>
+    `;
+    const reel1 = document.getElementById('reel1');
+    const reel2 = document.getElementById('reel2');
+    const reel3 = document.getElementById('reel3');
+
+    spinReel(reel1, 11, targetSymbol, undefined, () => {
+      spinReel(reel2, 15, targetSymbol, undefined, () => {
+        spinReel(reel3, 20, targetSymbol, targetIdx, () => {
+          reveal(rarity);
+        });
+      });
+    });
   }
 
-  function reveal() {
-    const rarity = rollRarity();
+  function reveal(rarity) {
     const name = generateCompanyName();
     const pitch = generatePitch(rarity);
     const valuation = generateValuation(rarity);
@@ -390,6 +500,8 @@
     saveState();
     renderStats();
     renderLog();
+
+    playWinChime(rarity);
 
     card.className = 'card landed' + (rarity !== 'common' ? ' rarity-' + rarity : '');
     card.innerHTML = `
@@ -404,6 +516,12 @@
   }
 
   pullBtn.addEventListener('click', pull);
+
+  const muteToggle = document.getElementById('muteToggle');
+  muteToggle.addEventListener('click', () => {
+    soundOn = !soundOn;
+    muteToggle.textContent = soundOn ? '🔊 sound on' : '🔇 sound off';
+  });
 
   logToggle.addEventListener('click', () => {
     const hidden = logPanel.hasAttribute('hidden');
