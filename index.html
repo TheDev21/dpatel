@@ -200,7 +200,7 @@
 
   /* Perfect Excuse thumb */
   .thumb.excuse { background: linear-gradient(160deg, #f3e2c8, #ecd4ae); }
-  .thumb.excuse .word { color: #4a2f14; }
+  .thumb.excuse .word { color: #4a2f14; font-size: clamp(28px, 6vw, 40px); }
   .thumb.excuse .bubble {
     position: absolute; top: 16%; left: 10%;
     background: #fff; border: 2.5px solid var(--ink); border-radius: 14px;
@@ -314,13 +314,11 @@
 
   <div class="grid" id="grid">
 
-    <a class="card" href="games/doomscroll/">
-      <div class="thumb doom">
-        <span class="arrow a1">&#8593;</span>
-        <span class="arrow a2">&#8593;</span>
-        <span class="arrow a3">&#8593;</span>
-        <div class="phone-shape"></div>
-        <div class="word">DOOM<br>SCROLL</div>
+    <a class="card" href="games/perfect-excuse/">
+      <div class="thumb excuse">
+        <div class="bubble">but why?</div>
+        <div class="bubble2">look, Gary...</div>
+        <div class="word">PERFECT<br>EXCUSE</div>
       </div>
     </a>
 
@@ -337,11 +335,13 @@
       </div>
     </a>
 
-    <a class="card" href="games/perfect-excuse/">
-      <div class="thumb excuse">
-        <div class="bubble">but why?</div>
-        <div class="bubble2">look, Gary...</div>
-        <div class="word">PERFECT<br>EXCUSE</div>
+    <a class="card" href="games/doomscroll/">
+      <div class="thumb doom">
+        <span class="arrow a1">&#8593;</span>
+        <span class="arrow a2">&#8593;</span>
+        <span class="arrow a3">&#8593;</span>
+        <div class="phone-shape"></div>
+        <div class="word">DOOM<br>SCROLL</div>
       </div>
     </a>
 
