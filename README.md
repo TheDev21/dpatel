@@ -1,4 +1,4 @@
-# Ctrl+Alt+Defeat
+# Weird Little Games
 
 A collection of original, self-contained browser games. Static site, no
 backend, no build step.
