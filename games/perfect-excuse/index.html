@@ -501,13 +501,36 @@
   // build a full day+scenario-specific challenge: its own rng, boss name,
   // banned word, trivia fact, and a shuffled slice of the rule pool.
   var dailyRules = [];
+  // some rules can be mutually impossible together -- e.g. "no more than
+  // 2 e's" plus rules that force in words like "leap year" or a Chinese
+  // zodiac animal that itself contains e's. this map says which rule ids
+  // can never be picked for the same day+scenario.
+  var ruleConflicts = {
+    noE: ['leapYear', 'chineseZodiac']
+  };
+  function conflicts(id, chosenIds) {
+    var against = ruleConflicts[id] || [];
+    for (var i = 0; i < chosenIds.length; i++) {
+      if (against.indexOf(chosenIds[i]) !== -1) return true;
+      if ((ruleConflicts[chosenIds[i]] || []).indexOf(id) !== -1) return true;
+    }
+    return false;
+  }
+
   function buildChallenge(scenarioId) {
     var rng = mulberry32(dateSeed(todayStr() + '|' + scenarioId));
     var bossName = pick(bossNames, rng);
     var bannedWord = pick(bannedWords, rng);
     var dailyTrivia = pick(triviaFacts, rng);
     var rulePool = buildRulePool(bossName, bannedWord, dailyTrivia);
-    return shuffle(rulePool, rng).slice(0, 16);
+    var shuffled = shuffle(rulePool, rng);
+    var chosen = [];
+    for (var i = 0; i < shuffled.length && chosen.length < 16; i++) {
+      if (!conflicts(shuffled[i].id, chosen.map(function (r) { return r.id; }))) {
+        chosen.push(shuffled[i]);
+      }
+    }
+    return chosen;
   }
 
   // ---------- save/load ----------
