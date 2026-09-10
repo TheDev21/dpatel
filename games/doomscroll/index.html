@@ -163,14 +163,15 @@
     font-family: 'DM Mono', monospace;
     font-size: 1rem;
     font-weight: 500;
-    color: var(--text-dim);
-    background: var(--pink-deep);
+    color: var(--ink);
+    background: linear-gradient(to right, var(--red) var(--fill, 0%), var(--pink-deep) var(--fill, 0%));
     border: 2px solid var(--ink);
     border-radius: 999px;
     padding: 11px 28px;
     cursor: not-allowed;
-    box-shadow: 0 0 0 var(--spread, 0px) rgba(255,45,85, var(--glow, 0));
-    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.15s ease, color 0.15s ease;
+    overflow: hidden;
+    box-shadow: 0 0 0 0 rgba(255,45,85,0);
+    transition: background 0.3s ease, box-shadow 0.2s ease;
   }
   .viral-btn.ready {
     color: #fff;
@@ -179,26 +180,6 @@
     animation: viralGlow 1.4s ease-in-out infinite;
   }
   .viral-btn.ready:hover { background: var(--orange); transform: translateY(-1px); }
-
-  .viral-progress {
-    width: 120px;
-    height: 6px;
-    background: var(--pink-deep);
-    border: 1.5px solid var(--ink);
-    border-radius: 999px;
-    overflow: hidden;
-    margin-top: 4px;
-  }
-  .viral-progress-fill {
-    height: 100%;
-    width: 0%;
-    background: var(--red);
-    transition: width 0.3s ease;
-  }
-  .viral-progress-label {
-    font-size: 0.68rem;
-    color: var(--text-dim);
-  }
 
   @keyframes viralGlow {
     0%, 100% { box-shadow: 0 0 0 0 rgba(255,45,85,0.5); }
@@ -413,10 +394,6 @@
       <div class="clout-row" id="cloutRow">
         <span id="cloutStatus">0 clout &middot; scrolling at normal speed</span>
         <button class="viral-btn" id="viralBtn" disabled>go viral</button>
-        <div class="viral-progress" id="viralProgress">
-          <div class="viral-progress-fill" id="viralProgressFill"></div>
-        </div>
-        <span class="viral-progress-label" id="viralProgressLabel">0%</span>
       </div>
     </div>
   </div>
@@ -681,9 +658,6 @@
   const screenEl = document.getElementById('phone');
   const cloutStatus = document.getElementById('cloutStatus');
   const viralBtn = document.getElementById('viralBtn');
-  const viralProgress = document.getElementById('viralProgress');
-  const viralProgressFill = document.getElementById('viralProgressFill');
-  const viralProgressLabel = document.getElementById('viralProgressLabel');
 
   function renderAppTile(u) {
     const cost = upgradeCost(u);
@@ -749,18 +723,10 @@
     viralBtn.classList.toggle('ready', available >= 1);
     viralBtn.textContent = 'go viral';
     if (available >= 1) {
-      viralBtn.style.removeProperty('--glow');
-      viralBtn.style.removeProperty('--spread');
-      viralProgress.style.display = 'none';
-      viralProgressLabel.style.display = 'none';
+      viralBtn.style.removeProperty('--fill');
     } else {
       const progress = Math.min(1, state.totalDistance / 1000);
-      viralBtn.style.setProperty('--glow', (progress * 0.9).toFixed(2));
-      viralBtn.style.setProperty('--spread', (progress * 14).toFixed(1) + 'px');
-      viralProgress.style.display = 'block';
-      viralProgressLabel.style.display = 'inline';
-      viralProgressFill.style.width = (progress * 100).toFixed(0) + '%';
-      viralProgressLabel.textContent = Math.round(progress * 100) + '% to next viral';
+      viralBtn.style.setProperty('--fill', (progress * 100).toFixed(1) + '%');
     }
   }
 
