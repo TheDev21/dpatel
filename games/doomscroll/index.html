@@ -162,8 +162,8 @@
     border-radius: 7px; font-weight: 500;
   }
 
-  .app-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-  .app-name { font-size: 0.72rem; color: var(--text); line-height: 1.2; }
+  .app-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; overflow: hidden; }
+  .app-name { font-size: 0.72rem; color: var(--text); line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .app-cost { font-size: 0.62rem; color: var(--orange); }
   .app-item:disabled .app-cost { color: var(--text-dim); }
 
@@ -466,12 +466,12 @@
 
   // ---------- upgrades ----------
   const upgrades = [
-    { id: 'thumb',       icon: icons.ghost,    color: 'var(--red)',    name: 'Ghost Scroll',      desc: '+0.1 m/s',   type: 'passive', value: 0.1,  baseCost: 15,    owned: 0, side: 'left'  },
-    { id: 'click',       icon: icons.bolt,     color: 'var(--red)',    name: 'Thumbzilla',        desc: '+0.1 m/tap', type: 'click',   value: 0.1,  baseCost: 60,    owned: 0, side: 'left'  },
-    { id: 'bot',         icon: icons.robot,    color: 'var(--red)',    name: 'Swipe Bot 3000',    desc: '+0.8 m/s',   type: 'passive', value: 0.8,  baseCost: 100,   owned: 0, side: 'left'  },
-    { id: 'farm',        icon: icons.factory,  color: 'var(--red)',    name: 'Scroll Sweatshop',  desc: '+5 m/s',     type: 'passive', value: 5,    baseCost: 600,   owned: 0, side: 'right' },
-    { id: 'ai',          icon: icons.eye,      color: 'var(--red)',    name: 'The Algorithm',     desc: '+30 m/s',    type: 'passive', value: 30,   baseCost: 4000,  owned: 0, side: 'right' },
-    { id: 'singularity', icon: icons.infinity, color: '#14141a',       name: 'The Singularity',   desc: '+150 m/s',   type: 'passive', value: 150,  baseCost: 20000, owned: 0, side: 'right' }
+    { id: 'thumb',       icon: icons.ghost,    color: 'var(--red)',    name: 'Ghost',        desc: '+0.1 m/s',   type: 'passive', value: 0.1,  baseCost: 15,    owned: 0, side: 'left'  },
+    { id: 'click',       icon: icons.bolt,     color: 'var(--red)',    name: 'Thumb',        desc: '+0.1 m/tap', type: 'click',   value: 0.1,  baseCost: 60,    owned: 0, side: 'left'  },
+    { id: 'bot',         icon: icons.robot,    color: 'var(--red)',    name: 'Bot',          desc: '+0.8 m/s',   type: 'passive', value: 0.8,  baseCost: 100,   owned: 0, side: 'left'  },
+    { id: 'farm',        icon: icons.factory,  color: 'var(--red)',    name: 'Scroll',       desc: '+5 m/s',     type: 'passive', value: 5,    baseCost: 600,   owned: 0, side: 'right' },
+    { id: 'ai',          icon: icons.eye,      color: 'var(--red)',    name: 'Algorithm',    desc: '+30 m/s',    type: 'passive', value: 30,   baseCost: 4000,  owned: 0, side: 'right' },
+    { id: 'singularity', icon: icons.infinity, color: '#14141a',       name: 'Singularity',  desc: '+150 m/s',   type: 'passive', value: 150,  baseCost: 20000, owned: 0, side: 'right' }
   ];
 
   // ---------- state ----------
