@@ -376,17 +376,17 @@
     },
     {
       id: 'zodiac',
-      text: 'Must mention today\'s zodiac sign (' + capitalize(zodiacSign(new Date())) + ').',
+      text: 'Must mention today\'s actual zodiac sign. (You\'ll have to know it.)',
       check: function (t) { return t.toLowerCase().includes(zodiacSign(new Date())); }
     },
     {
       id: 'dayOfYear',
-      text: 'Must contain the number ' + dayOfYear(new Date()) + ' (today\'s day-of-year).',
+      text: 'Must contain today\'s day-of-year number (what day number of the year is it today?).',
       check: function (t) { return new RegExp('\\b' + dayOfYear(new Date()) + '\\b').test(t); }
     },
     {
       id: 'leapYear',
-      text: 'Must state whether ' + new Date().getFullYear() + ' is a leap year (it ' + (isLeapYear(new Date().getFullYear()) ? 'is' : 'is not') + ').',
+      text: 'Must state whether ' + new Date().getFullYear() + ' is a leap year (correctly).',
       check: function (t) {
         var word = isLeapYear(new Date().getFullYear()) ? 'is a leap year' : 'is not a leap year';
         return t.toLowerCase().includes(word) || t.toLowerCase().includes('leap year');
@@ -394,7 +394,7 @@
     },
     {
       id: 'weekendWeekday',
-      text: 'Must mention whether today is a weekday or the weekend (today is a ' + (isWeekend(new Date()) ? 'weekend' : 'weekday') + ').',
+      text: 'Must correctly state whether today is a weekday or the weekend.',
       check: function (t) {
         var word = isWeekend(new Date()) ? 'weekend' : 'weekday';
         return t.toLowerCase().includes(word);
@@ -402,12 +402,12 @@
     },
     {
       id: 'chineseZodiac',
-      text: 'Must mention this year\'s Chinese zodiac animal (' + chineseZodiac(new Date().getFullYear()) + ').',
+      text: 'Must mention this year\'s Chinese zodiac animal.',
       check: function (t) { return t.toLowerCase().includes(chineseZodiac(new Date().getFullYear())); }
     },
     {
       id: 'trivia',
-      text: 'Must mention "' + dailyTrivia.answer + '" (' + dailyTrivia.clue + ').',
+      text: 'Must mention the answer to this: ' + dailyTrivia.clue + '.',
       check: function (t) { return t.toLowerCase().includes(dailyTrivia.answer); }
     },
     {
