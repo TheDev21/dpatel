@@ -86,26 +86,41 @@
   }
 
   .cabinet {
+    position: relative;
     background:
+      radial-gradient(circle at 50% 30%, #3d2560, transparent 60%),
       linear-gradient(160deg, #2a1a4a, var(--cabinet-dark) 60%, var(--cabinet-darker));
-    border: 4px solid #c9c0d8;
-    border-image: linear-gradient(160deg, #f4f1fa, #8b82a0, #f4f1fa) 1;
+    border: 5px solid #ddb84a;
     border-radius: 26px;
-    box-shadow: 7px 9px 0 rgba(35,32,29,0.25), inset 0 0 30px rgba(255,46,160,0.08);
-    padding: 16px 16px 20px;
+    box-shadow:
+      0 0 0 3px #1a1030,
+      0 0 22px 3px rgba(255,46,160,0.35),
+      7px 9px 0 rgba(35,32,29,0.3),
+      inset 0 0 30px rgba(255,46,160,0.12);
+    padding: 18px 16px 22px;
+  }
+  .cabinet::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 1.5px solid rgba(255,209,92,0.4);
+    border-radius: 20px;
+    pointer-events: none;
   }
 
-  .marquee { display: flex; justify-content: center; gap: 7px; margin-bottom: 12px; }
+  .marquee { display: flex; justify-content: center; gap: 7px; margin-bottom: 12px; position: relative; z-index: 1; }
   .bulb {
-    width: 9px; height: 9px;
+    width: 10px; height: 10px;
     border-radius: 50%;
-    background: #3a3050;
+    background: #6b4a1a;
     border: 1px solid #16102a;
+    box-shadow: 0 0 4px 1px rgba(255,179,71,0.4);
     transition: background 0.15s ease, box-shadow 0.15s ease;
   }
-  .bulb.lit { background: var(--gold-bright); box-shadow: 0 0 8px 3px rgba(255,209,92,0.9); }
+  .bulb.lit { background: var(--gold-bright); box-shadow: 0 0 10px 4px rgba(255,209,92,0.95); }
 
   .cabinet-title {
+    position: relative; z-index: 1;
     font-family: 'Bebas Neue', sans-serif;
     color: var(--neon-cyan);
     font-size: 1.05rem;
@@ -116,6 +131,7 @@
   }
 
   .reel-window {
+    position: relative; z-index: 1;
     background: var(--cabinet-darker);
     border: 3px solid #4a3d6b;
     border-radius: 16px;
@@ -322,9 +338,9 @@
       <div class="cabinet-title">SERIES SEED</div>
       <div class="reel-window">
         <div class="reels">
-          <div class="reel" id="reel1">🎲</div>
-          <div class="reel" id="reel2">🎲</div>
-          <div class="reel" id="reel3">🎲</div>
+          <div class="reel" id="reel1">🍒</div>
+          <div class="reel" id="reel2">🍒</div>
+          <div class="reel" id="reel3">🍒</div>
         </div>
       </div>
     </div>
@@ -547,7 +563,7 @@
 
   // ---------- reel spin ----------
   const tierOrder = ['common', 'rare', 'legendary', 'mythic'];
-  const tierSymbols = { common: '🎲', rare: '💎', legendary: '👑', mythic: '🦄' };
+  const tierSymbols = { common: '🍒', rare: '💎', legendary: '👑', mythic: '🦄' };
 
   function spinReel(el, ticks, finalSymbol, nearMissIdx, onDone) {
     let tick = 0;
