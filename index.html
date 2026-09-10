@@ -195,27 +195,15 @@
 
   .about {
     max-width: 480px;
-    margin: 64px auto 0;
+    margin: 72px auto 0;
     text-align: center;
     border-top: 2px dashed var(--pink-deep);
-    padding-top: 32px;
-  }
-  .about .about-avatar {
-    width: 56px;
-    height: 56px;
-    border-radius: 50%;
-    background: var(--orange);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
-    border: 3px solid var(--ink);
-    margin: 0 auto 14px;
+    padding-top: 40px;
   }
   .about p {
-    margin: 0 0 16px;
+    margin: 0 0 24px;
     font-size: 13px;
-    line-height: 1.6;
+    line-height: 1.7;
     color: var(--ink);
   }
   .about .links {
@@ -228,8 +216,8 @@
   .about .beer-link {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 6px 20px 6px 6px;
+    gap: 8px;
+    padding: 10px 22px;
     border: 2px solid var(--ink);
     border-radius: 999px;
     background: var(--card-bg);
@@ -238,21 +226,10 @@
     color: var(--ink);
     transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
-  .about .beer-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--orange);
-    border: 2px solid var(--ink);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: transform 0.2s ease;
-  }
   .about .beer-emoji {
-    font-size: 22px;
+    font-size: 18px;
     line-height: 1;
+    transition: transform 0.2s ease;
   }
   .about .beer-link:hover {
     background: var(--orange);
@@ -260,11 +237,16 @@
     transform: translateY(-2px);
     box-shadow: 3px 4px 0 rgba(35,32,29,0.18);
   }
-  .about .beer-link:hover .beer-circle {
-    transform: rotate(-10deg) scale(1.08);
+  .about .beer-link:hover .beer-emoji {
+    transform: rotate(-10deg) scale(1.15);
   }
 
+  footer {
+    margin-top: 40px;
+  }
   footer a {
+    display: inline-block;
+    margin-top: 6px;
     color: var(--ink-dim);
     text-decoration: underline;
   }
@@ -295,10 +277,9 @@
   </div>
 
   <div class="about">
-    <div class="about-avatar">🕹️</div>
     <p>Hi, I'm Dev. I build things for a living and apparently also for free, at 2am, for fun.<br>This is that. No therapist has been consulted.</p>
     <div class="links">
-      <a class="beer-link" href="https://venmo.com/u/yourname" target="_blank" rel="noopener"><span class="beer-circle"><span class="beer-emoji">🍺</span></span> buy me a beer</a>
+      <a class="beer-link" href="https://venmo.com/u/yourname" target="_blank" rel="noopener"><span class="beer-emoji">🍺</span> buy me a beer</a>
     </div>
   </div>
 
