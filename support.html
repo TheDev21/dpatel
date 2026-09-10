@@ -12,7 +12,7 @@
     --pink: #fbeae4;
     --pink-deep: #f6dcd3;
     --ink: #23201d;
-    --ink-dim: #766f68;
+    --ink-dim: #56504a;
     --card-bg: #fffaf7;
     --orange: #ff5a1f;
     --red: #ff2d55;
@@ -54,13 +54,13 @@
   .brand-name span { color: var(--orange); }
 
   h1 { font-size: 34px; margin: 0 0 4px; }
-  .subtitle { font-size: 12.5px; color: var(--ink-dim); margin: 0 0 24px; }
+  .subtitle { font-size: 13px; color: var(--ink-dim); margin: 0 0 24px; }
 
   .tiers {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 10px;
-    margin-bottom: 10px;
+    margin-bottom: 22px;
   }
   .tier {
     display: block;
@@ -69,7 +69,6 @@
     border: 2px solid var(--ink);
     border-radius: 14px;
     padding: 14px 6px;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
   }
   .tier .amount {
     font-family: 'Bebas Neue', sans-serif;
@@ -77,14 +76,29 @@
     line-height: 1;
   }
   .tier .label {
-    font-size: 10px;
-    opacity: 0.9;
+    font-size: 10.5px;
+    opacity: 0.95;
     margin-top: 4px;
   }
-  .tier:hover {
-    background: var(--red);
-    transform: translateY(-2px);
-    box-shadow: 3px 4px 0 rgba(35,32,29,0.18);
+
+  .qr-wrap {
+    background: var(--pink-deep);
+    border: 2px solid var(--ink);
+    border-radius: 16px;
+    padding: 18px;
+    margin-bottom: 10px;
+  }
+  .qr-wrap img {
+    display: block;
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto 12px;
+    border-radius: 8px;
+    background: #fff;
+  }
+  .qr-wrap .qr-label {
+    font-size: 12.5px;
+    color: var(--ink-dim);
   }
 
   .wide-btn {
@@ -96,25 +110,16 @@
     border-radius: 14px;
     padding: 12px;
     font-size: 13px;
-    margin-bottom: 10px;
+    margin-top: 10px;
     cursor: pointer;
     font-family: 'DM Mono', monospace;
     transition: background 0.15s ease, transform 0.15s ease;
   }
-  .wide-btn:hover { background: var(--pink-deep); transform: translateY(-1px); }
-
-  .venmo-note {
-    font-size: 11px;
-    color: var(--ink-dim);
-    line-height: 1.6;
-    margin: 18px 0 0;
-    padding-top: 16px;
-    border-top: 1px dashed var(--pink-deep);
-  }
+  .wide-btn:hover { background: var(--pink); transform: translateY(-1px); }
 
   .back {
     display: inline-block;
-    margin-top: 18px;
+    margin-top: 22px;
     font-size: 11.5px;
     color: var(--ink-dim);
     text-decoration: underline;
@@ -133,24 +138,26 @@
   <p class="subtitle">Keeps the servers on and the ideas weirder.</p>
 
   <div class="tiers">
-    <a class="tier" href="https://paypal.me/yourname/3" target="_blank" rel="noopener">
+    <div class="tier">
       <div class="amount">$3</div>
-      <div class="label">a beer</div>
-    </a>
-    <a class="tier" href="https://paypal.me/yourname/9" target="_blank" rel="noopener">
+      <div class="label">a can</div>
+    </div>
+    <div class="tier">
       <div class="amount">$9</div>
-      <div class="label">3 beers</div>
-    </a>
-    <a class="tier" href="https://paypal.me/yourname/15" target="_blank" rel="noopener">
+      <div class="label">a six-pack</div>
+    </div>
+    <div class="tier">
       <div class="amount">$15</div>
-      <div class="label">a round</div>
-    </a>
+      <div class="label">a case</div>
+    </div>
   </div>
 
-  <a class="wide-btn" href="https://paypal.me/yourname" target="_blank" rel="noopener">Custom amount (PayPal)</a>
-  <a class="wide-btn" href="https://venmo.com/u/yourname" target="_blank" rel="noopener">Pay with Venmo instead</a>
+  <div class="qr-wrap">
+    <img src="assets/venmo-qr.png" alt="Venmo QR code">
+    <div class="qr-label">scan with the Venmo app</div>
+  </div>
 
-  <p class="venmo-note">Venmo doesn't support pre-filled amounts on the web &mdash; you'll pick the amount yourself once you're there.</p>
+  <a class="wide-btn" href="https://venmo.com/u/yourname" target="_blank" rel="noopener">or open Venmo instead</a>
 
   <a class="back" href="index.html">&larr; nah, back to the games</a>
 </div>
