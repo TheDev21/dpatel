@@ -195,7 +195,11 @@
 
   .apps-column { width: 310px; height: 800px; display: flex; align-items: center; }
 
-  .side-header { text-align: center; margin-bottom: 1.1rem; }
+  .side-header { text-align: center; margin-bottom: 0.6rem; }
+  .side-header .tagline { margin-bottom: 0.5rem; }
+  .side-header .hero-stat { margin-bottom: 0.3rem; }
+  .side-header .hero-rule { margin: 6px auto 4px; }
+  .side-header .clout-row { margin-top: 6px; gap: 5px; }
   .apps-list {
     display: flex; flex-direction: column; gap: 34px; width: 100%;
   }
@@ -831,7 +835,7 @@
   function fitToScreen() {
     fitWrapper.style.transform = 'scale(1)';
     const rect = fitWrapper.getBoundingClientRect();
-    const margin = 40;
+    const margin = 16;
     const scaleX = (window.innerWidth - margin * 2) / rect.width;
     const scaleY = (window.innerHeight - margin * 2) / rect.height;
     const scale = Math.min(scaleX, scaleY, 1.9);
