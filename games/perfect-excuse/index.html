@@ -419,8 +419,7 @@
     picker.style.display = 'none';
     gameEl.classList.add('show');
     briefEl.innerHTML =
-      'You need to <b>' + currentScenario.intro + ' ' + currentScenario.target + '</b> why you did the thing. ' +
-      'Write an excuse below. Rules will appear as you go — once a rule shows up, it has to stay true.<br>' +
+      'Write an excuse for <b>' + currentScenario.target + '</b>.<br>' +
       '<button class="switch-btn" id="switchBtn">switch scenario</button>';
     document.getElementById('switchBtn').addEventListener('click', function () {
       picker.style.display = 'block';
