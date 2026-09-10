@@ -182,31 +182,20 @@
   .thumb.stack .block {
     position: absolute; border: 2.5px solid var(--ink); border-radius: 4px;
   }
-  .thumb.stack .b1 { width: 60px; height: 16px; bottom: 14%; left: 20%; background: var(--olive); transform: rotate(-2deg); }
-  .thumb.stack .b2 { width: 50px; height: 16px; bottom: 28%; left: 26%; background: var(--gold); transform: rotate(3deg); }
-  .thumb.stack .b3 { width: 42px; height: 16px; bottom: 42%; left: 30%; background: var(--red); transform: rotate(-5deg); }
-  .thumb.stack .b4 { width: 30px; height: 16px; bottom: 55%; left: 36%; background: var(--card-bg); transform: rotate(7deg); }
+  .thumb.stack .b1 { width: 60px; height: 16px; bottom: 10%; left: 20%; background: var(--olive); transform: rotate(-2deg); }
+  .thumb.stack .b2 { width: 50px; height: 16px; bottom: 23%; left: 26%; background: var(--gold); transform: rotate(3deg); }
+  .thumb.stack .b3 { width: 42px; height: 16px; bottom: 36%; left: 30%; background: var(--red); transform: rotate(-5deg); }
+  .thumb.stack .b4 { width: 30px; height: 16px; bottom: 47%; left: 36%; background: var(--card-bg); transform: rotate(7deg); }
 
   .card-foot {
-    padding: 12px 16px 16px;
+    padding: 14px 16px;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-  }
-  .card-foot p {
-    margin: 0;
-    font-size: 12.5px;
-    line-height: 1.5;
-    color: var(--ink-dim);
-    flex: 1;
   }
 
   .play-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    align-self: flex-start;
     padding: 7px 14px;
     border: 2px solid var(--ink);
     border-radius: 999px;
@@ -222,7 +211,6 @@
 
   .soon {
     display: inline-block;
-    align-self: flex-start;
     padding: 7px 14px;
     border: 2px dashed var(--ink-dim);
     border-radius: 999px;
@@ -260,7 +248,6 @@
         <div class="word">DOOM<br>SCROLL</div>
       </div>
       <div class="card-foot">
-        <p>An idle clicker about infinite scroll. Tap the phone or buy apps that scroll for you &mdash; distance measured against real landmarks, all the way to the Moon.</p>
         <span class="play-btn">Play</span>
       </div>
     </a>
@@ -272,7 +259,6 @@
         <div class="word">PERFECT<br>EXCUSE</div>
       </div>
       <div class="card-foot">
-        <p>Type your way out of trouble while the rules keep getting worse. Password Game, but it's your alibi.</p>
         <span class="soon">Coming soon</span>
       </div>
     </div>
@@ -285,21 +271,19 @@
         <div class="word">DAILY VIBE<br>CHECK</div>
       </div>
       <div class="card-foot">
-        <p>One mystery puzzle a day, same for everyone. Guess it, track your streak, brag in emoji squares.</p>
         <span class="soon">Coming soon</span>
       </div>
     </div>
 
     <div class="card disabled">
       <div class="thumb stack">
+        <div class="word" style="position:absolute; top:14%; left:50%; transform:translateX(-50%);">STACK THE<br>NONSENSE</div>
         <div class="block b1"></div>
         <div class="block b2"></div>
         <div class="block b3"></div>
         <div class="block b4"></div>
-        <div class="word">STACK THE<br>NONSENSE</div>
       </div>
       <div class="card-foot">
-        <p>Stack increasingly absurd objects as high as physics will allow. It will not allow much.</p>
         <span class="soon">Coming soon</span>
       </div>
     </div>
