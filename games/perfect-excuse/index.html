@@ -570,7 +570,10 @@
   function renderRules(text) {
     // reveal rules one at a time, in order, as each prior rule is satisfied.
     // once a rule has been revealed it stays visible even if broken again.
-    var results = dailyRules.map(function (r) { return { rule: r, pass: r.check(text) }; });
+    // an empty box can't pass anything -- several rules (no banned word,
+    // no "e" more than twice, etc.) are trivially true on zero characters.
+    var hasText = text.trim().length > 0;
+    var results = dailyRules.map(function (r) { return { rule: r, pass: hasText && r.check(text) }; });
 
     var consecPass = 0;
     while (consecPass < results.length && results[consecPass].pass) consecPass++;
