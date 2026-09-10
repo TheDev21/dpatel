@@ -541,7 +541,7 @@
   ];
 
   // ---------- state ----------
-  let state = { totalDistance: 0, sp: 0, unlocked: 0, clout: 0 };
+  let state = { totalDistance: 0, sp: 0, unlocked: 0, clout: 0, prestigeCount: 0 };
 
   function loadState() {
     try {
@@ -551,6 +551,7 @@
         state.sp = saved.sp || 0;
         state.unlocked = saved.unlocked || 0;
         state.clout = saved.clout || 0;
+        state.prestigeCount = saved.prestigeCount || 0;
         upgrades.forEach(u => { u.owned = (saved.upgrades && saved.upgrades[u.id]) || 0; });
       }
     } catch (e) {}
@@ -564,6 +565,7 @@
       sp: state.sp,
       unlocked: state.unlocked,
       clout: state.clout,
+      prestigeCount: state.prestigeCount,
       upgrades: upgradesOwned
     }));
   }
@@ -605,7 +607,8 @@
   }
 
   function upgradeCost(u) {
-    return Math.ceil(u.baseCost * Math.pow(1.15, u.owned));
+    const prestigeScale = Math.pow(1.2, state.prestigeCount);
+    return Math.ceil(u.baseCost * prestigeScale * Math.pow(1.15, u.owned));
   }
 
   // ---------- toast ----------
@@ -723,6 +726,7 @@
     const gained = cloutAvailable();
     if (gained < 1) return;
     state.clout += gained;
+    state.prestigeCount += 1;
     state.totalDistance = 0;
     state.sp = 0;
     state.unlocked = 0;
