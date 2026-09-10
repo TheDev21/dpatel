@@ -138,8 +138,64 @@
   /* Startup Slot Machine thumb */
   .thumb.unicorn { background: linear-gradient(160deg, #2a1a4a, #1a1030 65%, #100a1f); flex-direction: column; }
   .thumb.unicorn .word {
-    color: #35e6ff; font-size: clamp(26px, 5.5vw, 38px);
+    color: #35e6ff; font-size: clamp(22px, 5vw, 32px);
     text-shadow: 0 0 10px rgba(53,230,255,0.8), 0 0 2px #fff;
+    margin-top: 6px;
+  }
+  .thumb.unicorn .machine {
+    position: relative;
+    width: 92px;
+    height: 78px;
+  }
+  .thumb.unicorn .machine-body {
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, #3d2560, #1a1030 70%);
+    border: 3px solid #ddb84a;
+    border-radius: 12px;
+    box-shadow: 0 0 10px 1px rgba(255,46,160,0.35);
+  }
+  .thumb.unicorn .machine-bulbs {
+    position: absolute; top: -5px; left: 0; right: 0;
+    display: flex; justify-content: center; gap: 5px;
+  }
+  .thumb.unicorn .machine-bulbs span {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: #ffd15c;
+    box-shadow: 0 0 5px 2px rgba(255,209,92,0.9);
+  }
+  .thumb.unicorn .machine-window {
+    position: absolute; top: 12px; left: 8px; right: 22px; bottom: 10px;
+    background: #100a1f;
+    border: 2px solid #4a3d6b;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+  }
+  .thumb.unicorn .machine-window span {
+    width: 15px; height: 15px;
+    background: linear-gradient(160deg, #fff, #d6cee6);
+    border: 1px solid #8b82a0;
+    border-radius: 3px;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .thumb.unicorn .machine-lever {
+    position: absolute; right: -9px; top: 10px; bottom: 14px;
+    width: 4px;
+    background: linear-gradient(90deg, #6b6178, #d8d3ce, #6b6178);
+    border: 1px solid #16102a;
+    border-radius: 2px;
+  }
+  .thumb.unicorn .machine-knob {
+    position: absolute; right: -14px; top: 4px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 28%, #ff8f6b, #ff2d55 65%, #b3123a);
+    border: 1.5px solid #16102a;
   }
 
   /* Perfect Excuse thumb */
@@ -270,6 +326,13 @@
 
     <a class="card" href="games/startup-slot-machine/">
       <div class="thumb unicorn">
+        <div class="machine">
+          <div class="machine-bulbs"><span></span><span></span><span></span><span></span></div>
+          <div class="machine-body"></div>
+          <div class="machine-window"><span>🍒</span><span>💎</span><span>7</span></div>
+          <div class="machine-lever"></div>
+          <div class="machine-knob"></div>
+        </div>
         <div class="word">STARTUP<br>SLOT MACHINE</div>
       </div>
     </a>
