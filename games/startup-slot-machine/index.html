@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Unicorn Machine</title>
+<title>Startup Slot Machine</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -17,6 +17,7 @@
     --orange: #ff5a1f;
     --red: #ff2d55;
     --gold: #c98f00;
+    --gold-bright: #ffcf6b;
     --common: #9a9a9a;
     --rare: #3d95ce;
     --legendary: var(--orange);
@@ -58,7 +59,7 @@
 
   h1 { font-size: clamp(2.4rem, 7vw, 3.2rem); margin: 0 0 4px; }
   h1 span { color: var(--orange); }
-  .tagline { font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 26px; }
+  .tagline { font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 22px; }
 
   .stats-row {
     display: flex;
@@ -70,14 +71,154 @@
   }
   .stats-row b { color: var(--ink); }
 
+  /* ---------- the cabinet ---------- */
+  .cabinet-wrap {
+    position: relative;
+    padding-right: 54px;
+    margin-bottom: 20px;
+  }
+
+  .cabinet {
+    background: linear-gradient(160deg, var(--red), #c81f42);
+    border: 4px solid var(--ink);
+    border-radius: 26px;
+    box-shadow: 7px 9px 0 rgba(35,32,29,0.18);
+    padding: 16px 16px 20px;
+  }
+
+  .marquee {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .bulb {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.35);
+    border: 1px solid rgba(35,32,29,0.4);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+  }
+  .bulb.lit {
+    background: var(--gold-bright);
+    box-shadow: 0 0 6px 2px rgba(255,207,107,0.8);
+  }
+
+  .cabinet-title {
+    font-family: 'Bebas Neue', sans-serif;
+    color: #fff;
+    font-size: 1rem;
+    letter-spacing: 0.15em;
+    text-align: center;
+    margin-bottom: 10px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+  }
+
+  .reel-window {
+    background: #1a1418;
+    border: 3px solid var(--ink);
+    border-radius: 16px;
+    padding: 14px;
+    position: relative;
+  }
+  .reels { display: flex; gap: 10px; justify-content: center; }
+  .reel {
+    width: 74px;
+    height: 74px;
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    background: var(--card-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    overflow: hidden;
+  }
+  .reel.stopped { background: #fff; }
+  .reel-symbol { animation: spinPop 0.08s ease-out; }
+  @keyframes spinPop {
+    0% { transform: scale(0.7) rotate(-8deg); opacity: 0.4; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  }
+  .payline {
+    position: absolute;
+    left: 10px; right: 10px; top: 50%;
+    height: 2px;
+    background: rgba(255,45,85,0.6);
+    transform: translateY(-1px);
+    pointer-events: none;
+  }
+
+  /* ---------- lever ---------- */
+  .lever-wrap {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lever-base {
+    position: absolute;
+    right: 6px;
+    top: 20%;
+    bottom: 20%;
+    width: 12px;
+    background: var(--ink);
+    border-radius: 6px;
+  }
+  .lever {
+    position: absolute;
+    right: 2px;
+    top: 20%;
+    width: 20px;
+    height: 60%;
+    cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
+    display: block;
+  }
+  .lever-rod {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 26px;
+    width: 6px;
+    background: linear-gradient(90deg, #8a8580, #d8d3ce, #8a8580);
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
+    transform: translateX(-50%);
+    transform-origin: bottom center;
+    transition: transform 0.15s ease-out;
+  }
+  .lever-knob {
+    position: absolute;
+    left: 50%;
+    top: -6px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #ff7a4d, var(--red) 70%);
+    border: 2.5px solid var(--ink);
+    transform: translateX(-50%);
+    transition: transform 0.15s ease-out;
+  }
+  .lever:hover .lever-knob:not(.pulling) { transform: translateX(-50%) scale(1.06); }
+  .lever.pulling .lever-rod { transform: translateX(-50%) rotate(24deg); }
+  .lever.pulling .lever-knob { transform: translateX(-50%) translate(16px, 34px); }
+
   .card {
     background: var(--card-bg);
     border: 3px solid var(--ink);
     border-radius: 22px;
     box-shadow: 6px 7px 0 rgba(35,32,29,0.12);
-    padding: 30px 26px;
-    margin-bottom: 22px;
-    min-height: 220px;
+    padding: 24px 26px;
+    margin-bottom: 20px;
+    min-height: 130px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -95,31 +236,7 @@
     0%, 100% { box-shadow: 6px 7px 0 rgba(255,45,85,0.5), 0 0 0 0 rgba(255,45,85,0.4); }
     50% { box-shadow: 6px 7px 0 rgba(255,45,85,0.5), 0 0 0 10px rgba(255,45,85,0); }
   }
-
-  .card.spinning { background: var(--pink-deep); }
-
-  .reels { display: flex; gap: 12px; justify-content: center; }
-  .reel {
-    width: 76px;
-    height: 76px;
-    border: 2.5px solid var(--ink);
-    border-radius: 16px;
-    background: var(--card-bg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2.3rem;
-    overflow: hidden;
-  }
-  .reel.stopped { background: #fff; }
-  .reel-symbol { animation: spinPop 0.08s ease-out; }
-  @keyframes spinPop {
-    0% { transform: scale(0.7) rotate(-8deg); opacity: 0.4; }
-    100% { transform: scale(1) rotate(0deg); opacity: 1; }
-  }
-  .card.landed {
-    animation: landPop 0.3s ease-out;
-  }
+  .card.landed { animation: landPop 0.3s ease-out; }
   @keyframes landPop {
     0% { transform: scale(0.92); }
     60% { transform: scale(1.03); }
@@ -145,47 +262,24 @@
   .rarity-badge.legendary { background: var(--legendary); }
   .rarity-badge.mythic { background: var(--mythic); }
 
-  .empty-state { color: var(--ink-dim); font-size: 0.9rem; }
+  .empty-state { color: var(--ink-dim); font-size: 0.85rem; }
 
   .company-name {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.4rem;
+    font-size: 2.2rem;
     line-height: 1;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     word-break: break-word;
   }
-  .pitch-line {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    margin-bottom: 14px;
-  }
-  .valuation {
-    font-size: 0.78rem;
-    color: var(--gold);
-    font-weight: 500;
-  }
+  .pitch-line { font-size: 0.9rem; line-height: 1.5; margin-bottom: 12px; }
+  .valuation { font-size: 0.76rem; color: var(--gold); font-weight: 500; }
 
-  .pull-btn {
-    display: block;
-    width: 100%;
-    background: var(--red);
-    color: #fff;
-    font-family: 'DM Mono', monospace;
-    font-weight: 500;
-    font-size: 1.05rem;
-    border: 2px solid var(--ink);
-    border-radius: 999px;
-    padding: 15px;
-    cursor: pointer;
-    transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
-  }
-  .pull-btn:hover:not(:disabled) { background: var(--orange); transform: translateY(-2px); box-shadow: 3px 4px 0 rgba(35,32,29,0.18); }
-  .pull-btn:active:not(:disabled) { transform: translateY(0); }
-  .pull-btn:disabled { background: var(--common); cursor: default; }
+  .hint { font-size: 0.78rem; color: var(--ink-dim); margin-bottom: 16px; }
+  .hint b { color: var(--ink); }
 
   .log-toggle {
     display: inline-block;
-    margin-top: 16px;
+    margin: 0 6px;
     font-size: 0.78rem;
     color: var(--ink-dim);
     text-decoration: underline;
@@ -207,11 +301,7 @@
     padding: 12px 16px;
   }
   .log-panel[hidden] { display: none; }
-  .log-item {
-    padding: 8px 0;
-    border-bottom: 1px dashed var(--pink-deep);
-    font-size: 0.78rem;
-  }
+  .log-item { padding: 8px 0; border-bottom: 1px dashed var(--pink-deep); font-size: 0.78rem; }
   .log-item:last-child { border-bottom: none; }
   .log-item .log-name { font-weight: 600; }
   .log-item .log-tag {
@@ -235,7 +325,7 @@
 <a class="back-link" href="../../index.html">&larr; all games</a>
 
 <div class="wrap">
-  <h1>Unicorn <span>Machine</span></h1>
+  <h1>Startup Slot <span>Machine</span></h1>
   <p class="tagline">pull the lever. birth a startup. no investors were harmed.</p>
 
   <div class="stats-row">
@@ -244,11 +334,39 @@
     <span><b id="statMythic">0</b> mythic</span>
   </div>
 
-  <div class="card" id="card">
-    <div class="empty-state" id="emptyState">pull the lever to generate your first idea</div>
+  <div class="cabinet-wrap">
+    <div class="cabinet">
+      <div class="marquee" id="marquee">
+        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+        <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+        <span class="bulb"></span>
+      </div>
+      <div class="cabinet-title">SERIES SEED</div>
+      <div class="reel-window">
+        <div class="reels">
+          <div class="reel" id="reel1">🎲</div>
+          <div class="reel" id="reel2">🎲</div>
+          <div class="reel" id="reel3">🎲</div>
+        </div>
+        <div class="payline"></div>
+      </div>
+    </div>
+
+    <div class="lever-wrap">
+      <div class="lever-base"></div>
+      <button class="lever" id="lever" aria-label="pull the lever">
+        <div class="lever-rod" id="leverRod"></div>
+        <div class="lever-knob" id="leverKnob"></div>
+      </button>
+    </div>
   </div>
 
-  <button class="pull-btn" id="pullBtn">🎰 pull the lever</button>
+  <p class="hint" id="hint">grab the <b>lever</b> and pull down to spin</p>
+
+  <div class="card" id="card">
+    <div class="empty-state" id="emptyState">no pitch yet. give it a pull.</div>
+  </div>
+
   <button class="log-toggle" id="logToggle">show pitch history</button>
   <button class="log-toggle" id="muteToggle">🔊 sound on</button>
 
@@ -300,15 +418,9 @@
   }
 
   function generatePitch(rarity) {
-    if (rarity === 'mythic') {
-      return randomOf(mythicPitches);
-    }
-    if (rarity === 'legendary') {
-      return `The ${randomOf(adjectives)} Economy for ${randomOf(nouns2)}s.`;
-    }
-    if (rarity === 'rare') {
-      return `An AI-powered ${randomOf(nouns2).toLowerCase()} that ${randomOf(verbs)}.`;
-    }
+    if (rarity === 'mythic') return randomOf(mythicPitches);
+    if (rarity === 'legendary') return `The ${randomOf(adjectives)} Economy for ${randomOf(nouns2)}s.`;
+    if (rarity === 'rare') return `An AI-powered ${randomOf(nouns2).toLowerCase()} that ${randomOf(verbs)}.`;
     return `${randomOf(brands)}, but for ${randomOf(nouns)}.`;
   }
 
@@ -327,13 +439,13 @@
 
   function loadState() {
     try {
-      const saved = JSON.parse(localStorage.getItem('unicorn-machine-save'));
+      const saved = JSON.parse(localStorage.getItem('startup-slot-machine-save'));
       if (saved) state = Object.assign(state, saved);
     } catch (e) {}
   }
 
   function saveState() {
-    localStorage.setItem('unicorn-machine-save', JSON.stringify(state));
+    localStorage.setItem('startup-slot-machine-save', JSON.stringify(state));
   }
 
   loadState();
@@ -345,7 +457,9 @@
   const statMythic = document.getElementById('statMythic');
   const logPanel = document.getElementById('logPanel');
   const logToggle = document.getElementById('logToggle');
-  const pullBtn = document.getElementById('pullBtn');
+  const lever = document.getElementById('lever');
+  const marquee = document.getElementById('marquee');
+  const hint = document.getElementById('hint');
 
   function renderStats() {
     statTotal.textContent = state.total;
@@ -365,6 +479,25 @@
         <span>${item.pitch}</span>
       </div>
     `).join('');
+  }
+
+  function setBulbs(litCount) {
+    const bulbs = marquee.querySelectorAll('.bulb');
+    bulbs.forEach((b, i) => b.classList.toggle('lit', i < litCount));
+  }
+  let marqueeTimer = null;
+  function chaseBulbs() {
+    const bulbs = marquee.querySelectorAll('.bulb');
+    let i = 0;
+    marqueeTimer = setInterval(() => {
+      bulbs.forEach((b, j) => b.classList.toggle('lit', j === i % bulbs.length));
+      i++;
+    }, 90);
+  }
+  function stopBulbChase(allLit) {
+    if (marqueeTimer) clearInterval(marqueeTimer);
+    marqueeTimer = null;
+    marquee.querySelectorAll('.bulb').forEach(b => b.classList.toggle('lit', allLit));
   }
 
   // ---------- sound (WebAudio, no files) ----------
@@ -391,12 +524,7 @@
   function playWinChime(rarity) {
     if (!soundOn) return;
     ensureAudio();
-    const chords = {
-      mythic: [523, 659, 784, 1046],
-      legendary: [523, 659, 784],
-      rare: [440, 554],
-      common: [392]
-    };
+    const chords = { mythic: [523, 659, 784, 1046], legendary: [523, 659, 784], rare: [440, 554], common: [392] };
     const freqs = chords[rarity] || chords.common;
     freqs.forEach((f, i) => {
       const osc = audioCtx.createOscillator();
@@ -426,6 +554,21 @@
     gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.26);
     osc.stop(t + 0.27);
   }
+  function playLeverClunk() {
+    if (!soundOn) return;
+    ensureAudio();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(80, audioCtx.currentTime + 0.12);
+    gain.gain.value = 0.08;
+    osc.connect(gain).connect(audioCtx.destination);
+    const t = audioCtx.currentTime;
+    osc.start(t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.13);
+    osc.stop(t + 0.14);
+  }
 
   // ---------- reel spin ----------
   const tierOrder = ['common', 'rare', 'legendary', 'mythic'];
@@ -433,6 +576,7 @@
 
   function spinReel(el, ticks, finalSymbol, nearMissIdx, onDone) {
     let tick = 0;
+    el.classList.remove('stopped');
     function step() {
       if (tick >= ticks) {
         el.innerHTML = `<span class="reel-symbol">${finalSymbol}</span>`;
@@ -457,23 +601,25 @@
     step();
   }
 
+  let spinning = false;
+
   function pull() {
-    if (pullBtn.disabled) return;
-    pullBtn.disabled = true;
-    pullBtn.textContent = 'spinning...';
+    if (spinning) return;
+    spinning = true;
+    lever.classList.add('pulling');
+    playLeverClunk();
+    hint.textContent = 'spinning...';
+    chaseBulbs();
+
+    setTimeout(() => { lever.classList.remove('pulling'); }, 260);
 
     const rarity = rollRarity();
     const targetSymbol = tierSymbols[rarity];
     const targetIdx = tierOrder.indexOf(rarity);
 
-    card.className = 'card spinning';
-    card.innerHTML = `
-      <div class="reels">
-        <div class="reel" id="reel1"></div>
-        <div class="reel" id="reel2"></div>
-        <div class="reel" id="reel3"></div>
-      </div>
-    `;
+    card.className = 'card';
+    card.innerHTML = '<div class="empty-state">...</div>';
+
     const reel1 = document.getElementById('reel1');
     const reel2 = document.getElementById('reel2');
     const reel3 = document.getElementById('reel3');
@@ -502,6 +648,10 @@
     renderLog();
 
     playWinChime(rarity);
+    stopBulbChase(rarity === 'legendary' || rarity === 'mythic');
+    if (rarity === 'common' || rarity === 'rare') {
+      setTimeout(() => setBulbs(0), 900);
+    }
 
     card.className = 'card landed' + (rarity !== 'common' ? ' rarity-' + rarity : '');
     card.innerHTML = `
@@ -511,11 +661,11 @@
       <div class="valuation">valued at ${valuation}</div>
     `;
 
-    pullBtn.disabled = false;
-    pullBtn.textContent = '🎰 pull the lever';
+    spinning = false;
+    hint.innerHTML = 'grab the <b>lever</b> and pull down to spin';
   }
 
-  pullBtn.addEventListener('click', pull);
+  lever.addEventListener('click', pull);
 
   const muteToggle = document.getElementById('muteToggle');
   muteToggle.addEventListener('click', () => {

@@ -18,6 +18,11 @@ backend, no build step.
   carries over between visits. Includes a prestige loop ("go viral"):
   reset your run once you've scrolled far enough for permanent, stacking
   scroll-speed bonuses ("clout").
+- **Startup Slot Machine** (`games/startup-slot-machine/`) — pull the
+  lever, get a randomly generated absurd startup pitch with a rarity
+  tier (common/rare/legendary/mythic). Three-reel spin with near-miss
+  tension and WebAudio-generated sound effects (no audio files). Lifetime
+  pull stats and pitch history saved to `localStorage`.
 - Perfect Excuse, Daily Vibe Check, Stack the Nonsense — planned, not yet
   built.
 
