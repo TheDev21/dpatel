@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Weird Little Games</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --ink: #23201d;
+    --ink-dim: #766f68;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--pink);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    padding: 40px 24px 100px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: var(--orange); }
+
+  .wrap {
+    max-width: 640px;
+    margin: 0 auto;
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    padding: 36px;
+    box-shadow: 5px 5px 0 rgba(35,32,29,0.12);
+  }
+
+  .back {
+    display: inline-block;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    text-decoration: none;
+  }
+  .back:hover { color: var(--orange); }
+
+  h1 { font-size: 42px; margin: 0 0 4px; }
+  .updated { font-size: 11px; color: var(--ink-dim); margin-bottom: 28px; }
+
+  h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    margin: 28px 0 8px;
+  }
+  p, li { font-size: 13.5px; line-height: 1.6; color: var(--ink); }
+  ul { padding-left: 20px; margin: 8px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="index.html">&larr; back to the games</a>
+  <h1>Privacy Policy</h1>
+  <div class="updated">short version: there isn't much to track, and I don't.</div>
+
+  <h2>What this site collects</h2>
+  <p>Nothing, on my end. This is a static site — plain HTML, CSS, and JavaScript served from a file host. There's no server-side code, no database, no analytics script, and no ad network here.</p>
+
+  <h2>Game progress (localStorage)</h2>
+  <p>Some games save your progress — high scores, upgrades, streaks — directly in your browser using <code>localStorage</code>. That data:</p>
+  <ul>
+    <li>never leaves your device or gets sent to me</li>
+    <li>is only readable by pages on this site</li>
+    <li>disappears if you clear your browser's site data</li>
+  </ul>
+
+  <h2>Hosting logs</h2>
+  <p>Whoever hosts this site (a static host like GitHub Pages or Vercel) may keep standard server logs — IP address, browser type, timestamp — the same way almost any web host does. I don't have access to personally identify you from that, and I don't use it for anything.</p>
+
+  <h2>Third-party links</h2>
+  <p>Links off this site (like a donation link) go to other services with their own privacy policies. Once you click through, that's between you and them.</p>
+
+  <h2>Changes</h2>
+  <p>If this policy ever changes, this page will change with it. No notifications, no email lists — just check back if you're curious.</p>
+</div>
+</body>
+</html>
