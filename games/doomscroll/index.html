@@ -34,6 +34,53 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    width: 55vw;
+    height: 55vw;
+    max-width: 700px;
+    max-height: 700px;
+    border-radius: 50%;
+    filter: blur(90px);
+    z-index: 0;
+    pointer-events: none;
+  }
+  body::before {
+    top: -15%;
+    left: -15%;
+    background: radial-gradient(circle, rgba(255,45,85,0.16), transparent 70%);
+  }
+  body::after {
+    bottom: -15%;
+    right: -15%;
+    background: radial-gradient(circle, rgba(255,90,31,0.16), transparent 70%);
+  }
+
+  .wordmark-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .wordmark-bg span {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: min(38vw, 520px);
+    color: rgba(255,255,255,0.025);
+    white-space: nowrap;
+    letter-spacing: 0.02em;
+    transform: rotate(-6deg);
   }
 
   #fitWrapper {
@@ -262,6 +309,7 @@
 <body>
 
 <div class="bg-particles" id="bgParticles"></div>
+<div class="wordmark-bg"><span>DOOMSCROLL DOOMSCROLL</span></div>
 
 <div id="fitWrapper">
   <h1>Doomscroll</h1>
@@ -643,7 +691,7 @@
 
   // ---------- ambient particles ----------
   const particleContainer = document.getElementById('bgParticles');
-  for (let i = 0; i < 16; i++) {
+  for (let i = 0; i < 40; i++) {
     const p = document.createElement('div');
     p.className = 'particle';
     p.style.left = Math.random() * 100 + '%';
@@ -670,7 +718,7 @@
     const margin = 40;
     const scaleX = (window.innerWidth - margin * 2) / rect.width;
     const scaleY = (window.innerHeight - margin * 2) / rect.height;
-    const scale = Math.min(scaleX, scaleY, 1.1);
+    const scale = Math.min(scaleX, scaleY, 1.6);
     fitWrapper.style.transform = `scale(${scale})`;
   }
   window.addEventListener('resize', fitToScreen);
