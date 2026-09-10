@@ -163,16 +163,18 @@
     font-family: 'DM Mono', monospace;
     font-size: 1rem;
     font-weight: 500;
-    color: #fff;
-    background: var(--red);
+    color: var(--text-dim);
+    background: var(--pink-deep);
     border: 2px solid var(--ink);
     border-radius: 999px;
     padding: 11px 28px;
-    cursor: default;
+    cursor: not-allowed;
     box-shadow: 0 0 0 var(--spread, 0px) rgba(255,45,85, var(--glow, 0));
-    transition: transform 0.15s ease, box-shadow 0.2s ease;
+    transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.15s ease, color 0.15s ease;
   }
   .viral-btn.ready {
+    color: #fff;
+    background: var(--red);
     cursor: pointer;
     animation: viralGlow 1.4s ease-in-out infinite;
   }
