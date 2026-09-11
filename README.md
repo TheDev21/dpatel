@@ -13,6 +13,12 @@ backend, no build step.
 
 ## Games
 
+- **π** (`games/pi/`) — not a game. The thumbnail is just the symbol.
+  Clicking it opens a page that is just the digits of pi, generated
+  live via an unbounded spigot algorithm (arbitrary-precision BigInt
+  math, not a hardcoded string), computed in small batches as you
+  scroll so it never stops and never repeats. No point. No score.
+  Nothing to win.
 - **Where Can I Go?** (`games/where-can-i-go/`) — not really a game, more a
   toy: pick a budget, a departure city, and a trip type (beach/city/
   adventure/food/culture/surprise me), and it shows real destinations

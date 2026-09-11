@@ -211,6 +211,15 @@
     border: 1.5px solid #16102a;
   }
 
+  /* pi thumb -- deliberately just the symbol, nothing else */
+  .thumb.pi { background: var(--card-bg); }
+  .thumb.pi .pi-symbol {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(70px, 16vw, 120px);
+    color: var(--ink);
+    line-height: 1;
+  }
+
   /* Where Can I Go? thumb */
   .thumb.trip { background: linear-gradient(160deg, #cfeaf7, #e8f6fb 60%, #fdf6e3); }
   .thumb.trip .word { color: #1c4f66; font-size: clamp(26px, 6.5vw, 36px); position: relative; z-index: 2; }
@@ -556,6 +565,12 @@
   <p class="tagline">powered by spite and free time</p>
 
   <div class="grid" id="grid">
+
+    <a class="card" href="games/pi/">
+      <div class="thumb pi">
+        <div class="pi-symbol">&pi;</div>
+      </div>
+    </a>
 
     <a class="card" href="games/where-can-i-go/">
       <div class="thumb trip">
