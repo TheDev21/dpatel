@@ -62,7 +62,52 @@
     90% { transform: rotate(-27deg); }
   }
 
+  .layout {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 26px;
+    width: 100%;
+  }
   .wrap { width: 100%; max-width: 420px; text-align: center; }
+
+  .badges-panel {
+    width: 210px;
+    flex: none;
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    padding: 16px 18px;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.14);
+    margin-top: 62px;
+  }
+  .badges-panel h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    margin: 0 0 10px;
+    letter-spacing: 0.03em;
+  }
+  .badge-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+  .badge-list li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+  }
+  .badge-mark {
+    flex: none;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    background: #fff;
+    color: var(--ink-dim);
+  }
+  .badge-list li.unlocked .badge-mark { background: var(--orange); border-color: var(--orange); color: #fff; }
+  .badge-list li.unlocked .badge-label { color: var(--ink); }
+  .badge-label { color: var(--ink-dim); }
+  @media (max-width: 780px) { .badges-panel { display: none; } }
 
   h1 { font-size: clamp(2rem, 6vw, 2.8rem); margin: 0 0 4px; }
   h1 span { color: var(--orange); }
@@ -121,31 +166,39 @@
 </style>
 </head>
 <body>
-<div class="wrap">
+<a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
 
-  <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
-  <h1>Keep the Ball <span>From Falling</span></h1>
-  <p class="tagline">it's just gravity. how hard can it be.</p>
+<div class="layout">
+  <div class="wrap">
 
-  <div class="stats-row">
-    <span>time: <b id="timeStat">0.0s</b></span>
-    <span>bounces: <b id="bounceStat">0</b></span>
-    <span>best: <b id="bestStat">0.0s</b></span>
+    <h1>Keep the Ball <span>From Falling</span></h1>
+    <p class="tagline">it's just gravity. how hard can it be.</p>
+
+    <div class="stats-row">
+      <span>time: <b id="timeStat">0.0s</b></span>
+      <span>bounces: <b id="bounceStat">0</b></span>
+      <span>best: <b id="bestStat">0.0s</b></span>
+    </div>
+
+    <div class="stage" id="stage">
+      <canvas id="canvas" width="380" height="520"></canvas>
+      <div class="overlay" id="startOverlay">
+        <div class="big">drop it.</div>
+        <button class="go-btn" id="startBtn">start</button>
+      </div>
+      <div class="overlay hide" id="endOverlay">
+        <div class="big" id="endTitle">it fell.</div>
+        <p id="endSummary"></p>
+        <button class="go-btn" id="retryBtn">try again</button>
+      </div>
+    </div>
+
   </div>
 
-  <div class="stage" id="stage">
-    <canvas id="canvas" width="380" height="520"></canvas>
-    <div class="overlay" id="startOverlay">
-      <div class="big">drop it.</div>
-      <button class="go-btn" id="startBtn">start</button>
-    </div>
-    <div class="overlay hide" id="endOverlay">
-      <div class="big" id="endTitle">it fell.</div>
-      <p id="endSummary"></p>
-      <button class="go-btn" id="retryBtn">try again</button>
-    </div>
+  <div class="badges-panel">
+    <h2>milestones</h2>
+    <ul class="badge-list" id="badgeList"></ul>
   </div>
-
 </div>
 
 <script>
@@ -179,6 +232,42 @@
   var best = 0;
   try { best = parseFloat(localStorage.getItem(BEST_KEY)) || 0; } catch (e) {}
   bestStat.textContent = best.toFixed(1) + 's';
+
+  var BADGES_KEY = 'keep-the-ball-badges';
+  var badgeList = document.getElementById('badgeList');
+  var milestones = [
+    { seconds: 10,  label: '10s — rookie' },
+    { seconds: 30,  label: '30s — getting there' },
+    { seconds: 60,  label: '60s — actually good' },
+    { seconds: 120, label: '2 min — menace' },
+    { seconds: 180, label: '3 min — unreasonable' }
+  ];
+  var unlocked = [];
+  try { unlocked = JSON.parse(localStorage.getItem(BADGES_KEY)) || []; } catch (e) {}
+
+  function renderBadges() {
+    badgeList.innerHTML = milestones.map(function (m) {
+      var got = unlocked.indexOf(m.seconds) !== -1;
+      return '<li class="' + (got ? 'unlocked' : '') + '">' +
+        '<span class="badge-mark">' + (got ? '✓' : '') + '</span>' +
+        '<span class="badge-label">' + m.label + '</span>' +
+        '</li>';
+    }).join('');
+  }
+  function checkBadges(survived) {
+    var gained = false;
+    milestones.forEach(function (m) {
+      if (survived >= m.seconds && unlocked.indexOf(m.seconds) === -1) {
+        unlocked.push(m.seconds);
+        gained = true;
+      }
+    });
+    if (gained) {
+      try { localStorage.setItem(BADGES_KEY, JSON.stringify(unlocked)); } catch (e) {}
+      renderBadges();
+    }
+  }
+  renderBadges();
 
   var PADDLE_W = 84, PADDLE_H = 14;
   var BALL_R = 13;
@@ -332,6 +421,7 @@
       try { localStorage.setItem(BEST_KEY, String(best)); } catch (e) {}
       bestStat.textContent = best.toFixed(1) + 's';
     }
+    checkBadges(survived);
     endTitle.textContent = endMessages[Math.floor(Math.random() * endMessages.length)];
     endSummary.textContent = 'survived ' + survived.toFixed(1) + 's with ' + bounces + ' bounce' + (bounces === 1 ? '' : 's') + '.';
     endOverlay.classList.remove('hide');
