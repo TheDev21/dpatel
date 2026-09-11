@@ -323,7 +323,8 @@
         <p>The paint has been notified.</p>
       </div>
       <div class="btn-row">
-        <a class="btn ghost small" href="../../index.html">back to games</a>
+        <button class="btn small" id="playAgainBtn">PLAY AGAIN</button>
+        <a class="btn ghost small" href="../../index.html">other games</a>
       </div>
     </div>
   </div>
@@ -1075,6 +1076,7 @@
   document.getElementById('yesBtn').addEventListener('click', function () { setScene('yes'); });
   document.getElementById('noBtn').addEventListener('click', function () { setScene('no'); });
   document.getElementById('againBtn').addEventListener('click', function () { resetGame(); });
+  document.getElementById('playAgainBtn').addEventListener('click', function () { resetGame(); });
 
   function resetGame() {
     clearTimeout(dryTimerHandle);
