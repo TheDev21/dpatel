@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Keep the Ball From Falling — Weird Little Games</title>
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --pink-deep: #f6dcd3;
+    --ink: #23201d;
+    --ink-dim: #56504a;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --teal: #1f8a70;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 18px 60px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+
+  .wrap { width: 100%; max-width: 420px; text-align: center; }
+
+  h1 { font-size: clamp(2rem, 6vw, 2.8rem); margin: 0 0 4px; }
+  h1 span { color: var(--orange); }
+  .tagline { font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 18px; }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 14px;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+  }
+  .stats-row b { color: var(--ink); font-size: 1rem; }
+
+  .stage {
+    position: relative;
+    border: 3px solid var(--ink);
+    border-radius: 20px;
+    background: var(--card-bg);
+    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
+    overflow: hidden;
+    touch-action: none;
+    cursor: none;
+  }
+  canvas { display: block; width: 100%; height: auto; }
+
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 250, 247, 0.94);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+    text-align: center;
+  }
+  .overlay.hide { display: none; }
+  .overlay .big { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; }
+  .overlay p { margin: 0; font-size: 0.85rem; color: var(--ink-dim); max-width: 260px; }
+  .overlay .go-btn {
+    margin-top: 6px;
+    background: var(--orange);
+    color: #fff;
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 26px;
+    font-size: 0.9rem;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .overlay .go-btn:hover { background: var(--red); transform: translateY(-2px); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
+  <h1>Keep the Ball <span>From Falling</span></h1>
+  <p class="tagline">it's just gravity. how hard can it be.</p>
+
+  <div class="stats-row">
+    <span>time: <b id="timeStat">0.0s</b></span>
+    <span>bounces: <b id="bounceStat">0</b></span>
+    <span>best: <b id="bestStat">0.0s</b></span>
+  </div>
+
+  <div class="stage" id="stage">
+    <canvas id="canvas" width="380" height="520"></canvas>
+    <div class="overlay" id="startOverlay">
+      <div class="big">drop it.</div>
+      <p>move your mouse (or finger) to slide the paddle. don't let the ball touch the floor. it gets faster. it always gets faster.</p>
+      <button class="go-btn" id="startBtn">start</button>
+    </div>
+    <div class="overlay hide" id="endOverlay">
+      <div class="big" id="endTitle">it fell.</div>
+      <p id="endSummary"></p>
+      <button class="go-btn" id="retryBtn">try again</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  var W = canvas.width, H = canvas.height;
+
+  var startOverlay = document.getElementById('startOverlay');
+  var endOverlay = document.getElementById('endOverlay');
+  var endTitle = document.getElementById('endTitle');
+  var endSummary = document.getElementById('endSummary');
+  var timeStat = document.getElementById('timeStat');
+  var bounceStat = document.getElementById('bounceStat');
+  var bestStat = document.getElementById('bestStat');
+
+  var BEST_KEY = 'keep-the-ball-best';
+  var best = 0;
+  try { best = parseFloat(localStorage.getItem(BEST_KEY)) || 0; } catch (e) {}
+  bestStat.textContent = best.toFixed(1) + 's';
+
+  var PADDLE_W = 84, PADDLE_H = 14;
+  var BALL_R = 13;
+  var BASE_GRAVITY = 1400; // px/s^2
+  var MAX_GRAVITY = 3200;
+  var GRAVITY_RAMP = 22; // per second survived
+
+  var state = null; // null = not playing
+
+  var endMessages = [
+    "gravity remains undefeated.",
+    "the floor called. it wants its ball back.",
+    "physics: 1, you: 0.",
+    "it fell. it always falls eventually.",
+    "a moment of silence for the ball.",
+    "you kept it up admirably, then didn't."
+  ];
+
+  function newState() {
+    return {
+      ballX: W / 2,
+      ballY: H * 0.25,
+      vx: (Math.random() - 0.5) * 160,
+      vy: 0,
+      paddleX: W / 2,
+      elapsed: 0,
+      bounces: 0,
+      lastT: null,
+      pointerX: W / 2
+    };
+  }
+
+  function pointerToCanvasX(clientX) {
+    var rect = canvas.getBoundingClientRect();
+    var scale = W / rect.width;
+    return (clientX - rect.left) * scale;
+  }
+
+  function onPointerMove(e) {
+    if (!state) return;
+    var clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    state.pointerX = pointerToCanvasX(clientX);
+  }
+  canvas.addEventListener('mousemove', onPointerMove);
+  canvas.addEventListener('touchmove', function (e) { onPointerMove(e); e.preventDefault(); }, { passive: false });
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+
+    // floor danger zone
+    var grd = ctx.createLinearGradient(0, H - 40, 0, H);
+    grd.addColorStop(0, 'rgba(255,45,85,0)');
+    grd.addColorStop(1, 'rgba(255,45,85,0.25)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, H - 40, W, 40);
+
+    if (!state) return;
+
+    // paddle
+    ctx.fillStyle = '#23201d';
+    var py = H - 34;
+    ctx.beginPath();
+    ctx.roundRect(state.paddleX - PADDLE_W / 2, py, PADDLE_W, PADDLE_H, 7);
+    ctx.fill();
+
+    // ball
+    ctx.beginPath();
+    ctx.arc(state.ballX, state.ballY, BALL_R, 0, Math.PI * 2);
+    ctx.fillStyle = '#ff5a1f';
+    ctx.fill();
+    ctx.lineWidth = 2.5;
+    ctx.strokeStyle = '#23201d';
+    ctx.stroke();
+  }
+
+  function tick(t) {
+    if (!state) return;
+    if (state.lastT === null) state.lastT = t;
+    var dt = Math.min((t - state.lastT) / 1000, 0.05);
+    state.lastT = t;
+    state.elapsed += dt;
+
+    // paddle follows pointer, clamped
+    var targetX = Math.max(PADDLE_W / 2, Math.min(W - PADDLE_W / 2, state.pointerX));
+    state.paddleX += (targetX - state.paddleX) * 0.35;
+
+    var gravity = Math.min(BASE_GRAVITY + state.elapsed * GRAVITY_RAMP, MAX_GRAVITY);
+    state.vy += gravity * dt;
+    state.ballX += state.vx * dt;
+    state.ballY += state.vy * dt;
+
+    // walls
+    if (state.ballX - BALL_R < 0) { state.ballX = BALL_R; state.vx = Math.abs(state.vx); }
+    if (state.ballX + BALL_R > W) { state.ballX = W - BALL_R; state.vx = -Math.abs(state.vx); }
+    if (state.ballY - BALL_R < 0) { state.ballY = BALL_R; state.vy = Math.abs(state.vy); }
+
+    // paddle collision
+    var py = H - 34;
+    if (
+      state.vy > 0 &&
+      state.ballY + BALL_R >= py &&
+      state.ballY + BALL_R <= py + PADDLE_H + 14 &&
+      state.ballX > state.paddleX - PADDLE_W / 2 - BALL_R &&
+      state.ballX < state.paddleX + PADDLE_W / 2 + BALL_R
+    ) {
+      state.ballY = py - BALL_R;
+      var hitOffset = (state.ballX - state.paddleX) / (PADDLE_W / 2); // -1..1
+      var speed = Math.max(Math.abs(state.vy), 700);
+      state.vy = -speed * 0.98;
+      state.vx += hitOffset * 340;
+      state.vx = Math.max(-520, Math.min(520, state.vx));
+      state.bounces++;
+      bounceStat.textContent = state.bounces;
+    }
+
+    timeStat.textContent = state.elapsed.toFixed(1) + 's';
+
+    if (state.ballY - BALL_R > H) {
+      endGame();
+      return;
+    }
+
+    draw();
+    requestAnimationFrame(tick);
+  }
+
+  function startGame() {
+    state = newState();
+    bounceStat.textContent = '0';
+    timeStat.textContent = '0.0s';
+    startOverlay.classList.add('hide');
+    endOverlay.classList.add('hide');
+    requestAnimationFrame(tick);
+  }
+
+  function endGame() {
+    var survived = state.elapsed;
+    var bounces = state.bounces;
+    state = null;
+    if (survived > best) {
+      best = survived;
+      try { localStorage.setItem(BEST_KEY, String(best)); } catch (e) {}
+      bestStat.textContent = best.toFixed(1) + 's';
+    }
+    endTitle.textContent = endMessages[Math.floor(Math.random() * endMessages.length)];
+    endSummary.textContent = 'survived ' + survived.toFixed(1) + 's with ' + bounces + ' bounce' + (bounces === 1 ? '' : 's') + '.';
+    endOverlay.classList.remove('hide');
+    draw();
+  }
+
+  document.getElementById('startBtn').addEventListener('click', startGame);
+  document.getElementById('retryBtn').addEventListener('click', startGame);
+
+  draw();
+</script>
+</body>
+</html>

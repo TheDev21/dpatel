@@ -211,6 +211,30 @@
     border: 1.5px solid #16102a;
   }
 
+  /* Keep the Ball From Falling thumb */
+  .thumb.ball { background: linear-gradient(160deg, #d9ecf6, #bfe0f0 65%, #a9d3ea); }
+  .thumb.ball .word { color: #14405a; font-size: clamp(24px, 5.5vw, 34px); }
+  .thumb.ball .ball-orb {
+    position: absolute; top: 20%; left: 26%;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--orange); border: 2.5px solid var(--ink);
+  }
+  .thumb.ball .ball-arc {
+    position: absolute; border: 2px dashed rgba(20,64,90,0.4);
+    border-radius: 50%; border-left-color: transparent; border-right-color: transparent;
+  }
+  .thumb.ball .ball-arc.a1 { width: 46px; height: 24px; top: 34%; left: 20%; transform: rotate(-8deg); }
+  .thumb.ball .ball-arc.a2 { width: 36px; height: 18px; top: 12%; left: 30%; transform: rotate(6deg); }
+  .thumb.ball .ball-floor {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 14%;
+    background: linear-gradient(rgba(255,45,85,0), rgba(255,45,85,0.35));
+  }
+  .thumb.ball .ball-paddle {
+    position: absolute; bottom: 22%; left: 50%; transform: translateX(-50%);
+    width: 58px; height: 12px; border-radius: 6px;
+    background: var(--ink);
+  }
+
   /* Perfect Excuse thumb */
   .thumb.excuse { background: linear-gradient(160deg, #f3e2c8, #ecd4ae); }
   .thumb.excuse .word { color: #4a2f14; font-size: clamp(28px, 6vw, 40px); }
@@ -481,6 +505,17 @@
   <p class="tagline">powered by spite and free time</p>
 
   <div class="grid" id="grid">
+
+    <a class="card" href="games/keep-the-ball/">
+      <div class="thumb ball">
+        <div class="ball-orb"></div>
+        <div class="ball-arc a1"></div>
+        <div class="ball-arc a2"></div>
+        <div class="ball-floor"></div>
+        <div class="ball-paddle"></div>
+        <div class="word">KEEP THE<br>BALL UP</div>
+      </div>
+    </a>
 
     <a class="card" href="games/perfect-excuse/">
       <div class="thumb excuse">

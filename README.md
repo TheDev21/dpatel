@@ -13,6 +13,11 @@ backend, no build step.
 
 ## Games
 
+- **Keep the Ball From Falling** (`games/keep-the-ball/`) — a ball falls,
+  you move a paddle with your mouse/finger to bounce it, gravity ramps up
+  the longer you survive. Canvas + hand-rolled physics (gravity, velocity,
+  bounce, paddle-position deflection), no physics library. Best time
+  saved to `localStorage`.
 - **Doomscroll** (`games/doomscroll/`) — idle clicker satirizing infinite
   scroll. Progress saves to `localStorage`, Cookie Clicker style, so it
   carries over between visits. Includes a prestige loop ("go viral"):
