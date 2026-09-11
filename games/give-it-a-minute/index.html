@@ -646,6 +646,28 @@
   }
   function coveragePercent() { return Math.min(100, Math.round((paintedCount / (GRID_COLS * GRID_ROWS)) * 100)); }
 
+  var lastPaintColor = currentColor();
+
+  // once the player has covered ~96%+ by hand, top off whatever handful of
+  // stray gaps are left with the last color they used -- on a small canvas
+  // that remainder was invisible, but on a full-screen wall a few percent
+  // can be a real, visible patch. This only ever cleans up leftover
+  // stragglers after real painting has happened; it never substitutes for it.
+  function autoFillRemainingGaps() {
+    for (var row = 0; row < GRID_ROWS; row++) {
+      for (var col = 0; col < GRID_COLS; col++) {
+        var idx = row * GRID_COLS + col;
+        if (!grid[idx]) {
+          var cx = col * cellW + cellW / 2, cy = row * cellH + cellH / 2;
+          stampAt(cx, cy, lastPaintColor, Math.max(cellW, cellH) * 1.1);
+          grid[idx] = 1;
+          paintedCount++;
+        }
+      }
+    }
+    coverageLabel.textContent = '100%';
+  }
+
   function stampAt(x, y, color, radius) {
     wallCtx.fillStyle = color;
     for (var i = 0; i < 3; i++) {
@@ -684,6 +706,7 @@
     coverageLabel.textContent = (pct >= COMPLETE_THRESHOLD ? 100 : pct) + '%';
     if (!paintingDone && pct >= COMPLETE_THRESHOLD) {
       paintingDone = true;
+      autoFillRemainingGaps();
       setTimeout(finishPainting, 500);
     }
   }
@@ -696,7 +719,8 @@
     var p = canvasPoint(e);
     lastX = p.x; lastY = p.y;
     var r = BRUSH_SIZES[currentBrush];
-    stampAt(p.x, p.y, currentColor(), r);
+    lastPaintColor = currentColor();
+    stampAt(p.x, p.y, lastPaintColor, r);
     markGrid(p.x, p.y, r);
     refreshCoverageLabel();
   }
@@ -705,7 +729,8 @@
     e.preventDefault();
     var p = canvasPoint(e);
     var r = BRUSH_SIZES[currentBrush];
-    strokeSegment(lastX, lastY, p.x, p.y, currentColor(), r);
+    lastPaintColor = currentColor();
+    strokeSegment(lastX, lastY, p.x, p.y, lastPaintColor, r);
     lastX = p.x; lastY = p.y;
     if (!coverageDirty) {
       coverageDirty = true;
