@@ -50,6 +50,10 @@
     transition: color 0.15s ease;
   }
   .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (max-width: 960px) {
+    .corner-badge { top: 14px; left: 14px; font-size: 22px; }
+    body { padding-top: 90px; }
+  }
   @keyframes badgeWobble {
     0%, 100% { transform: rotate(-25deg); }
     15% { transform: rotate(-12deg); }
@@ -147,7 +151,7 @@
     color: var(--ink);
     cursor: pointer;
   }
-  input[type="text"] { cursor: text; }
+  input[type="text"] { cursor: text; font-size: 16px; }
   input[type="text"]:focus { outline: none; border-color: var(--orange); }
 
   .switch-link {

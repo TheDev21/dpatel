@@ -61,6 +61,10 @@
     transition: color 0.15s ease;
   }
   .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (max-width: 960px) {
+    .corner-badge { top: 14px; left: 14px; font-size: 22px; }
+    body { align-items: flex-start; padding-top: 90px; }
+  }
   @keyframes badgeWobble {
     0%, 100% { transform: rotate(-25deg); }
     15% { transform: rotate(-12deg); }
@@ -175,7 +179,7 @@
     top: 0; left: 100%; bottom: 0;
     width: 58px;
   }
-  @media (max-width: 480px) {
+  @media (max-width: 620px) {
     .cabinet-wrap { padding-right: 58px; }
     .lever-wrap { left: auto; right: 0; }
   }
