@@ -213,7 +213,7 @@
 
   /* Where Can I Go? thumb */
   .thumb.trip { background: linear-gradient(160deg, #cfeaf7, #e8f6fb 60%, #fdf6e3); }
-  .thumb.trip .word { color: #1c4f66; font-size: clamp(20px, 5vw, 28px); position: relative; z-index: 2; }
+  .thumb.trip .word { color: #1c4f66; font-size: clamp(26px, 6.5vw, 36px); position: relative; z-index: 2; }
 
   .thumb.trip .trip-cloud {
     position: absolute;
@@ -230,22 +230,22 @@
     border-radius: 50%;
   }
   .thumb.trip .trip-cloud.c1 {
-    top: 8%; left: 6%; width: 40px; height: 14px;
+    top: 6%; left: 5%; width: 58px; height: 20px;
   }
-  .thumb.trip .trip-cloud.c1::before { width: 18px; height: 18px; top: -10px; left: 3px; }
-  .thumb.trip .trip-cloud.c1::after { width: 14px; height: 14px; top: -7px; left: 20px; }
+  .thumb.trip .trip-cloud.c1::before { width: 26px; height: 26px; top: -15px; left: 5px; }
+  .thumb.trip .trip-cloud.c1::after { width: 20px; height: 20px; top: -10px; left: 30px; }
 
   .thumb.trip .trip-cloud.c2 {
-    bottom: 10%; right: 6%; width: 36px; height: 13px;
+    bottom: 6%; right: 5%; width: 52px; height: 18px;
   }
-  .thumb.trip .trip-cloud.c2::before { width: 15px; height: 15px; top: -8px; left: 3px; }
-  .thumb.trip .trip-cloud.c2::after { width: 13px; height: 13px; top: -6px; left: 17px; }
+  .thumb.trip .trip-cloud.c2::before { width: 22px; height: 22px; top: -12px; left: 4px; }
+  .thumb.trip .trip-cloud.c2::after { width: 18px; height: 18px; top: -9px; left: 25px; }
 
   .thumb.trip .trip-cloud.c3 {
-    bottom: 12%; left: 10%; width: 26px; height: 10px; opacity: 0.85;
+    bottom: 8%; left: 8%; width: 38px; height: 14px; opacity: 0.85;
   }
-  .thumb.trip .trip-cloud.c3::before { width: 12px; height: 12px; top: -6px; left: 2px; }
-  .thumb.trip .trip-cloud.c3::after { width: 10px; height: 10px; top: -5px; left: 13px; }
+  .thumb.trip .trip-cloud.c3::before { width: 17px; height: 17px; top: -9px; left: 3px; }
+  .thumb.trip .trip-cloud.c3::after { width: 14px; height: 14px; top: -7px; left: 19px; }
 
   .thumb.trip .trip-trail {
     position: absolute; top: 24%; right: 40%;
@@ -566,24 +566,29 @@
         <div class="trip-plane">
           <svg viewBox="0 0 240 110" xmlns="http://www.w3.org/2000/svg">
             <!-- horizontal tail wing -->
-            <polygon points="30,60 6,82 56,68" fill="var(--red)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M32,58 C22,64 12,72 6,82 C22,78 40,74 56,68 C48,64 40,60 32,58 Z"
+                  fill="var(--red)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
             <!-- vertical tail fin -->
-            <polygon points="36,40 20,6 62,36" fill="var(--red)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M38,42 C32,30 26,16 22,6 C34,14 46,24 62,36 C54,38 46,40 38,42 Z"
+                  fill="var(--red)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
             <!-- main wing -->
-            <polygon points="128,60 68,107 158,58" fill="#eef6fa" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M126,58 C108,72 88,90 70,105 C100,96 132,82 158,60 C147,59 137,58 126,58 Z"
+                  fill="#eef6fa" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/>
             <!-- engine pod -->
-            <ellipse cx="108" cy="90" rx="17" ry="10" fill="#c9d6dc" stroke="var(--ink)" stroke-width="4"/>
+            <ellipse cx="112" cy="92" rx="19" ry="11" fill="#c9d6dc" stroke="var(--ink)" stroke-width="4"/>
+            <ellipse cx="100" cy="92" rx="5" ry="8" fill="#8fa2ab"/>
             <!-- fuselage -->
-            <path d="M20,55 C20,39 42,31 82,31 L168,31 C208,31 224,41 233,55 C224,69 208,79 168,79 L82,79 C42,79 20,71 20,55 Z"
+            <path d="M20,55 C20,39 42,31 82,31 L166,31 C202,31 222,40 236,55 C222,70 202,79 166,79 L82,79 C42,79 20,71 20,55 Z"
                   fill="#ffffff" stroke="var(--ink)" stroke-width="4.5" stroke-linejoin="round"/>
             <!-- cockpit window -->
-            <ellipse cx="206" cy="50" rx="11" ry="8" fill="#1c4f66" stroke="var(--ink)" stroke-width="3"/>
+            <path d="M182,40 C196,42 208,47 219,54 C208,60 196,63 183,64 C186,56 186,48 182,40 Z"
+                  fill="#1c4f66" stroke="var(--ink)" stroke-width="2.5" stroke-linejoin="round"/>
             <!-- passenger windows -->
-            <circle cx="96" cy="48" r="4.5" fill="#1c4f66"/>
-            <circle cx="115" cy="48" r="4.5" fill="#1c4f66"/>
-            <circle cx="134" cy="48" r="4.5" fill="#1c4f66"/>
-            <circle cx="153" cy="48" r="4.5" fill="#1c4f66"/>
-            <circle cx="172" cy="48" r="4.5" fill="#1c4f66"/>
+            <circle cx="94" cy="48" r="4.5" fill="#1c4f66"/>
+            <circle cx="112" cy="48" r="4.5" fill="#1c4f66"/>
+            <circle cx="130" cy="48" r="4.5" fill="#1c4f66"/>
+            <circle cx="148" cy="48" r="4.5" fill="#1c4f66"/>
+            <circle cx="166" cy="48" r="4.5" fill="#1c4f66"/>
           </svg>
         </div>
         <div class="word">WHERE CAN<br>I GO?</div>
