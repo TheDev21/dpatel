@@ -6,7 +6,7 @@
 <title>Weird Little Games</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=STIX+Two+Math&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Bungee+Outline&family=Pacifico&family=STIX+Two+Math&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --pink: #fbeae4;
@@ -212,13 +212,15 @@
   }
 
   /* pi thumb -- deliberately just the symbol, nothing else */
-  .thumb.pi { background: linear-gradient(160deg, #2a1e3d, #1a1228 70%); }
+  .thumb.pi {
+    background: linear-gradient(160deg, #2a1e3d, #1a1228 70%);
+    flex-direction: column;
+    gap: 10px;
+  }
   .thumb.pi .pi-symbol {
-    position: relative;
-    z-index: 2;
     font-family: 'STIX Two Math', Georgia, serif;
     font-weight: 700;
-    font-size: clamp(90px, 19vw, 150px);
+    font-size: clamp(70px, 15vw, 120px);
     line-height: 1;
     background: linear-gradient(160deg, #ffd27a, var(--orange) 55%, var(--red));
     -webkit-background-clip: text;
@@ -226,21 +228,12 @@
     color: transparent;
     filter: drop-shadow(0 3px 10px rgba(255,90,31,0.35));
   }
-  .thumb.pi .pi-bg {
-    position: absolute;
-    z-index: 1;
-    font-family: 'STIX Two Math', Georgia, serif;
-    color: rgba(255,255,255,0.14);
-    line-height: 1;
+  .thumb.pi .pi-line {
+    font-family: 'Bungee Outline', 'Bebas Neue', sans-serif;
+    font-size: clamp(16px, 3.6vw, 24px);
+    letter-spacing: 0.06em;
+    color: #fff;
   }
-  .thumb.pi .pi-bg.d1 { top: 10%;  left: 8%;  font-size: 28px; transform: rotate(-8deg); }
-  .thumb.pi .pi-bg.d2 { top: 16%;  right: 12%; font-size: 22px; transform: rotate(6deg); }
-  .thumb.pi .pi-bg.d3 { top: 42%;  left: 4%;  font-size: 34px; transform: rotate(4deg); }
-  .thumb.pi .pi-bg.d4 { bottom: 32%; right: 6%; font-size: 26px; transform: rotate(-5deg); }
-  .thumb.pi .pi-bg.d5 { bottom: 12%; left: 14%; font-size: 20px; transform: rotate(9deg); }
-  .thumb.pi .pi-bg.d6 { bottom: 10%; right: 20%; font-size: 30px; transform: rotate(-6deg); }
-  .thumb.pi .pi-bg.d7 { top: 6%;  left: 42%; font-size: 18px; transform: rotate(3deg); }
-  .thumb.pi .pi-bg.d8 { bottom: 6%; left: 46%; font-size: 24px; transform: rotate(-4deg); }
 
   /* Where Can I Go? thumb */
   .thumb.trip { background: linear-gradient(160deg, #cfeaf7, #e8f6fb 60%, #fdf6e3); }
@@ -590,15 +583,8 @@
 
     <a class="card" href="games/pi/">
       <div class="thumb pi">
-        <span class="pi-bg d1">3</span>
-        <span class="pi-bg d2">1</span>
-        <span class="pi-bg d3">4</span>
-        <span class="pi-bg d4">1</span>
-        <span class="pi-bg d5">5</span>
-        <span class="pi-bg d6">9</span>
-        <span class="pi-bg d7">2</span>
-        <span class="pi-bg d8">6</span>
         <div class="pi-symbol">&pi;</div>
+        <div class="pi-line">3.1415926</div>
       </div>
     </a>
 
