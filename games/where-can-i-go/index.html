@@ -523,6 +523,78 @@
     return best;
   }
 
+  // ---------- domestic trips, for full Surprise Me in the $100-$400 range ----------
+  // [country, departure city, destination city, tier]
+  var DOMESTIC_TRIPS = [
+    ['United States', 'Atlanta', 'Orlando', 3], ['United Kingdom', 'London', 'Manchester', 3],
+    ['France', 'Paris', 'Lyon', 3], ['Japan', 'Tokyo', 'Osaka', 3], ['Germany', 'Berlin', 'Munich', 3],
+    ['Italy', 'Rome', 'Florence', 3], ['Spain', 'Madrid', 'Barcelona', 2], ['Canada', 'Toronto', 'Vancouver', 3],
+    ['Australia', 'Sydney', 'Melbourne', 3], ['South Korea', 'Seoul', 'Busan', 2], ['China', 'Beijing', 'Shanghai', 2],
+    ['Poland', 'Warsaw', 'Krakow', 2], ['Greece', 'Athens', 'Santorini', 2], ['Portugal', 'Lisbon', 'Porto', 2],
+    ['Turkey', 'Istanbul', 'Antalya', 2], ['Mexico', 'Mexico City', 'Cancun', 2], ['Brazil', 'Rio de Janeiro', 'Sao Paulo', 2],
+    ['Argentina', 'Buenos Aires', 'Mendoza', 2], ['South Africa', 'Cape Town', 'Johannesburg', 2],
+    ['India', 'Mumbai', 'Goa', 1], ['Thailand', 'Bangkok', 'Chiang Mai', 1], ['Vietnam', 'Hanoi', 'Ho Chi Minh City', 1],
+    ['Indonesia', 'Jakarta', 'Bali', 1], ['Philippines', 'Manila', 'Cebu', 1], ['Egypt', 'Cairo', 'Luxor', 1],
+    ['Morocco', 'Casablanca', 'Marrakech', 1], ['Peru', 'Lima', 'Cusco', 1], ['Colombia', 'Bogota', 'Cartagena', 1],
+    ['Kenya', 'Nairobi', 'Mombasa', 1], ['Nigeria', 'Lagos', 'Abuja', 1]
+  ].map(function (d) { return { country: d[0], from: d[1], to: d[2], tier: d[3] }; });
+
+  function domesticFlightCost(tier) { return tier === 1 ? 25 : tier === 2 ? 70 : 110; }
+
+  function estimateDomesticTrip(entry, nights) {
+    var rates = TIER_RATES[entry.tier];
+    var flight = domesticFlightCost(entry.tier);
+    var hotel = rates.hotel * nights;
+    var food = rates.food * nights;
+    var activities = rates.activities * nights;
+    var transport = rates.transport * nights;
+    return {
+      flight: flight, hotel: hotel, food: food, activities: activities, transport: transport,
+      total: flight + hotel + food + activities + transport, nights: nights
+    };
+  }
+
+  // domestic version of "surprise me still respects the budget": try random
+  // country/night combos before falling back to the cheapest possible one.
+  function findAffordableDomesticTrip(budget) {
+    var attempts = 60;
+    for (var i = 0; i < attempts; i++) {
+      var entry = pick(DOMESTIC_TRIPS);
+      for (var nights = 4; nights >= 1; nights--) {
+        var est = estimateDomesticTrip(entry, nights);
+        if (est.total <= budget) return { entry: entry, est: est };
+      }
+    }
+    var best = null, bestTotal = Infinity;
+    DOMESTIC_TRIPS.forEach(function (entry) {
+      var est = estimateDomesticTrip(entry, 1);
+      if (est.total < bestTotal) { bestTotal = est.total; best = { entry: entry, est: est }; }
+    });
+    return best;
+  }
+
+  function domesticTripCardHTML(entry, est) {
+    var fits = est.total <= trip.budget;
+    var left = trip.budget - est.total;
+    return (
+      '<div class="card dest-card">' +
+        '<div class="dest-label">domestic trip within ' + entry.country + '</div>' +
+        '<div class="dest-name">' + entry.from + ' &rarr; ' + entry.to + '</div>' +
+        '<div class="dest-line">Surprise Me kept this one inside the country, since that is what actually fit.</div>' +
+        '<span class="fit-tag ' + (fits ? 'yes' : 'no') + '">' + (fits ? 'fits your budget' : 'does not fit your budget') + '</span>' +
+        '<table class="breakdown">' +
+          '<tr><td>Transportation (estimate)</td><td>' + formatMoney(est.flight) + '</td></tr>' +
+          '<tr><td>Hotel — ' + est.nights + ' night' + (est.nights === 1 ? '' : 's') + '</td><td>' + formatMoney(est.hotel) + '</td></tr>' +
+          '<tr><td>Food</td><td>' + formatMoney(est.food) + '</td></tr>' +
+          '<tr><td>Local transportation</td><td>' + formatMoney(est.transport) + '</td></tr>' +
+          '<tr><td>Activities</td><td>' + formatMoney(est.activities) + '</td></tr>' +
+          '<tr><td>Total estimate</td><td>' + formatMoney(est.total) + '</td></tr>' +
+          '<tr><td>' + (fits ? 'Left over' : 'You are short') + '</td><td class="' + (fits ? 'fits' : 'short') + '">' + formatMoney(Math.abs(left)) + '</td></tr>' +
+        '</table>' +
+      '</div>'
+    );
+  }
+
   document.getElementById('goBtn').addEventListener('click', function () {
     var depName = departureSelect.value;
     var destName = destinationSelect.value;
@@ -539,6 +611,16 @@
 
     if (!depSurprise && !destSurprise && depCountry.name === destCountry.name) {
       body.innerHTML = '<div class="card empty-card"><h2>that is not a trip.</h2><p>Leaving from ' + depCountry.name + ' to go to ' + destCountry.name + ' is just staying home with extra steps.</p></div>';
+      showStep('results');
+      return;
+    }
+
+    // full Surprise Me (no manual departure or destination at all): the game
+    // decides everything. $100-$400 stays domestic since that's realistically
+    // what fits; $401+ uses the normal international surprise logic below.
+    if (depSurprise && destSurprise && trip.budget <= 400) {
+      var domestic = findAffordableDomesticTrip(trip.budget);
+      body.innerHTML = domesticTripCardHTML(domestic.entry, domestic.est);
       showStep('results');
       return;
     }
