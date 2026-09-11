@@ -428,14 +428,75 @@
     );
   }
 
+  var jokeTiers = [
+    {
+      max: 29,
+      lines: [
+        'You can visit the nearest city and buy lunch.',
+        'Trip duration: 6 hours, 5 of which are travel.'
+      ]
+    },
+    {
+      max: 39,
+      lines: [
+        'You can visit the nearest city, buy lunch, AND a small dessert.',
+        'Look at you, living large.'
+      ]
+    },
+    {
+      max: 49,
+      lines: [
+        'You can drive two towns over for a real sit-down lunch.',
+        'Tip is optional but will absolutely be judged.'
+      ]
+    },
+    {
+      max: 59,
+      lines: [
+        'You can drive somewhere with a nice view, park, and eat a sandwich looking at it.',
+        'Congratulations, that\'s basically a picnic. You\'re outdoorsy now.'
+      ]
+    },
+    {
+      max: 69,
+      lines: [
+        'You could technically afford a motel room for a few hours.',
+        'We are not going to ask why. Godspeed.'
+      ]
+    },
+    {
+      max: 79,
+      lines: [
+        'One night at a truly mediocre motel is now on the table.',
+        'Free continental breakfast not guaranteed. Bedbugs also not guaranteed, but also not ruled out.'
+      ]
+    },
+    {
+      max: 89,
+      lines: [
+        'A full day trip: gas, one real meal, and a gift shop keychain you did not need.',
+        'This is the good life. Briefly.'
+      ]
+    },
+    {
+      max: 99,
+      lines: [
+        'You are one skipped meal away from actually affording a real trip.',
+        'So close. Go check the couch cushions.'
+      ]
+    }
+  ];
+
   function jokeCardHTML(budget) {
-    var hours = Math.max(1, Math.round(budget / 8));
+    var tier = jokeTiers[jokeTiers.length - 1];
+    for (var i = 0; i < jokeTiers.length; i++) {
+      if (budget <= jokeTiers[i].max) { tier = jokeTiers[i]; break; }
+    }
     return (
       '<div class="card joke-card">' +
         '<div class="big">' + formatMoney(budget) + '</div>' +
         '<p>Congratulations.</p>' +
-        '<p>You can visit the nearest city and buy lunch.</p>' +
-        '<p>Trip duration: ' + hours + ' hour' + (hours === 1 ? '' : 's') + '.</p>' +
+        tier.lines.map(function (line) { return '<p>' + line + '</p>'; }).join('') +
       '</div>'
     );
   }
