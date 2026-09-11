@@ -521,7 +521,7 @@
 </div>
 
 <div class="notice" id="notice"></div>
-<div class="critter-badge" id="critterBadge">critters: 0/6</div>
+<div class="critter-badge" id="critterBadge" hidden>critters: 0/6</div>
 <div class="critter-panel" id="critterPanel"></div>
 
 <script>
@@ -621,6 +621,7 @@
   var badgeEl = document.getElementById('critterBadge');
   var panelEl = document.getElementById('critterPanel');
   function renderBadge() {
+    badgeEl.hidden = collected.length === 0;
     badgeEl.textContent = 'critters: ' + collected.length + '/' + critters.length;
     panelEl.innerHTML = critters.map(function (c) {
       var got = collected.indexOf(c.id) !== -1;
