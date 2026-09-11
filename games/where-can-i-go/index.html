@@ -149,6 +149,8 @@
     box-shadow: 3px 4px 0 rgba(28,79,102,0.14);
   }
   .tile:hover { transform: translateY(-2px); background: var(--sky); }
+  .tile.selected { background: var(--orange); color: #fff; border-color: var(--orange); font-weight: 500; }
+  .tile.selected:hover { background: var(--red); border-color: var(--red); }
   .tile.wide { grid-column: 1 / -1; }
   .tile .display { font-size: 1.05rem; }
 
@@ -291,8 +293,8 @@
     tile.addEventListener('click', function () {
       trip.city = tile.dataset.city;
       trip.domestic = tile.dataset.domestic === '1';
-      departureTiles.forEach(function (t) { t.style.background = ''; });
-      tile.style.background = 'var(--sky)';
+      departureTiles.forEach(function (t) { t.classList.remove('selected'); });
+      tile.classList.add('selected');
     });
   });
   document.getElementById('toTypeBtn').addEventListener('click', function () {
