@@ -50,7 +50,7 @@
     font-family: 'Pacifico', cursive;
     font-weight: 400;
     text-decoration: underline;
-    font-size: clamp(42px, 8vw, 66px);
+    font-size: clamp(32px, 8vw, 66px);
     margin: 0;
     color: var(--ink);
     cursor: pointer;
@@ -87,7 +87,7 @@
   /* ---- grid ---- */
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
     gap: 22px;
   }
 
