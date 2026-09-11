@@ -20,13 +20,17 @@ backend, no build step.
   scroll so it never stops and never repeats. No point. No score.
   Nothing to win.
 - **Where Can I Go?** (`games/where-can-i-go/`) — not really a game, more a
-  toy: pick a budget, a departure city, and a trip type (beach/city/
-  adventure/food/culture/surprise me), and it shows real destinations
-  that actually fit that budget with a full cost breakdown (flight/
-  hotel/food/transport/activities/left over) per destination, based on
-  typical-cost guesswork, not live flight/hotel prices. "Surprise me"
-  reveals one destination at a time with a "nope, next one" reroll.
-  Extremely low budgets get a joke result instead of a full itinerary.
+  toy: pick a budget, then pick a departure country and a destination
+  country from all ~195 countries in the world (or leave either one as
+  "surprise me"). It estimates a full trip cost (flight/hotel/food/
+  transport/activities) from each country's rough region and cost tier,
+  based on typical-cost guesswork, not live flight/hotel prices — and
+  says whether it fits your budget. "Surprise me" still respects the
+  budget, trying affordable random picks before falling back to the
+  cheapest possible pairing. The handful of countries with no
+  international airport (Vatican City, Monaco, San Marino, Andorra,
+  Liechtenstein) get a joke instead of a trip. Extremely low budgets
+  get a joke result instead of a full itinerary.
 - **Keep the Ball From Falling** (`games/keep-the-ball/`) — a ball falls,
   you move a paddle with your mouse/finger to bounce it, gravity ramps up
   the longer you survive. Canvas + hand-rolled physics (gravity, velocity,
