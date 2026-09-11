@@ -290,6 +290,12 @@
   budgetSlider.addEventListener('input', syncFromSlider);
   budgetInput.addEventListener('input', syncFromInput);
   document.getElementById('toDepartureBtn').addEventListener('click', function () {
+    trip.budget = Math.max(20, Math.min(10000, parseInt(budgetInput.value, 10) || 20));
+    if (trip.budget < 100) {
+      document.getElementById('resultsBody').innerHTML = jokeCardHTML(trip.budget);
+      showStep('results');
+      return;
+    }
     showStep('departure');
   });
 
