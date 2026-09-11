@@ -136,7 +136,7 @@
 
   .field-label { font-size: 0.78rem; color: var(--ink-dim); margin: 14px 0 6px; }
   .field-label:first-child { margin-top: 0; }
-  select {
+  select, input[type="text"] {
     width: 100%;
     font-family: 'DM Mono', monospace;
     font-size: 0.95rem;
@@ -147,6 +147,8 @@
     color: var(--ink);
     cursor: pointer;
   }
+  input[type="text"] { cursor: text; }
+  input[type="text"]:focus { outline: none; border-color: var(--orange); }
 
   .switch-link {
     display: block;
@@ -219,14 +221,12 @@
       <h2>where from, where to?</h2>
 
       <div class="field-label">leaving from</div>
-      <select id="departureSelect">
-        <option value="surprise">Surprise me (random everything)</option>
-      </select>
+      <input type="text" id="departureInput" list="departureOptions" placeholder="type a country, or 'surprise me'" autocomplete="off">
+      <datalist id="departureOptions"></datalist>
 
       <div class="field-label">going to</div>
-      <select id="destinationSelect">
-        <option value="surprise">Surprise me (pick something that fits)</option>
-      </select>
+      <input type="text" id="destinationInput" list="destinationOptions" placeholder="type a country, or 'surprise me'" autocomplete="off">
+      <datalist id="destinationOptions"></datalist>
 
       <button class="btn" id="goBtn">go</button>
     </div>
@@ -570,24 +570,79 @@
     return [a, b];
   }
 
-  // ---------- populate the two selects ----------
-  var departureSelect = document.getElementById('departureSelect');
-  var destinationSelect = document.getElementById('destinationSelect');
-  countries.forEach(function (c) {
-    var opt1 = document.createElement('option');
-    opt1.value = c.name;
-    opt1.textContent = c.name + (c.noAirport ? ' (no international airport)' : '');
-    departureSelect.appendChild(opt1);
+  // ---------- free-text country inputs, backed by a datalist for
+  // fast autocomplete instead of scrolling a giant dropdown ----------
+  var departureInput = document.getElementById('departureInput');
+  var destinationInput = document.getElementById('destinationInput');
+  var departureOptions = document.getElementById('departureOptions');
+  var destinationOptions = document.getElementById('destinationOptions');
 
-    var opt2 = document.createElement('option');
-    opt2.value = c.name;
-    opt2.textContent = c.name + (c.noAirport ? ' (no international airport)' : '');
-    destinationSelect.appendChild(opt2);
+  [departureOptions, destinationOptions].forEach(function (list) {
+    var surpriseOpt = document.createElement('option');
+    surpriseOpt.value = 'Surprise me';
+    list.appendChild(surpriseOpt);
+    countries.forEach(function (c) {
+      var opt = document.createElement('option');
+      opt.value = c.name + (c.noAirport ? ' (no international airport)' : '');
+      list.appendChild(opt);
+    });
   });
 
   function findCountry(name) {
     for (var i = 0; i < countries.length; i++) { if (countries[i].name === name) return countries[i]; }
     return null;
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (ch) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch];
+    });
+  }
+
+  var SURPRISE_WORDS = ['surprise', 'surprise me', 'random', 'anywhere', 'any', 'idk', 'you pick', 'you choose'];
+
+  // reads whatever the user actually typed and resolves it to a country,
+  // a "surprise me", or nothing at all -- matches by full country name or
+  // by its ISO code, both case-insensitive, so "IN" and "india" both work.
+  function resolveCountryInput(raw) {
+    var trimmed = (raw || '').trim();
+    if (!trimmed) return { type: 'empty' };
+    var lower = trimmed.toLowerCase().replace(/\s*\(no international airport\)\s*$/, '');
+    if (SURPRISE_WORDS.indexOf(lower) !== -1) return { type: 'surprise' };
+    for (var i = 0; i < countries.length; i++) {
+      var c = countries[i];
+      if (c.name.toLowerCase() === lower) return { type: 'country', country: c };
+      if (c.isoCode && c.isoCode.toLowerCase() === lower) return { type: 'country', country: c };
+    }
+    return { type: 'invalid', raw: trimmed };
+  }
+
+  var typoRoasts = [
+    '"{input}" is not a country. Learn how to spell, or pick one from the list. Either works.',
+    'The United Nations has never heard of "{input}". Neither has anyone else.',
+    '"{input}" is not a real place. Not even a fake one we would accept.',
+    'That is not a country, that is just violence against a keyboard.',
+    'Bold of you to invent "{input}" and expect us to fly there.',
+    '"{input}"? Try again, this time with a real country.'
+  ];
+
+  function invalidInputCardHTML(raw) {
+    var line = pick(typoRoasts).replace('{input}', escapeHtml(raw));
+    return (
+      '<div class="card empty-card">' +
+        '<h2>that is not a country.</h2>' +
+        '<p>' + line + '</p>' +
+      '</div>'
+    );
+  }
+
+  function emptyInputCardHTML() {
+    return (
+      '<div class="card empty-card">' +
+        '<h2>type something.</h2>' +
+        '<p>Even "surprise me" would have worked. You typed nothing.</p>' +
+      '</div>'
+    );
   }
 
   // ---------- cost estimate ----------
@@ -776,12 +831,28 @@
   }
 
   document.getElementById('goBtn').addEventListener('click', function () {
-    var depName = departureSelect.value;
-    var destName = destinationSelect.value;
     var body = document.getElementById('resultsBody');
+    var depResolved = resolveCountryInput(departureInput.value);
+    var destResolved = resolveCountryInput(destinationInput.value);
 
-    var depSurprise = depName === 'surprise';
-    var destSurprise = destName === 'surprise';
+    if (depResolved.type === 'empty' || destResolved.type === 'empty') {
+      body.innerHTML = emptyInputCardHTML();
+      showStep('results');
+      return;
+    }
+    if (depResolved.type === 'invalid') {
+      body.innerHTML = invalidInputCardHTML(depResolved.raw);
+      showStep('results');
+      return;
+    }
+    if (destResolved.type === 'invalid') {
+      body.innerHTML = invalidInputCardHTML(destResolved.raw);
+      showStep('results');
+      return;
+    }
+
+    var depSurprise = depResolved.type === 'surprise';
+    var destSurprise = destResolved.type === 'surprise';
 
     // Surprise Me on EITHER side hands the whole trip to the game -- any
     // manually chosen country on the other side is not a constraint, it's
@@ -798,8 +869,8 @@
       return;
     }
 
-    var depCountry = findCountry(depName);
-    var destCountry = findCountry(destName);
+    var depCountry = depResolved.country;
+    var destCountry = destResolved.country;
 
     if (depCountry.noAirport) { body.innerHTML = noAirportCardHTML(depCountry); showStep('results'); return; }
     if (destCountry.noAirport) { body.innerHTML = noAirportCardHTML(destCountry); showStep('results'); return; }
