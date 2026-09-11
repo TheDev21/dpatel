@@ -324,211 +324,217 @@
   };
   var NIGHTS = 5;
 
+  // city cost multipliers are rough local-cost-of-living/tourism-demand
+  // estimates layered on top of the country tier -- not real prices.
+  // most cities sit close to 1.0; pricier hubs run up to ~1.30, cheaper
+  // ones down to ~0.85.
+  function c(n, m) { return { name: n, costMultiplier: m }; }
+
   // { name, zone, tier, iso: ISO 3166-1 alpha-2 code, cities: recognizable
   // major destinations, sized roughly to how many meaningful ones the
   // country actually has -- not a fixed count for everyone. }
   var countryData = [
-    { name: 'United States', zone: 1, tier: 3, iso: 'US', cities: ['New York City', 'Los Angeles', 'Chicago', 'Houston', 'Miami', 'Atlanta', 'Dallas', 'Las Vegas', 'Seattle', 'San Francisco', 'Boston', 'Washington, D.C.', 'Denver', 'Orlando', 'Honolulu'] },
-    { name: 'Canada', zone: 1, tier: 3, iso: 'CA', cities: ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Ottawa', 'Quebec City', 'Edmonton', 'Halifax'] },
-    { name: 'Mexico', zone: 1, tier: 2, iso: 'MX', cities: ['Mexico City', 'Cancun', 'Guadalajara', 'Monterrey', 'Puebla', 'Tulum', 'Oaxaca'] },
+    { name: 'United States', zone: 1, tier: 3, iso: 'US', cities: [c('New York City', 1.25), c('Los Angeles', 1.2), c('Chicago', 1.1), c('Houston', 0.95), c('Miami', 1.1), c('Atlanta', 0.9), c('Dallas', 0.95), c('Las Vegas', 1.05), c('Seattle', 1.1), c('San Francisco', 1.25), c('Boston', 1.15), c('Washington, D.C.', 1.15), c('Denver', 0.95), c('Orlando', 0.95), c('Honolulu', 1.25)] },
+    { name: 'Canada', zone: 1, tier: 3, iso: 'CA', cities: [c('Toronto', 1.15), c('Vancouver', 1.2), c('Montreal', 1.05), c('Calgary', 1), c('Ottawa', 1.05), c('Quebec City', 1), c('Edmonton', 0.95), c('Halifax', 0.95)] },
+    { name: 'Mexico', zone: 1, tier: 2, iso: 'MX', cities: [c('Mexico City', 1.05), c('Cancun', 1.15), c('Guadalajara', 0.95), c('Monterrey', 0.95), c('Puebla', 0.9), c('Tulum', 1.2), c('Oaxaca', 0.9)] },
 
-    { name: 'Belize', zone: 2, tier: 2, iso: 'BZ', cities: ['Belize City', 'San Ignacio', 'Placencia'] },
-    { name: 'Guatemala', zone: 2, tier: 1, iso: 'GT', cities: ['Guatemala City', 'Antigua', 'Flores'] },
-    { name: 'Honduras', zone: 2, tier: 1, iso: 'HN', cities: ['Tegucigalpa', 'San Pedro Sula', 'Roatan'] },
-    { name: 'El Salvador', zone: 2, tier: 1, iso: 'SV', cities: ['San Salvador', 'Santa Ana'] },
-    { name: 'Nicaragua', zone: 2, tier: 1, iso: 'NI', cities: ['Managua', 'Granada', 'Leon'] },
-    { name: 'Costa Rica', zone: 2, tier: 2, iso: 'CR', cities: ['San Jose', 'Liberia', 'Tamarindo', 'Manuel Antonio'] },
-    { name: 'Panama', zone: 2, tier: 2, iso: 'PA', cities: ['Panama City', 'Bocas del Toro', 'David'] },
-    { name: 'Cuba', zone: 2, tier: 1, iso: 'CU', cities: ['Havana', 'Varadero', 'Santiago de Cuba'] },
-    { name: 'Jamaica', zone: 2, tier: 2, iso: 'JM', cities: ['Kingston', 'Montego Bay', 'Negril'] },
-    { name: 'Haiti', zone: 2, tier: 1, iso: 'HT', cities: ['Port-au-Prince', 'Cap-Haitien'] },
-    { name: 'Dominican Republic', zone: 2, tier: 2, iso: 'DO', cities: ['Santo Domingo', 'Punta Cana', 'Puerto Plata'] },
-    { name: 'Bahamas', zone: 2, tier: 3, iso: 'BS', cities: ['Nassau', 'Freeport'] },
-    { name: 'Barbados', zone: 2, tier: 3, iso: 'BB', cities: ['Bridgetown', 'Holetown'] },
-    { name: 'Trinidad and Tobago', zone: 2, tier: 2, iso: 'TT', cities: ['Port of Spain', 'Scarborough'] },
-    { name: 'Saint Lucia', zone: 2, tier: 2, iso: 'LC', cities: ['Castries', 'Soufriere'] },
-    { name: 'Grenada', zone: 2, tier: 2, iso: 'GD', cities: ["St. George's", 'Grand Anse'] },
-    { name: 'Saint Vincent and the Grenadines', zone: 2, tier: 2, iso: 'VC', cities: ['Kingstown', 'Bequia'] },
-    { name: 'Antigua and Barbuda', zone: 2, tier: 2, iso: 'AG', cities: ["St. John's", 'English Harbour'] },
-    { name: 'Saint Kitts and Nevis', zone: 2, tier: 2, iso: 'KN', cities: ['Basseterre', 'Charlestown'] },
-    { name: 'Dominica', zone: 2, tier: 1, iso: 'DM', cities: ['Roseau', 'Portsmouth'] },
+    { name: 'Belize', zone: 2, tier: 2, iso: 'BZ', cities: [c('Belize City', 1), c('San Ignacio', 0.9), c('Placencia', 1.1)] },
+    { name: 'Guatemala', zone: 2, tier: 1, iso: 'GT', cities: [c('Guatemala City', 1), c('Antigua', 1.1), c('Flores', 0.9)] },
+    { name: 'Honduras', zone: 2, tier: 1, iso: 'HN', cities: [c('Tegucigalpa', 0.95), c('San Pedro Sula', 0.95), c('Roatan', 1.15)] },
+    { name: 'El Salvador', zone: 2, tier: 1, iso: 'SV', cities: [c('San Salvador', 1), c('Santa Ana', 0.9)] },
+    { name: 'Nicaragua', zone: 2, tier: 1, iso: 'NI', cities: [c('Managua', 0.95), c('Granada', 1.05), c('Leon', 0.9)] },
+    { name: 'Costa Rica', zone: 2, tier: 2, iso: 'CR', cities: [c('San Jose', 1.05), c('Liberia', 1), c('Tamarindo', 1.2), c('Manuel Antonio', 1.15)] },
+    { name: 'Panama', zone: 2, tier: 2, iso: 'PA', cities: [c('Panama City', 1.1), c('Bocas del Toro', 1.05), c('David', 0.9)] },
+    { name: 'Cuba', zone: 2, tier: 1, iso: 'CU', cities: [c('Havana', 1.1), c('Varadero', 1.15), c('Santiago de Cuba', 0.9)] },
+    { name: 'Jamaica', zone: 2, tier: 2, iso: 'JM', cities: [c('Kingston', 1), c('Montego Bay', 1.15), c('Negril', 1.1)] },
+    { name: 'Haiti', zone: 2, tier: 1, iso: 'HT', cities: [c('Port-au-Prince', 1), c('Cap-Haitien', 0.9)] },
+    { name: 'Dominican Republic', zone: 2, tier: 2, iso: 'DO', cities: [c('Santo Domingo', 1), c('Punta Cana', 1.2), c('Puerto Plata', 1)] },
+    { name: 'Bahamas', zone: 2, tier: 3, iso: 'BS', cities: [c('Nassau', 1.15), c('Freeport', 1)] },
+    { name: 'Barbados', zone: 2, tier: 3, iso: 'BB', cities: [c('Bridgetown', 1.1), c('Holetown', 1.2)] },
+    { name: 'Trinidad and Tobago', zone: 2, tier: 2, iso: 'TT', cities: [c('Port of Spain', 1.05), c('Scarborough', 0.95)] },
+    { name: 'Saint Lucia', zone: 2, tier: 2, iso: 'LC', cities: [c('Castries', 1.05), c('Soufriere', 1.1)] },
+    { name: 'Grenada', zone: 2, tier: 2, iso: 'GD', cities: [c('St. George\'s', 1.05), c('Grand Anse', 1.1)] },
+    { name: 'Saint Vincent and the Grenadines', zone: 2, tier: 2, iso: 'VC', cities: [c('Kingstown', 1), c('Bequia', 1.15)] },
+    { name: 'Antigua and Barbuda', zone: 2, tier: 2, iso: 'AG', cities: [c('St. John\'s', 1.05), c('English Harbour', 1.15)] },
+    { name: 'Saint Kitts and Nevis', zone: 2, tier: 2, iso: 'KN', cities: [c('Basseterre', 1.05), c('Charlestown', 1)] },
+    { name: 'Dominica', zone: 2, tier: 1, iso: 'DM', cities: [c('Roseau', 1), c('Portsmouth', 0.95)] },
 
-    { name: 'Colombia', zone: 3, tier: 1, iso: 'CO', cities: ['Bogota', 'Medellin', 'Cartagena', 'Cali'] },
-    { name: 'Venezuela', zone: 3, tier: 1, iso: 'VE', cities: ['Caracas', 'Maracaibo', 'Merida'] },
-    { name: 'Guyana', zone: 3, tier: 1, iso: 'GY', cities: ['Georgetown', 'Linden'] },
-    { name: 'Suriname', zone: 3, tier: 1, iso: 'SR', cities: ['Paramaribo', 'Nieuw Nickerie'] },
-    { name: 'Ecuador', zone: 3, tier: 1, iso: 'EC', cities: ['Quito', 'Guayaquil', 'Cuenca', 'Galapagos'] },
-    { name: 'Peru', zone: 3, tier: 1, iso: 'PE', cities: ['Lima', 'Cusco', 'Arequipa', 'Trujillo'] },
-    { name: 'Bolivia', zone: 3, tier: 1, iso: 'BO', cities: ['La Paz', 'Santa Cruz', 'Sucre'] },
-    { name: 'Paraguay', zone: 3, tier: 1, iso: 'PY', cities: ['Asuncion', 'Ciudad del Este'] },
-    { name: 'Chile', zone: 3, tier: 2, iso: 'CL', cities: ['Santiago', 'Valparaiso', 'Punta Arenas', 'San Pedro de Atacama'] },
-    { name: 'Argentina', zone: 3, tier: 2, iso: 'AR', cities: ['Buenos Aires', 'Cordoba', 'Mendoza', 'Bariloche', 'Ushuaia'] },
-    { name: 'Uruguay', zone: 3, tier: 2, iso: 'UY', cities: ['Montevideo', 'Punta del Este', 'Colonia del Sacramento'] },
-    { name: 'Brazil', zone: 3, tier: 2, iso: 'BR', cities: ['Rio de Janeiro', 'Sao Paulo', 'Brasilia', 'Salvador', 'Recife', 'Fortaleza', 'Manaus', 'Florianopolis', 'Foz do Iguacu', 'Belo Horizonte'] },
+    { name: 'Colombia', zone: 3, tier: 1, iso: 'CO', cities: [c('Bogota', 1.05), c('Medellin', 1), c('Cartagena', 1.15), c('Cali', 0.9)] },
+    { name: 'Venezuela', zone: 3, tier: 1, iso: 'VE', cities: [c('Caracas', 1), c('Maracaibo', 0.9), c('Merida', 0.9)] },
+    { name: 'Guyana', zone: 3, tier: 1, iso: 'GY', cities: [c('Georgetown', 1), c('Linden', 0.9)] },
+    { name: 'Suriname', zone: 3, tier: 1, iso: 'SR', cities: [c('Paramaribo', 1), c('Nieuw Nickerie', 0.9)] },
+    { name: 'Ecuador', zone: 3, tier: 1, iso: 'EC', cities: [c('Quito', 1), c('Guayaquil', 0.95), c('Cuenca', 0.9), c('Galapagos', 1.3)] },
+    { name: 'Peru', zone: 3, tier: 1, iso: 'PE', cities: [c('Lima', 1.05), c('Cusco', 1.1), c('Arequipa', 0.9), c('Trujillo', 0.9)] },
+    { name: 'Bolivia', zone: 3, tier: 1, iso: 'BO', cities: [c('La Paz', 1), c('Santa Cruz', 0.95), c('Sucre', 0.9)] },
+    { name: 'Paraguay', zone: 3, tier: 1, iso: 'PY', cities: [c('Asuncion', 1), c('Ciudad del Este', 0.9)] },
+    { name: 'Chile', zone: 3, tier: 2, iso: 'CL', cities: [c('Santiago', 1.05), c('Valparaiso', 1), c('Punta Arenas', 1.1), c('San Pedro de Atacama', 1.2)] },
+    { name: 'Argentina', zone: 3, tier: 2, iso: 'AR', cities: [c('Buenos Aires', 1.05), c('Cordoba', 0.95), c('Mendoza', 1.05), c('Bariloche', 1.15), c('Ushuaia', 1.2)] },
+    { name: 'Uruguay', zone: 3, tier: 2, iso: 'UY', cities: [c('Montevideo', 1.05), c('Punta del Este', 1.2), c('Colonia del Sacramento', 1)] },
+    { name: 'Brazil', zone: 3, tier: 2, iso: 'BR', cities: [c('Rio de Janeiro', 1.15), c('Sao Paulo', 1.1), c('Brasilia', 1), c('Salvador', 0.95), c('Recife', 0.9), c('Fortaleza', 0.9), c('Manaus', 0.9), c('Florianopolis', 1.1), c('Foz do Iguacu', 1), c('Belo Horizonte', 0.9)] },
 
-    { name: 'United Kingdom', zone: 4, tier: 3, iso: 'GB', cities: ['London', 'Manchester', 'Edinburgh', 'Liverpool', 'Birmingham', 'Glasgow', 'Bristol'] },
-    { name: 'Ireland', zone: 4, tier: 3, iso: 'IE', cities: ['Dublin', 'Cork', 'Galway'] },
-    { name: 'France', zone: 4, tier: 3, iso: 'FR', cities: ['Paris', 'Lyon', 'Marseille', 'Nice', 'Bordeaux', 'Strasbourg'] },
-    { name: 'Germany', zone: 4, tier: 3, iso: 'DE', cities: ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne', 'Dresden', 'Stuttgart', 'Dusseldorf'] },
-    { name: 'Netherlands', zone: 4, tier: 3, iso: 'NL', cities: ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht'] },
-    { name: 'Belgium', zone: 4, tier: 3, iso: 'BE', cities: ['Brussels', 'Bruges', 'Antwerp', 'Ghent'] },
-    { name: 'Luxembourg', zone: 4, tier: 3, iso: 'LU', cities: ['Luxembourg City', 'Esch-sur-Alzette'] },
-    { name: 'Switzerland', zone: 4, tier: 3, iso: 'CH', cities: ['Zurich', 'Geneva', 'Bern', 'Lucerne', 'Interlaken'] },
-    { name: 'Austria', zone: 4, tier: 3, iso: 'AT', cities: ['Vienna', 'Salzburg', 'Innsbruck', 'Graz'] },
-    { name: 'Denmark', zone: 4, tier: 3, iso: 'DK', cities: ['Copenhagen', 'Aarhus', 'Odense'] },
-    { name: 'Norway', zone: 4, tier: 3, iso: 'NO', cities: ['Oslo', 'Bergen', 'Tromso', 'Trondheim'] },
-    { name: 'Sweden', zone: 4, tier: 3, iso: 'SE', cities: ['Stockholm', 'Gothenburg', 'Malmo'] },
-    { name: 'Finland', zone: 4, tier: 3, iso: 'FI', cities: ['Helsinki', 'Tampere', 'Rovaniemi'] },
-    { name: 'Iceland', zone: 4, tier: 3, iso: 'IS', cities: ['Reykjavik', 'Akureyri'] },
+    { name: 'United Kingdom', zone: 4, tier: 3, iso: 'GB', cities: [c('London', 1.3), c('Manchester', 1), c('Edinburgh', 1.1), c('Liverpool', 0.95), c('Birmingham', 0.95), c('Glasgow', 0.95), c('Bristol', 1)] },
+    { name: 'Ireland', zone: 4, tier: 3, iso: 'IE', cities: [c('Dublin', 1.15), c('Cork', 0.95), c('Galway', 1)] },
+    { name: 'France', zone: 4, tier: 3, iso: 'FR', cities: [c('Paris', 1.25), c('Lyon', 1), c('Marseille', 0.95), c('Nice', 1.15), c('Bordeaux', 1.05), c('Strasbourg', 0.95)] },
+    { name: 'Germany', zone: 4, tier: 3, iso: 'DE', cities: [c('Berlin', 1.1), c('Munich', 1.2), c('Frankfurt', 1.1), c('Hamburg', 1.05), c('Cologne', 1), c('Dresden', 0.9), c('Stuttgart', 1.05), c('Dusseldorf', 1.05)] },
+    { name: 'Netherlands', zone: 4, tier: 3, iso: 'NL', cities: [c('Amsterdam', 1.25), c('Rotterdam', 1), c('The Hague', 1.05), c('Utrecht', 1)] },
+    { name: 'Belgium', zone: 4, tier: 3, iso: 'BE', cities: [c('Brussels', 1.1), c('Bruges', 1.1), c('Antwerp', 1), c('Ghent', 0.95)] },
+    { name: 'Luxembourg', zone: 4, tier: 3, iso: 'LU', cities: [c('Luxembourg City', 1.25), c('Esch-sur-Alzette', 1)] },
+    { name: 'Switzerland', zone: 4, tier: 3, iso: 'CH', cities: [c('Zurich', 1.3), c('Geneva', 1.3), c('Bern', 1.15), c('Lucerne', 1.2), c('Interlaken', 1.2)] },
+    { name: 'Austria', zone: 4, tier: 3, iso: 'AT', cities: [c('Vienna', 1.15), c('Salzburg', 1.15), c('Innsbruck', 1.1), c('Graz', 0.95)] },
+    { name: 'Denmark', zone: 4, tier: 3, iso: 'DK', cities: [c('Copenhagen', 1.25), c('Aarhus', 1), c('Odense', 0.95)] },
+    { name: 'Norway', zone: 4, tier: 3, iso: 'NO', cities: [c('Oslo', 1.25), c('Bergen', 1.15), c('Tromso', 1.2), c('Trondheim', 1.05)] },
+    { name: 'Sweden', zone: 4, tier: 3, iso: 'SE', cities: [c('Stockholm', 1.2), c('Gothenburg', 1), c('Malmo', 0.95)] },
+    { name: 'Finland', zone: 4, tier: 3, iso: 'FI', cities: [c('Helsinki', 1.15), c('Tampere', 0.95), c('Rovaniemi', 1.1)] },
+    { name: 'Iceland', zone: 4, tier: 3, iso: 'IS', cities: [c('Reykjavik', 1.3), c('Akureyri', 1.05)] },
 
-    { name: 'Spain', zone: 5, tier: 2, iso: 'ES', cities: ['Madrid', 'Barcelona', 'Seville', 'Valencia', 'Granada', 'Ibiza'] },
-    { name: 'Portugal', zone: 5, tier: 2, iso: 'PT', cities: ['Lisbon', 'Porto', 'Faro', 'Sintra'] },
-    { name: 'Italy', zone: 5, tier: 3, iso: 'IT', cities: ['Rome', 'Milan', 'Venice', 'Florence', 'Naples', 'Bologna'] },
-    { name: 'Greece', zone: 5, tier: 2, iso: 'GR', cities: ['Athens', 'Santorini', 'Mykonos', 'Thessaloniki'] },
-    { name: 'Poland', zone: 5, tier: 2, iso: 'PL', cities: ['Warsaw', 'Krakow', 'Gdansk', 'Wroclaw'] },
-    { name: 'Czechia', zone: 5, tier: 2, iso: 'CZ', cities: ['Prague', 'Brno', 'Cesky Krumlov'] },
-    { name: 'Slovakia', zone: 5, tier: 2, iso: 'SK', cities: ['Bratislava', 'Kosice'] },
-    { name: 'Hungary', zone: 5, tier: 2, iso: 'HU', cities: ['Budapest', 'Debrecen'] },
-    { name: 'Romania', zone: 5, tier: 1, iso: 'RO', cities: ['Bucharest', 'Cluj-Napoca', 'Brasov'] },
-    { name: 'Bulgaria', zone: 5, tier: 1, iso: 'BG', cities: ['Sofia', 'Plovdiv', 'Varna'] },
-    { name: 'Croatia', zone: 5, tier: 2, iso: 'HR', cities: ['Zagreb', 'Split', 'Dubrovnik', 'Zadar'] },
-    { name: 'Slovenia', zone: 5, tier: 2, iso: 'SI', cities: ['Ljubljana', 'Bled'] },
-    { name: 'Serbia', zone: 5, tier: 1, iso: 'RS', cities: ['Belgrade', 'Novi Sad'] },
-    { name: 'Bosnia and Herzegovina', zone: 5, tier: 1, iso: 'BA', cities: ['Sarajevo', 'Mostar'] },
-    { name: 'Montenegro', zone: 5, tier: 2, iso: 'ME', cities: ['Podgorica', 'Kotor', 'Budva'] },
-    { name: 'North Macedonia', zone: 5, tier: 1, iso: 'MK', cities: ['Skopje', 'Ohrid'] },
-    { name: 'Albania', zone: 5, tier: 1, iso: 'AL', cities: ['Tirana', 'Saranda'] },
-    { name: 'Kosovo', zone: 5, tier: 1, iso: 'XK', cities: ['Pristina', 'Prizren'] },
-    { name: 'Moldova', zone: 5, tier: 1, iso: 'MD', cities: ['Chisinau', 'Balti'] },
-    { name: 'Ukraine', zone: 5, tier: 1, iso: 'UA', cities: ['Kyiv', 'Lviv', 'Odesa'] },
-    { name: 'Belarus', zone: 5, tier: 1, iso: 'BY', cities: ['Minsk', 'Brest'] },
-    { name: 'Russia', zone: 5, tier: 2, iso: 'RU', cities: ['Moscow', 'Saint Petersburg', 'Kazan', 'Sochi', 'Novosibirsk', 'Yekaterinburg', 'Vladivostok', 'Nizhny Novgorod'] },
-    { name: 'Estonia', zone: 5, tier: 2, iso: 'EE', cities: ['Tallinn', 'Tartu'] },
-    { name: 'Latvia', zone: 5, tier: 2, iso: 'LV', cities: ['Riga', 'Jurmala'] },
-    { name: 'Lithuania', zone: 5, tier: 2, iso: 'LT', cities: ['Vilnius', 'Kaunas'] },
-    { name: 'Malta', zone: 5, tier: 2, iso: 'MT', cities: ['Valletta', 'Sliema'] },
-    { name: 'Cyprus', zone: 5, tier: 2, iso: 'CY', cities: ['Nicosia', 'Limassol', 'Paphos'] },
+    { name: 'Spain', zone: 5, tier: 2, iso: 'ES', cities: [c('Madrid', 1.1), c('Barcelona', 1.15), c('Seville', 0.95), c('Valencia', 1), c('Granada', 0.9), c('Ibiza', 1.25)] },
+    { name: 'Portugal', zone: 5, tier: 2, iso: 'PT', cities: [c('Lisbon', 1.1), c('Porto', 1), c('Faro', 1), c('Sintra', 1.05)] },
+    { name: 'Italy', zone: 5, tier: 3, iso: 'IT', cities: [c('Rome', 1.2), c('Milan', 1.2), c('Venice', 1.25), c('Florence', 1.15), c('Naples', 0.95), c('Bologna', 1)] },
+    { name: 'Greece', zone: 5, tier: 2, iso: 'GR', cities: [c('Athens', 1.05), c('Santorini', 1.3), c('Mykonos', 1.3), c('Thessaloniki', 0.95)] },
+    { name: 'Poland', zone: 5, tier: 2, iso: 'PL', cities: [c('Warsaw', 1), c('Krakow', 0.95), c('Gdansk', 0.95), c('Wroclaw', 0.9)] },
+    { name: 'Czechia', zone: 5, tier: 2, iso: 'CZ', cities: [c('Prague', 1.05), c('Brno', 0.9), c('Cesky Krumlov', 0.95)] },
+    { name: 'Slovakia', zone: 5, tier: 2, iso: 'SK', cities: [c('Bratislava', 1), c('Kosice', 0.85)] },
+    { name: 'Hungary', zone: 5, tier: 2, iso: 'HU', cities: [c('Budapest', 1), c('Debrecen', 0.85)] },
+    { name: 'Romania', zone: 5, tier: 1, iso: 'RO', cities: [c('Bucharest', 0.95), c('Cluj-Napoca', 0.9), c('Brasov', 0.9)] },
+    { name: 'Bulgaria', zone: 5, tier: 1, iso: 'BG', cities: [c('Sofia', 0.9), c('Plovdiv', 0.85), c('Varna', 0.9)] },
+    { name: 'Croatia', zone: 5, tier: 2, iso: 'HR', cities: [c('Zagreb', 1), c('Split', 1.1), c('Dubrovnik', 1.25), c('Zadar', 1.05)] },
+    { name: 'Slovenia', zone: 5, tier: 2, iso: 'SI', cities: [c('Ljubljana', 1.05), c('Bled', 1.15)] },
+    { name: 'Serbia', zone: 5, tier: 1, iso: 'RS', cities: [c('Belgrade', 0.95), c('Novi Sad', 0.9)] },
+    { name: 'Bosnia and Herzegovina', zone: 5, tier: 1, iso: 'BA', cities: [c('Sarajevo', 0.9), c('Mostar', 0.9)] },
+    { name: 'Montenegro', zone: 5, tier: 2, iso: 'ME', cities: [c('Podgorica', 0.95), c('Kotor', 1.1), c('Budva', 1.1)] },
+    { name: 'North Macedonia', zone: 5, tier: 1, iso: 'MK', cities: [c('Skopje', 0.9), c('Ohrid', 0.9)] },
+    { name: 'Albania', zone: 5, tier: 1, iso: 'AL', cities: [c('Tirana', 0.9), c('Saranda', 0.95)] },
+    { name: 'Kosovo', zone: 5, tier: 1, iso: 'XK', cities: [c('Pristina', 0.85), c('Prizren', 0.85)] },
+    { name: 'Moldova', zone: 5, tier: 1, iso: 'MD', cities: [c('Chisinau', 0.9), c('Balti', 0.85)] },
+    { name: 'Ukraine', zone: 5, tier: 1, iso: 'UA', cities: [c('Kyiv', 0.95), c('Lviv', 0.9), c('Odesa', 0.9)] },
+    { name: 'Belarus', zone: 5, tier: 1, iso: 'BY', cities: [c('Minsk', 0.9), c('Brest', 0.85)] },
+    { name: 'Russia', zone: 5, tier: 2, iso: 'RU', cities: [c('Moscow', 1.2), c('Saint Petersburg', 1.1), c('Kazan', 0.95), c('Sochi', 1.1), c('Novosibirsk', 0.9), c('Yekaterinburg', 0.9), c('Vladivostok', 0.95), c('Nizhny Novgorod', 0.9)] },
+    { name: 'Estonia', zone: 5, tier: 2, iso: 'EE', cities: [c('Tallinn', 1.05), c('Tartu', 0.9)] },
+    { name: 'Latvia', zone: 5, tier: 2, iso: 'LV', cities: [c('Riga', 1), c('Jurmala', 1.05)] },
+    { name: 'Lithuania', zone: 5, tier: 2, iso: 'LT', cities: [c('Vilnius', 0.95), c('Kaunas', 0.9)] },
+    { name: 'Malta', zone: 5, tier: 2, iso: 'MT', cities: [c('Valletta', 1.1), c('Sliema', 1.05)] },
+    { name: 'Cyprus', zone: 5, tier: 2, iso: 'CY', cities: [c('Nicosia', 1), c('Limassol', 1.05), c('Paphos', 1.05)] },
 
-    { name: 'Turkey', zone: 6, tier: 2, iso: 'TR', cities: ['Istanbul', 'Ankara', 'Antalya', 'Cappadocia', 'Izmir', 'Bodrum'] },
-    { name: 'Israel', zone: 6, tier: 3, iso: 'IL', cities: ['Jerusalem', 'Tel Aviv', 'Haifa', 'Eilat'] },
-    { name: 'Palestine', zone: 6, tier: 1, iso: 'PS', cities: ['Ramallah', 'Bethlehem'] },
-    { name: 'Jordan', zone: 6, tier: 2, iso: 'JO', cities: ['Amman', 'Petra', 'Aqaba'] },
-    { name: 'Lebanon', zone: 6, tier: 2, iso: 'LB', cities: ['Beirut', 'Byblos'] },
-    { name: 'Syria', zone: 6, tier: 1, iso: 'SY', cities: ['Damascus', 'Aleppo'] },
-    { name: 'Iraq', zone: 6, tier: 1, iso: 'IQ', cities: ['Baghdad', 'Erbil'] },
-    { name: 'Iran', zone: 6, tier: 1, iso: 'IR', cities: ['Tehran', 'Isfahan', 'Shiraz'] },
-    { name: 'Saudi Arabia', zone: 6, tier: 3, iso: 'SA', cities: ['Riyadh', 'Jeddah', 'Mecca', 'AlUla'] },
-    { name: 'Yemen', zone: 6, tier: 1, iso: 'YE', cities: ["Sana'a", 'Aden'] },
-    { name: 'Oman', zone: 6, tier: 2, iso: 'OM', cities: ['Muscat', 'Salalah'] },
-    { name: 'United Arab Emirates', zone: 6, tier: 3, iso: 'AE', cities: ['Dubai', 'Abu Dhabi', 'Sharjah'] },
-    { name: 'Qatar', zone: 6, tier: 3, iso: 'QA', cities: ['Doha', 'Al Wakrah'] },
-    { name: 'Bahrain', zone: 6, tier: 2, iso: 'BH', cities: ['Manama', 'Muharraq'] },
-    { name: 'Kuwait', zone: 6, tier: 2, iso: 'KW', cities: ['Kuwait City', 'Al Ahmadi'] },
-    { name: 'Egypt', zone: 6, tier: 1, iso: 'EG', cities: ['Cairo', 'Luxor', 'Alexandria', 'Aswan', 'Sharm El Sheikh'] },
-    { name: 'Libya', zone: 6, tier: 1, iso: 'LY', cities: ['Tripoli', 'Benghazi'] },
-    { name: 'Tunisia', zone: 6, tier: 1, iso: 'TN', cities: ['Tunis', 'Sousse', 'Carthage'] },
-    { name: 'Algeria', zone: 6, tier: 1, iso: 'DZ', cities: ['Algiers', 'Oran', 'Constantine'] },
-    { name: 'Morocco', zone: 6, tier: 1, iso: 'MA', cities: ['Casablanca', 'Marrakech', 'Fez', 'Chefchaouen', 'Tangier'] },
-    { name: 'Sudan', zone: 6, tier: 1, iso: 'SD', cities: ['Khartoum', 'Port Sudan'] },
+    { name: 'Turkey', zone: 6, tier: 2, iso: 'TR', cities: [c('Istanbul', 1.1), c('Ankara', 0.95), c('Antalya', 1.05), c('Cappadocia', 1.1), c('Izmir', 0.95), c('Bodrum', 1.15)] },
+    { name: 'Israel', zone: 6, tier: 3, iso: 'IL', cities: [c('Jerusalem', 1.15), c('Tel Aviv', 1.25), c('Haifa', 1.05), c('Eilat', 1.1)] },
+    { name: 'Palestine', zone: 6, tier: 1, iso: 'PS', cities: [c('Ramallah', 1), c('Bethlehem', 0.95)] },
+    { name: 'Jordan', zone: 6, tier: 2, iso: 'JO', cities: [c('Amman', 1.05), c('Petra', 1.15), c('Aqaba', 1.05)] },
+    { name: 'Lebanon', zone: 6, tier: 2, iso: 'LB', cities: [c('Beirut', 1.1), c('Byblos', 1)] },
+    { name: 'Syria', zone: 6, tier: 1, iso: 'SY', cities: [c('Damascus', 0.9), c('Aleppo', 0.85)] },
+    { name: 'Iraq', zone: 6, tier: 1, iso: 'IQ', cities: [c('Baghdad', 0.95), c('Erbil', 0.95)] },
+    { name: 'Iran', zone: 6, tier: 1, iso: 'IR', cities: [c('Tehran', 0.95), c('Isfahan', 0.95), c('Shiraz', 0.9)] },
+    { name: 'Saudi Arabia', zone: 6, tier: 3, iso: 'SA', cities: [c('Riyadh', 1.15), c('Jeddah', 1.1), c('Mecca', 1.15), c('AlUla', 1.2)] },
+    { name: 'Yemen', zone: 6, tier: 1, iso: 'YE', cities: [c('Sana\'a', 0.9), c('Aden', 0.85)] },
+    { name: 'Oman', zone: 6, tier: 2, iso: 'OM', cities: [c('Muscat', 1.1), c('Salalah', 1)] },
+    { name: 'United Arab Emirates', zone: 6, tier: 3, iso: 'AE', cities: [c('Dubai', 1.3), c('Abu Dhabi', 1.2), c('Sharjah', 1)] },
+    { name: 'Qatar', zone: 6, tier: 3, iso: 'QA', cities: [c('Doha', 1.25), c('Al Wakrah', 1.05)] },
+    { name: 'Bahrain', zone: 6, tier: 2, iso: 'BH', cities: [c('Manama', 1.1), c('Muharraq', 1)] },
+    { name: 'Kuwait', zone: 6, tier: 2, iso: 'KW', cities: [c('Kuwait City', 1.1), c('Al Ahmadi', 1)] },
+    { name: 'Egypt', zone: 6, tier: 1, iso: 'EG', cities: [c('Cairo', 1), c('Luxor', 1.05), c('Alexandria', 0.95), c('Aswan', 1), c('Sharm El Sheikh', 1.2)] },
+    { name: 'Libya', zone: 6, tier: 1, iso: 'LY', cities: [c('Tripoli', 0.95), c('Benghazi', 0.9)] },
+    { name: 'Tunisia', zone: 6, tier: 1, iso: 'TN', cities: [c('Tunis', 0.95), c('Sousse', 1), c('Carthage', 1.05)] },
+    { name: 'Algeria', zone: 6, tier: 1, iso: 'DZ', cities: [c('Algiers', 0.95), c('Oran', 0.9), c('Constantine', 0.85)] },
+    { name: 'Morocco', zone: 6, tier: 1, iso: 'MA', cities: [c('Casablanca', 1), c('Marrakech', 1.15), c('Fez', 1), c('Chefchaouen', 1.05), c('Tangier', 0.95)] },
+    { name: 'Sudan', zone: 6, tier: 1, iso: 'SD', cities: [c('Khartoum', 0.9), c('Port Sudan', 0.85)] },
 
-    { name: 'Mauritania', zone: 7, tier: 1, iso: 'MR', cities: ['Nouakchott', 'Nouadhibou'] },
-    { name: 'Mali', zone: 7, tier: 1, iso: 'ML', cities: ['Bamako', 'Timbuktu'] },
-    { name: 'Niger', zone: 7, tier: 1, iso: 'NE', cities: ['Niamey', 'Zinder'] },
-    { name: 'Chad', zone: 7, tier: 1, iso: 'TD', cities: ["N'Djamena", 'Moundou'] },
-    { name: 'Senegal', zone: 7, tier: 1, iso: 'SN', cities: ['Dakar', 'Saint-Louis'] },
-    { name: 'Gambia', zone: 7, tier: 1, iso: 'GM', cities: ['Banjul', 'Serekunda'] },
-    { name: 'Guinea-Bissau', zone: 7, tier: 1, iso: 'GW', cities: ['Bissau'] },
-    { name: 'Guinea', zone: 7, tier: 1, iso: 'GN', cities: ['Conakry', 'Kankan'] },
-    { name: 'Sierra Leone', zone: 7, tier: 1, iso: 'SL', cities: ['Freetown', 'Bo'] },
-    { name: 'Liberia', zone: 7, tier: 1, iso: 'LR', cities: ['Monrovia'] },
-    { name: 'Ivory Coast', zone: 7, tier: 1, iso: 'CI', cities: ['Abidjan', 'Yamoussoukro'] },
-    { name: 'Ghana', zone: 7, tier: 1, iso: 'GH', cities: ['Accra', 'Kumasi', 'Cape Coast'] },
-    { name: 'Togo', zone: 7, tier: 1, iso: 'TG', cities: ['Lome'] },
-    { name: 'Benin', zone: 7, tier: 1, iso: 'BJ', cities: ['Cotonou', 'Porto-Novo'] },
-    { name: 'Nigeria', zone: 7, tier: 1, iso: 'NG', cities: ['Lagos', 'Abuja', 'Port Harcourt', 'Kano'] },
-    { name: 'Cameroon', zone: 7, tier: 1, iso: 'CM', cities: ['Yaounde', 'Douala'] },
-    { name: 'Central African Republic', zone: 7, tier: 1, iso: 'CF', cities: ['Bangui'] },
-    { name: 'South Sudan', zone: 7, tier: 1, iso: 'SS', cities: ['Juba'] },
-    { name: 'Ethiopia', zone: 7, tier: 1, iso: 'ET', cities: ['Addis Ababa', 'Lalibela', 'Gondar'] },
-    { name: 'Eritrea', zone: 7, tier: 1, iso: 'ER', cities: ['Asmara'] },
-    { name: 'Djibouti', zone: 7, tier: 1, iso: 'DJ', cities: ['Djibouti City'] },
-    { name: 'Somalia', zone: 7, tier: 1, iso: 'SO', cities: ['Mogadishu'] },
-    { name: 'Kenya', zone: 7, tier: 1, iso: 'KE', cities: ['Nairobi', 'Mombasa', 'Maasai Mara'] },
-    { name: 'Uganda', zone: 7, tier: 1, iso: 'UG', cities: ['Kampala', 'Entebbe'] },
-    { name: 'Rwanda', zone: 7, tier: 1, iso: 'RW', cities: ['Kigali'] },
-    { name: 'Burundi', zone: 7, tier: 1, iso: 'BI', cities: ['Gitega', 'Bujumbura'] },
-    { name: 'Tanzania', zone: 7, tier: 1, iso: 'TZ', cities: ['Dodoma', 'Dar es Salaam', 'Zanzibar', 'Arusha'] },
-    { name: 'Democratic Republic of the Congo', zone: 7, tier: 1, iso: 'CD', cities: ['Kinshasa', 'Lubumbashi'] },
-    { name: 'Republic of the Congo', zone: 7, tier: 1, iso: 'CG', cities: ['Brazzaville'] },
-    { name: 'Gabon', zone: 7, tier: 1, iso: 'GA', cities: ['Libreville'] },
-    { name: 'Equatorial Guinea', zone: 7, tier: 1, iso: 'GQ', cities: ['Malabo'] },
-    { name: 'Sao Tome and Principe', zone: 7, tier: 1, iso: 'ST', cities: ['Sao Tome'] },
-    { name: 'Angola', zone: 7, tier: 1, iso: 'AO', cities: ['Luanda'] },
-    { name: 'Zambia', zone: 7, tier: 1, iso: 'ZM', cities: ['Lusaka', 'Livingstone'] },
-    { name: 'Malawi', zone: 7, tier: 1, iso: 'MW', cities: ['Lilongwe', 'Blantyre'] },
-    { name: 'Mozambique', zone: 7, tier: 1, iso: 'MZ', cities: ['Maputo'] },
-    { name: 'Zimbabwe', zone: 7, tier: 1, iso: 'ZW', cities: ['Harare', 'Victoria Falls'] },
-    { name: 'Botswana', zone: 7, tier: 2, iso: 'BW', cities: ['Gaborone', 'Maun'] },
-    { name: 'Namibia', zone: 7, tier: 2, iso: 'NA', cities: ['Windhoek', 'Swakopmund'] },
-    { name: 'South Africa', zone: 7, tier: 2, iso: 'ZA', cities: ['Cape Town', 'Johannesburg', 'Durban', 'Pretoria', 'Port Elizabeth'] },
-    { name: 'Lesotho', zone: 7, tier: 1, iso: 'LS', cities: ['Maseru'] },
-    { name: 'Eswatini', zone: 7, tier: 1, iso: 'SZ', cities: ['Mbabane'] },
-    { name: 'Madagascar', zone: 7, tier: 1, iso: 'MG', cities: ['Antananarivo', 'Nosy Be'] },
-    { name: 'Comoros', zone: 7, tier: 1, iso: 'KM', cities: ['Moroni'] },
-    { name: 'Mauritius', zone: 7, tier: 2, iso: 'MU', cities: ['Port Louis', 'Grand Baie'] },
-    { name: 'Seychelles', zone: 7, tier: 3, iso: 'SC', cities: ['Victoria', 'Praslin'] },
-    { name: 'Cape Verde', zone: 7, tier: 1, iso: 'CV', cities: ['Praia', 'Sal'] },
-    { name: 'Burkina Faso', zone: 7, tier: 1, iso: 'BF', cities: ['Ouagadougou'] },
+    { name: 'Mauritania', zone: 7, tier: 1, iso: 'MR', cities: [c('Nouakchott', 0.9), c('Nouadhibou', 0.85)] },
+    { name: 'Mali', zone: 7, tier: 1, iso: 'ML', cities: [c('Bamako', 0.9), c('Timbuktu', 0.95)] },
+    { name: 'Niger', zone: 7, tier: 1, iso: 'NE', cities: [c('Niamey', 0.9), c('Zinder', 0.85)] },
+    { name: 'Chad', zone: 7, tier: 1, iso: 'TD', cities: [c('N\'Djamena', 0.9), c('Moundou', 0.85)] },
+    { name: 'Senegal', zone: 7, tier: 1, iso: 'SN', cities: [c('Dakar', 1), c('Saint-Louis', 0.9)] },
+    { name: 'Gambia', zone: 7, tier: 1, iso: 'GM', cities: [c('Banjul', 0.95), c('Serekunda', 0.9)] },
+    { name: 'Guinea-Bissau', zone: 7, tier: 1, iso: 'GW', cities: [c('Bissau', 0.9)] },
+    { name: 'Guinea', zone: 7, tier: 1, iso: 'GN', cities: [c('Conakry', 0.9), c('Kankan', 0.85)] },
+    { name: 'Sierra Leone', zone: 7, tier: 1, iso: 'SL', cities: [c('Freetown', 0.9), c('Bo', 0.85)] },
+    { name: 'Liberia', zone: 7, tier: 1, iso: 'LR', cities: [c('Monrovia', 0.9)] },
+    { name: 'Ivory Coast', zone: 7, tier: 1, iso: 'CI', cities: [c('Abidjan', 1), c('Yamoussoukro', 0.9)] },
+    { name: 'Ghana', zone: 7, tier: 1, iso: 'GH', cities: [c('Accra', 1), c('Kumasi', 0.9), c('Cape Coast', 0.95)] },
+    { name: 'Togo', zone: 7, tier: 1, iso: 'TG', cities: [c('Lome', 0.9)] },
+    { name: 'Benin', zone: 7, tier: 1, iso: 'BJ', cities: [c('Cotonou', 0.95), c('Porto-Novo', 0.85)] },
+    { name: 'Nigeria', zone: 7, tier: 1, iso: 'NG', cities: [c('Lagos', 1.05), c('Abuja', 1), c('Port Harcourt', 0.95), c('Kano', 0.9)] },
+    { name: 'Cameroon', zone: 7, tier: 1, iso: 'CM', cities: [c('Yaounde', 0.95), c('Douala', 0.95)] },
+    { name: 'Central African Republic', zone: 7, tier: 1, iso: 'CF', cities: [c('Bangui', 0.85)] },
+    { name: 'South Sudan', zone: 7, tier: 1, iso: 'SS', cities: [c('Juba', 0.9)] },
+    { name: 'Ethiopia', zone: 7, tier: 1, iso: 'ET', cities: [c('Addis Ababa', 0.95), c('Lalibela', 1), c('Gondar', 0.9)] },
+    { name: 'Eritrea', zone: 7, tier: 1, iso: 'ER', cities: [c('Asmara', 0.85)] },
+    { name: 'Djibouti', zone: 7, tier: 1, iso: 'DJ', cities: [c('Djibouti City', 0.95)] },
+    { name: 'Somalia', zone: 7, tier: 1, iso: 'SO', cities: [c('Mogadishu', 0.85)] },
+    { name: 'Kenya', zone: 7, tier: 1, iso: 'KE', cities: [c('Nairobi', 1), c('Mombasa', 1.05), c('Maasai Mara', 1.2)] },
+    { name: 'Uganda', zone: 7, tier: 1, iso: 'UG', cities: [c('Kampala', 0.95), c('Entebbe', 0.95)] },
+    { name: 'Rwanda', zone: 7, tier: 1, iso: 'RW', cities: [c('Kigali', 1)] },
+    { name: 'Burundi', zone: 7, tier: 1, iso: 'BI', cities: [c('Gitega', 0.85), c('Bujumbura', 0.9)] },
+    { name: 'Tanzania', zone: 7, tier: 1, iso: 'TZ', cities: [c('Dodoma', 0.9), c('Dar es Salaam', 1), c('Zanzibar', 1.2), c('Arusha', 1.05)] },
+    { name: 'Democratic Republic of the Congo', zone: 7, tier: 1, iso: 'CD', cities: [c('Kinshasa', 0.95), c('Lubumbashi', 0.9)] },
+    { name: 'Republic of the Congo', zone: 7, tier: 1, iso: 'CG', cities: [c('Brazzaville', 0.9)] },
+    { name: 'Gabon', zone: 7, tier: 1, iso: 'GA', cities: [c('Libreville', 0.95)] },
+    { name: 'Equatorial Guinea', zone: 7, tier: 1, iso: 'GQ', cities: [c('Malabo', 0.95)] },
+    { name: 'Sao Tome and Principe', zone: 7, tier: 1, iso: 'ST', cities: [c('Sao Tome', 1)] },
+    { name: 'Angola', zone: 7, tier: 1, iso: 'AO', cities: [c('Luanda', 1.05)] },
+    { name: 'Zambia', zone: 7, tier: 1, iso: 'ZM', cities: [c('Lusaka', 0.95), c('Livingstone', 1.05)] },
+    { name: 'Malawi', zone: 7, tier: 1, iso: 'MW', cities: [c('Lilongwe', 0.9), c('Blantyre', 0.9)] },
+    { name: 'Mozambique', zone: 7, tier: 1, iso: 'MZ', cities: [c('Maputo', 0.95)] },
+    { name: 'Zimbabwe', zone: 7, tier: 1, iso: 'ZW', cities: [c('Harare', 0.9), c('Victoria Falls', 1.15)] },
+    { name: 'Botswana', zone: 7, tier: 2, iso: 'BW', cities: [c('Gaborone', 0.95), c('Maun', 1.05)] },
+    { name: 'Namibia', zone: 7, tier: 2, iso: 'NA', cities: [c('Windhoek', 0.95), c('Swakopmund', 1.05)] },
+    { name: 'South Africa', zone: 7, tier: 2, iso: 'ZA', cities: [c('Cape Town', 1.15), c('Johannesburg', 1), c('Durban', 0.95), c('Pretoria', 0.95), c('Port Elizabeth', 0.9)] },
+    { name: 'Lesotho', zone: 7, tier: 1, iso: 'LS', cities: [c('Maseru', 0.9)] },
+    { name: 'Eswatini', zone: 7, tier: 1, iso: 'SZ', cities: [c('Mbabane', 0.9)] },
+    { name: 'Madagascar', zone: 7, tier: 1, iso: 'MG', cities: [c('Antananarivo', 0.9), c('Nosy Be', 1.1)] },
+    { name: 'Comoros', zone: 7, tier: 1, iso: 'KM', cities: [c('Moroni', 0.95)] },
+    { name: 'Mauritius', zone: 7, tier: 2, iso: 'MU', cities: [c('Port Louis', 1), c('Grand Baie', 1.2)] },
+    { name: 'Seychelles', zone: 7, tier: 3, iso: 'SC', cities: [c('Victoria', 1.2), c('Praslin', 1.25)] },
+    { name: 'Cape Verde', zone: 7, tier: 1, iso: 'CV', cities: [c('Praia', 1), c('Sal', 1.15)] },
+    { name: 'Burkina Faso', zone: 7, tier: 1, iso: 'BF', cities: [c('Ouagadougou', 0.9)] },
 
-    { name: 'Kazakhstan', zone: 8, tier: 2, iso: 'KZ', cities: ['Astana', 'Almaty'] },
-    { name: 'Uzbekistan', zone: 8, tier: 1, iso: 'UZ', cities: ['Tashkent', 'Samarkand', 'Bukhara'] },
-    { name: 'Turkmenistan', zone: 8, tier: 1, iso: 'TM', cities: ['Ashgabat'] },
-    { name: 'Tajikistan', zone: 8, tier: 1, iso: 'TJ', cities: ['Dushanbe'] },
-    { name: 'Kyrgyzstan', zone: 8, tier: 1, iso: 'KG', cities: ['Bishkek', 'Osh'] },
-    { name: 'Afghanistan', zone: 8, tier: 1, iso: 'AF', cities: ['Kabul'] },
-    { name: 'Pakistan', zone: 8, tier: 1, iso: 'PK', cities: ['Islamabad', 'Karachi', 'Lahore'] },
-    { name: 'India', zone: 8, tier: 1, iso: 'IN', cities: ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad', 'Pune', 'Jaipur', 'Goa', 'Kochi', 'Varanasi', 'Agra', 'Srinagar', 'Amritsar'] },
-    { name: 'Nepal', zone: 8, tier: 1, iso: 'NP', cities: ['Kathmandu', 'Pokhara'] },
-    { name: 'Bhutan', zone: 8, tier: 2, iso: 'BT', cities: ['Thimphu', 'Paro'] },
-    { name: 'Bangladesh', zone: 8, tier: 1, iso: 'BD', cities: ['Dhaka', 'Chittagong'] },
-    { name: 'Sri Lanka', zone: 8, tier: 1, iso: 'LK', cities: ['Colombo', 'Kandy', 'Galle'] },
-    { name: 'Maldives', zone: 8, tier: 3, iso: 'MV', cities: ['Male'] },
-    { name: 'Georgia', zone: 8, tier: 1, iso: 'GE', cities: ['Tbilisi', 'Batumi'] },
-    { name: 'Armenia', zone: 8, tier: 1, iso: 'AM', cities: ['Yerevan'] },
-    { name: 'Azerbaijan', zone: 8, tier: 2, iso: 'AZ', cities: ['Baku'] },
+    { name: 'Kazakhstan', zone: 8, tier: 2, iso: 'KZ', cities: [c('Astana', 1), c('Almaty', 1.05)] },
+    { name: 'Uzbekistan', zone: 8, tier: 1, iso: 'UZ', cities: [c('Tashkent', 0.95), c('Samarkand', 1), c('Bukhara', 0.95)] },
+    { name: 'Turkmenistan', zone: 8, tier: 1, iso: 'TM', cities: [c('Ashgabat', 1)] },
+    { name: 'Tajikistan', zone: 8, tier: 1, iso: 'TJ', cities: [c('Dushanbe', 0.9)] },
+    { name: 'Kyrgyzstan', zone: 8, tier: 1, iso: 'KG', cities: [c('Bishkek', 0.9), c('Osh', 0.85)] },
+    { name: 'Afghanistan', zone: 8, tier: 1, iso: 'AF', cities: [c('Kabul', 0.85)] },
+    { name: 'Pakistan', zone: 8, tier: 1, iso: 'PK', cities: [c('Islamabad', 0.95), c('Karachi', 0.9), c('Lahore', 0.9)] },
+    { name: 'India', zone: 8, tier: 1, iso: 'IN', cities: [c('Mumbai', 1.15), c('Delhi', 1.05), c('Bengaluru', 1.05), c('Hyderabad', 0.95), c('Chennai', 0.95), c('Kolkata', 0.9), c('Ahmedabad', 0.9), c('Pune', 0.95), c('Jaipur', 1), c('Goa', 1.15), c('Kochi', 1), c('Varanasi', 0.9), c('Agra', 0.95), c('Srinagar', 1.05), c('Amritsar', 0.9)] },
+    { name: 'Nepal', zone: 8, tier: 1, iso: 'NP', cities: [c('Kathmandu', 1), c('Pokhara', 0.95)] },
+    { name: 'Bhutan', zone: 8, tier: 2, iso: 'BT', cities: [c('Thimphu', 1.1), c('Paro', 1.1)] },
+    { name: 'Bangladesh', zone: 8, tier: 1, iso: 'BD', cities: [c('Dhaka', 0.9), c('Chittagong', 0.85)] },
+    { name: 'Sri Lanka', zone: 8, tier: 1, iso: 'LK', cities: [c('Colombo', 1), c('Kandy', 0.95), c('Galle', 1.05)] },
+    { name: 'Maldives', zone: 8, tier: 3, iso: 'MV', cities: [c('Male', 1.3)] },
+    { name: 'Georgia', zone: 8, tier: 1, iso: 'GE', cities: [c('Tbilisi', 0.95), c('Batumi', 1)] },
+    { name: 'Armenia', zone: 8, tier: 1, iso: 'AM', cities: [c('Yerevan', 0.95)] },
+    { name: 'Azerbaijan', zone: 8, tier: 2, iso: 'AZ', cities: [c('Baku', 1.05)] },
 
-    { name: 'Myanmar', zone: 9, tier: 1, iso: 'MM', cities: ['Yangon', 'Mandalay', 'Bagan'] },
-    { name: 'Thailand', zone: 9, tier: 1, iso: 'TH', cities: ['Bangkok', 'Chiang Mai', 'Phuket', 'Pattaya', 'Krabi'] },
-    { name: 'Laos', zone: 9, tier: 1, iso: 'LA', cities: ['Vientiane', 'Luang Prabang'] },
-    { name: 'Cambodia', zone: 9, tier: 1, iso: 'KH', cities: ['Phnom Penh', 'Siem Reap'] },
-    { name: 'Vietnam', zone: 9, tier: 1, iso: 'VN', cities: ['Hanoi', 'Ho Chi Minh City', 'Da Nang', 'Hoi An', 'Ha Long Bay'] },
-    { name: 'Malaysia', zone: 9, tier: 2, iso: 'MY', cities: ['Kuala Lumpur', 'Penang', 'Langkawi', 'Malacca'] },
-    { name: 'Singapore', zone: 9, tier: 3, iso: 'SG', cities: ['Singapore'] },
-    { name: 'Indonesia', zone: 9, tier: 1, iso: 'ID', cities: ['Jakarta', 'Bali', 'Yogyakarta', 'Surabaya', 'Bandung'] },
-    { name: 'Brunei', zone: 9, tier: 2, iso: 'BN', cities: ['Bandar Seri Begawan'] },
-    { name: 'Philippines', zone: 9, tier: 1, iso: 'PH', cities: ['Manila', 'Cebu', 'Boracay', 'Palawan', 'Davao'] },
-    { name: 'Timor-Leste', zone: 9, tier: 1, iso: 'TL', cities: ['Dili'] },
+    { name: 'Myanmar', zone: 9, tier: 1, iso: 'MM', cities: [c('Yangon', 0.95), c('Mandalay', 0.9), c('Bagan', 1)] },
+    { name: 'Thailand', zone: 9, tier: 1, iso: 'TH', cities: [c('Bangkok', 1.05), c('Chiang Mai', 0.9), c('Phuket', 1.15), c('Pattaya', 1), c('Krabi', 1.05)] },
+    { name: 'Laos', zone: 9, tier: 1, iso: 'LA', cities: [c('Vientiane', 0.9), c('Luang Prabang', 1)] },
+    { name: 'Cambodia', zone: 9, tier: 1, iso: 'KH', cities: [c('Phnom Penh', 0.9), c('Siem Reap', 1)] },
+    { name: 'Vietnam', zone: 9, tier: 1, iso: 'VN', cities: [c('Hanoi', 0.95), c('Ho Chi Minh City', 1), c('Da Nang', 0.95), c('Hoi An', 1.05), c('Ha Long Bay', 1.05)] },
+    { name: 'Malaysia', zone: 9, tier: 2, iso: 'MY', cities: [c('Kuala Lumpur', 1.05), c('Penang', 0.95), c('Langkawi', 1.1), c('Malacca', 0.9)] },
+    { name: 'Singapore', zone: 9, tier: 3, iso: 'SG', cities: [c('Singapore', 1.3)] },
+    { name: 'Indonesia', zone: 9, tier: 1, iso: 'ID', cities: [c('Jakarta', 1), c('Bali', 1.15), c('Yogyakarta', 0.9), c('Surabaya', 0.9), c('Bandung', 0.9)] },
+    { name: 'Brunei', zone: 9, tier: 2, iso: 'BN', cities: [c('Bandar Seri Begawan', 1.05)] },
+    { name: 'Philippines', zone: 9, tier: 1, iso: 'PH', cities: [c('Manila', 1), c('Cebu', 1), c('Boracay', 1.2), c('Palawan', 1.15), c('Davao', 0.9)] },
+    { name: 'Timor-Leste', zone: 9, tier: 1, iso: 'TL', cities: [c('Dili', 0.95)] },
 
-    { name: 'China', zone: 10, tier: 2, iso: 'CN', cities: ['Beijing', 'Shanghai', "Xi'an", 'Guangzhou', 'Chengdu', 'Hong Kong', 'Guilin', 'Shenzhen', 'Hangzhou', 'Suzhou', 'Harbin', 'Kunming'] },
-    { name: 'Mongolia', zone: 10, tier: 1, iso: 'MN', cities: ['Ulaanbaatar'] },
-    { name: 'South Korea', zone: 10, tier: 2, iso: 'KR', cities: ['Seoul', 'Busan', 'Jeju', 'Incheon'] },
-    { name: 'Japan', zone: 10, tier: 3, iso: 'JP', cities: ['Tokyo', 'Osaka', 'Kyoto', 'Nagoya', 'Sapporo', 'Fukuoka', 'Hiroshima', 'Nara', 'Okinawa'] },
-    { name: 'Taiwan', zone: 10, tier: 2, iso: 'TW', cities: ['Taipei', 'Kaohsiung', 'Tainan'] },
+    { name: 'China', zone: 10, tier: 2, iso: 'CN', cities: [c('Beijing', 1.1), c('Shanghai', 1.15), c('Xi\'an', 0.95), c('Guangzhou', 1), c('Chengdu', 0.95), c('Hong Kong', 1.3), c('Guilin', 1), c('Shenzhen', 1.1), c('Hangzhou', 1.05), c('Suzhou', 1), c('Harbin', 0.9), c('Kunming', 0.9)] },
+    { name: 'Mongolia', zone: 10, tier: 1, iso: 'MN', cities: [c('Ulaanbaatar', 1)] },
+    { name: 'South Korea', zone: 10, tier: 2, iso: 'KR', cities: [c('Seoul', 1.2), c('Busan', 1), c('Jeju', 1.1), c('Incheon', 1.05)] },
+    { name: 'Japan', zone: 10, tier: 3, iso: 'JP', cities: [c('Tokyo', 1.25), c('Osaka', 1.1), c('Kyoto', 1.15), c('Nagoya', 1), c('Sapporo', 1), c('Fukuoka', 0.95), c('Hiroshima', 0.95), c('Nara', 1), c('Okinawa', 1.1)] },
+    { name: 'Taiwan', zone: 10, tier: 2, iso: 'TW', cities: [c('Taipei', 1.1), c('Kaohsiung', 0.95), c('Tainan', 0.9)] },
 
-    { name: 'Australia', zone: 11, tier: 3, iso: 'AU', cities: ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Cairns', 'Gold Coast'] },
-    { name: 'New Zealand', zone: 11, tier: 3, iso: 'NZ', cities: ['Auckland', 'Wellington', 'Queenstown', 'Christchurch'] },
-    { name: 'Papua New Guinea', zone: 11, tier: 1, iso: 'PG', cities: ['Port Moresby'] },
-    { name: 'Fiji', zone: 11, tier: 2, iso: 'FJ', cities: ['Suva', 'Nadi'] },
-    { name: 'Solomon Islands', zone: 11, tier: 1, iso: 'SB', cities: ['Honiara'] },
-    { name: 'Vanuatu', zone: 11, tier: 2, iso: 'VU', cities: ['Port Vila'] },
-    { name: 'Samoa', zone: 11, tier: 2, iso: 'WS', cities: ['Apia'] },
-    { name: 'Tonga', zone: 11, tier: 2, iso: 'TO', cities: ["Nuku'alofa"] },
-    { name: 'Kiribati', zone: 11, tier: 1, iso: 'KI', cities: ['Tarawa'] },
-    { name: 'Tuvalu', zone: 11, tier: 1, iso: 'TV', cities: ['Funafuti'] },
-    { name: 'Nauru', zone: 11, tier: 1, iso: 'NR', cities: ['Yaren'] },
-    { name: 'Palau', zone: 11, tier: 2, iso: 'PW', cities: ['Ngerulmud', 'Koror'] },
-    { name: 'Micronesia', zone: 11, tier: 1, iso: 'FM', cities: ['Palikir'] },
-    { name: 'Marshall Islands', zone: 11, tier: 1, iso: 'MH', cities: ['Majuro'] }
+    { name: 'Australia', zone: 11, tier: 3, iso: 'AU', cities: [c('Sydney', 1.25), c('Melbourne', 1.15), c('Brisbane', 1.05), c('Perth', 1.05), c('Adelaide', 0.95), c('Cairns', 1.1), c('Gold Coast', 1.1)] },
+    { name: 'New Zealand', zone: 11, tier: 3, iso: 'NZ', cities: [c('Auckland', 1.15), c('Wellington', 1.1), c('Queenstown', 1.25), c('Christchurch', 1)] },
+    { name: 'Papua New Guinea', zone: 11, tier: 1, iso: 'PG', cities: [c('Port Moresby', 1)] },
+    { name: 'Fiji', zone: 11, tier: 2, iso: 'FJ', cities: [c('Suva', 1.05), c('Nadi', 1.1)] },
+    { name: 'Solomon Islands', zone: 11, tier: 1, iso: 'SB', cities: [c('Honiara', 0.95)] },
+    { name: 'Vanuatu', zone: 11, tier: 2, iso: 'VU', cities: [c('Port Vila', 1.05)] },
+    { name: 'Samoa', zone: 11, tier: 2, iso: 'WS', cities: [c('Apia', 1)] },
+    { name: 'Tonga', zone: 11, tier: 2, iso: 'TO', cities: [c('Nuku\'alofa', 1)] },
+    { name: 'Kiribati', zone: 11, tier: 1, iso: 'KI', cities: [c('Tarawa', 0.95)] },
+    { name: 'Tuvalu', zone: 11, tier: 1, iso: 'TV', cities: [c('Funafuti', 0.95)] },
+    { name: 'Nauru', zone: 11, tier: 1, iso: 'NR', cities: [c('Yaren', 0.95)] },
+    { name: 'Palau', zone: 11, tier: 2, iso: 'PW', cities: [c('Ngerulmud', 1), c('Koror', 1.15)] },
+    { name: 'Micronesia', zone: 11, tier: 1, iso: 'FM', cities: [c('Palikir', 1)] },
+    { name: 'Marshall Islands', zone: 11, tier: 1, iso: 'MH', cities: [c('Majuro', 1)] }
   ];
 
   var NO_AIRPORT = [
@@ -589,13 +595,19 @@
     var diff = Math.abs(ZONE_ORDER[depZone] - ZONE_ORDER[destZone]);
     return Math.round(180 + diff * 160);
   }
-  function estimateTrip(dep, dest) {
+  // destCity's costMultiplier scales the destination-side costs (hotel,
+  // food, activities, local transport) on top of the country tier -- the
+  // flight itself is untouched, since that's a between-countries cost, not
+  // a destination-city one. Every city has a multiplier; missing/undefined
+  // safely falls back to 1.0 so this can never break a result.
+  function estimateTrip(dep, dest, destCity) {
     var rates = TIER_RATES[dest.tier];
+    var mult = (destCity && destCity.costMultiplier) || 1.0;
     var flight = dep.zone === dest.zone ? Math.round(flightCost(dep.zone, dest.zone) * 0.6) : flightCost(dep.zone, dest.zone);
-    var hotel = rates.hotel * NIGHTS;
-    var food = rates.food * NIGHTS;
-    var activities = rates.activities * NIGHTS;
-    var transport = rates.transport * NIGHTS;
+    var hotel = Math.round(rates.hotel * NIGHTS * mult);
+    var food = Math.round(rates.food * NIGHTS * mult);
+    var activities = Math.round(rates.activities * NIGHTS * mult);
+    var transport = Math.round(rates.transport * NIGHTS * mult);
     return {
       flight: flight, hotel: hotel, food: food, activities: activities, transport: transport,
       total: flight + hotel + food + activities + transport, nights: NIGHTS
@@ -620,16 +632,16 @@
     );
   }
 
-  function tripCardHTML(dep, dest) {
-    var c = estimateTrip(dep, dest);
+  function tripCardHTML(dep, dest, depCity, destCity) {
+    depCity = depCity || pickCity(dep);
+    destCity = destCity || pickCity(dest);
+    var c = estimateTrip(dep, dest, destCity);
     var fits = c.total <= trip.budget;
     var left = trip.budget - c.total;
-    var depCity = pickCity(dep);
-    var destCity = pickCity(dest);
     return (
       '<div class="card dest-card">' +
-        '<div class="dest-label">flying from ' + depCity + ', ' + dep.name + '</div>' +
-        '<div class="dest-name">' + destCity + ', ' + dest.name + '</div>' +
+        '<div class="dest-label">flying from ' + depCity.name + ', ' + dep.name + '</div>' +
+        '<div class="dest-name">' + destCity.name + ', ' + dest.name + '</div>' +
         '<div class="dest-line">' + pick(destLines) + '</div>' +
         '<span class="fit-tag ' + (fits ? 'yes' : 'no') + '">' + (fits ? 'fits your budget' : 'does not fit your budget') + '</span>' +
         '<table class="breakdown">' +
@@ -650,16 +662,30 @@
     return pick(pool);
   }
 
+  // the cheapest city in a country, for the honest-fallback search below --
+  // deterministic on purpose, so the number it finds and the city it shows
+  // are always the same one.
+  function cheapestCity(country) {
+    return country.cities.reduce(function (best, city) {
+      return city.costMultiplier < best.costMultiplier ? city : best;
+    });
+  }
+
   // try a handful of random affordable pairs before giving up and just
   // showing the cheapest possible pairing, so "surprise me" still respects
-  // the budget instead of being purely random.
+  // the budget instead of being purely random. the destination city is
+  // chosen as part of the search itself so the "fits budget" check always
+  // matches the city-adjusted total that actually gets displayed.
   function findAffordablePair(depFixed, destFixed) {
     var attempts = 60;
     for (var i = 0; i < attempts; i++) {
       var dep = depFixed || pickRandomFlyable(destFixed ? destFixed.name : null);
       var dest = destFixed || pickRandomFlyable(dep.name);
       if (dep.name === dest.name) continue;
-      if (estimateTrip(dep, dest).total <= trip.budget) return { dep: dep, dest: dest };
+      var destCity = pickCity(dest);
+      if (estimateTrip(dep, dest, destCity).total <= trip.budget) {
+        return { dep: dep, dest: dest, depCity: pickCity(dep), destCity: destCity };
+      }
     }
     // nothing affordable found -- fall back to the cheapest possible pair
     // so the game is still honest instead of silently failing
@@ -669,8 +695,9 @@
     depsToTry.forEach(function (d) {
       destsToTry.forEach(function (t) {
         if (d.name === t.name) return;
-        var total = estimateTrip(d, t).total;
-        if (total < bestTotal) { bestTotal = total; best = { dep: d, dest: t }; }
+        var tCity = cheapestCity(t);
+        var total = estimateTrip(d, t, tCity).total;
+        if (total < bestTotal) { bestTotal = total; best = { dep: d, dest: t, depCity: pickCity(d), destCity: tCity }; }
       });
     });
     return best;
@@ -680,13 +707,17 @@
   // uses the same unified country/city database -- no separate list.
   function domesticFlightCost(tier) { return tier === 1 ? 25 : tier === 2 ? 70 : 110; }
 
-  function estimateDomesticTrip(country, nights) {
+  // toCity's costMultiplier scales the destination-side costs, same as the
+  // international estimator -- the intra-country transportation leg stays
+  // untouched, like the flight does internationally.
+  function estimateDomesticTrip(country, nights, toCity) {
     var rates = TIER_RATES[country.tier];
+    var mult = (toCity && toCity.costMultiplier) || 1.0;
     var flight = domesticFlightCost(country.tier);
-    var hotel = rates.hotel * nights;
-    var food = rates.food * nights;
-    var activities = rates.activities * nights;
-    var transport = rates.transport * nights;
+    var hotel = Math.round(rates.hotel * nights * mult);
+    var food = Math.round(rates.food * nights * mult);
+    var activities = Math.round(rates.activities * nights * mult);
+    var transport = Math.round(rates.transport * nights * mult);
     return {
       flight: flight, hotel: hotel, food: food, activities: activities, transport: transport,
       total: flight + hotel + food + activities + transport, nights: nights
@@ -694,27 +725,30 @@
   }
 
   // domestic version of "surprise me still respects the budget": try random
-  // country/night combos before falling back to the cheapest possible one.
+  // country/city/night combos before falling back to the cheapest possible
+  // one. cities are picked as part of the search so the "fits budget" check
+  // always matches the city-adjusted total that gets displayed.
   function findAffordableDomesticTrip(budget) {
     var attempts = 60;
     for (var i = 0; i < attempts; i++) {
       var country = pick(domesticPool);
+      var cities = pickTwoCities(country);
       for (var nights = 4; nights >= 1; nights--) {
-        var est = estimateDomesticTrip(country, nights);
+        var est = estimateDomesticTrip(country, nights, cities[1]);
         if (est.total <= budget) {
-          var cities = pickTwoCities(country);
           return { country: country, from: cities[0], to: cities[1], est: est };
         }
       }
     }
     var best = null, bestTotal = Infinity;
     domesticPool.forEach(function (country) {
-      var est = estimateDomesticTrip(country, 1);
-      if (est.total < bestTotal) { bestTotal = est.total; best = { country: country, est: est }; }
+      var toCity = cheapestCity(country);
+      var est = estimateDomesticTrip(country, 1, toCity);
+      if (est.total < bestTotal) { bestTotal = est.total; best = { country: country, toCity: toCity, est: est }; }
     });
-    var cities = pickTwoCities(best.country);
-    best.from = cities[0];
-    best.to = cities[1];
+    var fromCity = pick(best.country.cities.filter(function (c) { return c !== best.toCity; }));
+    best.from = fromCity;
+    best.to = best.toCity;
     return best;
   }
 
@@ -725,7 +759,7 @@
     return (
       '<div class="card dest-card">' +
         '<div class="dest-label">domestic trip within ' + trip_.country.name + '</div>' +
-        '<div class="dest-name">' + trip_.from + ' &rarr; ' + trip_.to + '</div>' +
+        '<div class="dest-name">' + trip_.from.name + ' &rarr; ' + trip_.to.name + '</div>' +
         '<div class="dest-line">Surprise Me kept this one inside the country, since that is what actually fit.</div>' +
         '<span class="fit-tag ' + (fits ? 'yes' : 'no') + '">' + (fits ? 'fits your budget' : 'does not fit your budget') + '</span>' +
         '<table class="breakdown">' +
@@ -758,7 +792,7 @@
         body.innerHTML = domesticTripCardHTML(domestic);
       } else {
         var surprisePair = findAffordablePair(null, null);
-        body.innerHTML = tripCardHTML(surprisePair.dep, surprisePair.dest);
+        body.innerHTML = tripCardHTML(surprisePair.dep, surprisePair.dest, surprisePair.depCity, surprisePair.destCity);
       }
       showStep('results');
       return;
