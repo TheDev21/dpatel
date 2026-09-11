@@ -426,9 +426,34 @@
     gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     osc.stop(t + dur + 0.02);
   }
+  // a real knuckle-on-a-door knock is a short noise transient, not a
+  // clean tone -- synthesize it as filtered noise with a fast decay
+  // instead of an oscillator beep, played twice like an actual knock.
+  function knockThump(t) {
+    var bufferSize = Math.floor(audioCtx.sampleRate * 0.07);
+    var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 3);
+    }
+    var noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    var filter = audioCtx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 200 + Math.random() * 60;
+    filter.Q.value = 1.1;
+    var gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.9, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+    noise.connect(filter).connect(gain).connect(audioCtx.destination);
+    noise.start(t);
+    noise.stop(t + 0.1);
+  }
   function playKnock() {
-    playBlip(120, 0.09, 'square', 0.07);
-    setTimeout(function () { playBlip(110, 0.09, 'square', 0.07); }, 180);
+    ensureAudio();
+    var t0 = audioCtx.currentTime;
+    knockThump(t0);
+    knockThump(t0 + 0.19);
   }
 
   // goofy cartoon background loop -- a bouncy pentatonic pluck melody over
@@ -883,7 +908,6 @@
     }
     setTimeout(wander, 400);
     setTimeout(function () { if (fly.parentNode) fly.remove(); }, wanders * 900 + 800);
-    showTicker('A fly lands on the wall.');
   }
   function eventSpider() {
     var size = stageSize();
@@ -903,7 +927,6 @@
       spider.style.left = (startLeft ? size.w + 20 : -20) + 'px';
     });
     setTimeout(function () { if (spider.parentNode) spider.remove(); }, dur + 200);
-    showTicker('A spider slowly walks across the wall.');
   }
   function eventDrip() {
     var size = stageSize();
@@ -925,7 +948,6 @@
       drip.style.height = '18px';
     });
     setTimeout(function () { if (drip.parentNode) drip.remove(); }, dur + 300);
-    showTicker('A paint drip appears.');
   }
   function eventBubble() {
     var size = stageSize();
@@ -942,8 +964,7 @@
     setTimeout(function () {
       b.style.transform = 'scale(0)';
       setTimeout(function () { if (b.parentNode) b.remove(); }, 400);
-    }, 1800 + Math.random() * 1200);
-    showTicker('A tiny paint bubble appears.');
+    }, 3000 + Math.random() * 2000);
   }
   function eventCrack() {
     var size = stageSize();
@@ -964,7 +985,7 @@
     setTimeout(function () {
       svg.style.opacity = '0';
       setTimeout(function () { if (svg.parentNode) svg.remove(); }, 350);
-    }, 1600);
+    }, 3000 + Math.random() * 2000);
     showTicker('A small crack appears… and then disappears.');
   }
   function eventPasserby() {
@@ -974,13 +995,13 @@
     var fromLeft = Math.random() < 0.5;
     p.style.left = (fromLeft ? -20 : size.w + 20) + 'px';
     eventLayer.appendChild(p);
-    var dur = 1200 + Math.random() * 500;
+    var dur = 3000 + Math.random() * 2000;
     p.style.transition = 'left ' + (dur / 1000) + 's linear';
     requestAnimationFrame(function () { p.style.left = (fromLeft ? size.w + 20 : -20) + 'px'; });
     setTimeout(function () { if (p.parentNode) p.remove(); }, dur + 100);
     showTicker('Someone briefly walks past the wall.');
   }
-  function eventKnock() { playKnock(); showTicker('Someone knocks on a door.'); }
+  function eventKnock() { playKnock(); }
   function eventShake() {
     document.body.classList.add('shake');
     setTimeout(function () { document.body.classList.remove('shake'); }, 420);
@@ -995,16 +1016,16 @@
     var x = Math.random() * (size.w - 40) + 10, y = Math.random() * (size.h - 40) + 10;
     icon.style.left = x + 'px'; icon.style.top = y + 'px';
     eventLayer.appendChild(icon);
-    var jiggles = 5; var i = 0;
+    var jiggles = 16; var i = 0;
     function jiggle() {
       if (i >= jiggles) { icon.remove(); return; }
-      icon.style.transition = 'transform 0.15s ease';
+      icon.style.transition = 'transform 0.24s ease';
       icon.style.transform = 'translate(' + ((Math.random() - 0.5) * 14) + 'px,' + ((Math.random() - 0.5) * 10) + 'px) rotate(' + ((Math.random() - 0.5) * 20) + 'deg)';
       i++;
-      setTimeout(jiggle, 150);
+      setTimeout(jiggle, 240);
     }
     jiggle();
-    setTimeout(function () { if (icon.parentNode) icon.remove(); }, jiggles * 150 + 300);
+    setTimeout(function () { if (icon.parentNode) icon.remove(); }, jiggles * 240 + 300);
     showTicker('The roller mysteriously moves by itself.');
   }
   function textOnly(msg) { return function () { showTicker(msg); }; }
