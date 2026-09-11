@@ -13,7 +13,7 @@ backend, no build step.
 
 ## Games
 
-- **Vacation Math** (`games/vacation-math/`) — not really a game, more a
+- **Where Can I Go?** (`games/where-can-i-go/`) — not really a game, more a
   toy: type in a budget and it estimates what kind of trip that could
   realistically buy (destination tier, a cost breakdown table, a "you
   can afford" list), based on typical-cost guesswork, not live flight/
