@@ -152,18 +152,6 @@
   .tile.wide { grid-column: 1 / -1; }
   .tile .display { font-size: 1.05rem; }
 
-  #customCityRow { display: none; margin-top: 12px; }
-  #customCityRow.show { display: block; }
-  #customCityRow input {
-    width: 100%;
-    font-family: 'DM Mono', monospace;
-    font-size: 0.9rem;
-    padding: 10px 12px;
-    border: 2px solid var(--ink);
-    border-radius: 10px;
-    margin-bottom: 8px;
-  }
-
   .switch-link {
     display: block;
     margin: 18px auto 0;
@@ -223,12 +211,8 @@
     <div class="card">
       <h2>where are you leaving from?</h2>
       <div class="tile-grid">
-        <div class="tile" data-city="Washington, DC" data-domestic="1">Washington, DC</div>
-        <div class="tile" data-city="Atlanta" data-domestic="1">Atlanta</div>
-        <div class="tile wide" id="chooseCityTile">choose another city</div>
-      </div>
-      <div id="customCityRow">
-        <input type="text" id="customCityInput" placeholder="type your city">
+        <div class="tile wide" data-city="Washington, DC" data-domestic="1">Washington, DC</div>
+        <div class="tile wide" data-city="Atlanta" data-domestic="1">Atlanta</div>
       </div>
       <button class="btn" id="toTypeBtn">next</button>
     </div>
@@ -302,31 +286,17 @@
   // ---------- step 2: departure ----------
   var trip = { budget: 1000, city: 'Washington, DC', domestic: true, type: 'surprise' };
   var departureTiles = document.querySelectorAll('#stepDeparture .tile[data-city]');
-  var chooseCityTile = document.getElementById('chooseCityTile');
-  var customCityRow = document.getElementById('customCityRow');
-  var customCityInput = document.getElementById('customCityInput');
 
   departureTiles.forEach(function (tile) {
     tile.addEventListener('click', function () {
       trip.city = tile.dataset.city;
       trip.domestic = tile.dataset.domestic === '1';
-      customCityRow.classList.remove('show');
       departureTiles.forEach(function (t) { t.style.background = ''; });
-      chooseCityTile.style.background = '';
       tile.style.background = 'var(--sky)';
     });
   });
-  chooseCityTile.addEventListener('click', function () {
-    customCityRow.classList.add('show');
-    departureTiles.forEach(function (t) { t.style.background = ''; });
-    chooseCityTile.style.background = 'var(--sky)';
-  });
   document.getElementById('toTypeBtn').addEventListener('click', function () {
     trip.budget = Math.max(20, Math.min(10000, parseInt(budgetInput.value, 10) || 20));
-    if (customCityRow.classList.contains('show') && customCityInput.value.trim()) {
-      trip.city = customCityInput.value.trim();
-      trip.domestic = false; // unknown city, no domestic discount assumed
-    }
     showStep('type');
   });
 
