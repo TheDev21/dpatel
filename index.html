@@ -113,6 +113,33 @@
     transform: rotate(0deg);
     box-shadow: 5px 5px 0 rgba(35,32,29,0.12);
   }
+  .card.disabled { cursor: not-allowed; }
+  .card.disabled .thumb { filter: grayscale(0.35) brightness(0.92); }
+
+  .construction-banner {
+    position: absolute;
+    top: 38%;
+    left: -12%;
+    width: 124%;
+    padding: 7px 0;
+    background: repeating-linear-gradient(45deg, #ffcc22, #ffcc22 14px, #23201d 14px, #23201d 28px);
+    border-top: 3px solid var(--ink);
+    border-bottom: 3px solid var(--ink);
+    transform: rotate(-7deg);
+    box-shadow: 0 4px 0 rgba(35,32,29,0.25);
+    z-index: 5;
+    text-align: center;
+  }
+  .construction-banner span {
+    display: inline-block;
+    background: #23201d;
+    color: #ffcc22;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.05rem;
+    letter-spacing: 1.5px;
+    padding: 3px 14px;
+    border-radius: 4px;
+  }
 
   .thumb {
     aspect-ratio: 16 / 10;
@@ -599,8 +626,9 @@
       </div>
     </a>
 
-    <a class="card" href="games/where-can-i-go/">
+    <div class="card disabled">
       <div class="thumb trip">
+        <div class="construction-banner"><span>UNDER CONSTRUCTION</span></div>
         <div class="trip-cloud c1"></div>
         <div class="trip-cloud c2"></div>
         <div class="trip-cloud c3"></div>
@@ -635,7 +663,7 @@
         </div>
         <div class="word">WHERE CAN<br>I GO?</div>
       </div>
-    </a>
+    </div>
 
     <a class="card" href="games/keep-the-ball/">
       <div class="thumb ball">
