@@ -212,12 +212,18 @@
   }
 
   /* pi thumb -- deliberately just the symbol, nothing else */
-  .thumb.pi { background: var(--card-bg); }
+  .thumb.pi { background: linear-gradient(160deg, #2a1e3d, #1a1228 70%); }
   .thumb.pi .pi-symbol {
-    font-family: 'DM Mono', monospace;
-    font-size: clamp(70px, 16vw, 120px);
-    color: var(--ink);
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: clamp(90px, 19vw, 150px);
     line-height: 1;
+    background: linear-gradient(160deg, #ffd27a, var(--orange) 55%, var(--red));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    filter: drop-shadow(0 3px 10px rgba(255,90,31,0.35));
   }
 
   /* Where Can I Go? thumb */
