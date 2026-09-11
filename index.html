@@ -50,6 +50,16 @@
     font-size: clamp(40px, 8vw, 64px);
     margin: 0;
     color: var(--ink);
+    cursor: pointer;
+    user-select: none;
+    transition: transform 0.08s ease;
+  }
+  .logo-row h1.bonk { animation: logoBonk 0.28s ease; }
+  @keyframes logoBonk {
+    0% { transform: scale(1) rotate(0deg); }
+    35% { transform: scale(1.08) rotate(-2deg); }
+    70% { transform: scale(0.96) rotate(2deg); }
+    100% { transform: scale(1) rotate(0deg); }
   }
   .tagline {
     text-align: center;
@@ -302,6 +312,156 @@
     text-decoration: underline;
   }
   footer a:hover { color: var(--orange); }
+
+  /* ---- collectible critters (hand-drawn, no emoji) ---- */
+  .critter {
+    position: fixed;
+    width: 58px;
+    height: 58px;
+    cursor: pointer;
+    z-index: 80;
+    filter: drop-shadow(2px 3px 0 rgba(35,32,29,0.22));
+    animation: critterPop 0.22s ease;
+  }
+  @keyframes critterPop { from { transform: scale(0); } to { transform: scale(1); } }
+  .critter.leaving { animation: critterLeave 0.25s ease forwards; }
+  @keyframes critterLeave { to { transform: scale(0); opacity: 0; } }
+
+  /* sock */
+  .critter-sock .body {
+    position: absolute; left: 10px; top: 4px; width: 26px; height: 40px;
+    background: repeating-linear-gradient(0deg, #ff5a1f 0 6px, #fff3ea 6px 12px);
+    border: 2.5px solid var(--ink);
+    border-radius: 14px 14px 6px 6px;
+  }
+  .critter-sock .foot {
+    position: absolute; left: 20px; top: 32px; width: 30px; height: 16px;
+    background: #fff3ea; border: 2.5px solid var(--ink); border-radius: 0 10px 10px 4px;
+  }
+  .critter-sock .eye { position: absolute; width: 4px; height: 4px; background: var(--ink); border-radius: 50%; top: 16px; left: 18px; }
+
+  /* rat */
+  .critter-rat .body {
+    position: absolute; left: 8px; top: 18px; width: 38px; height: 24px;
+    background: #9a9088; border: 2.5px solid var(--ink); border-radius: 50% 60% 50% 50%;
+  }
+  .critter-rat .snout {
+    position: absolute; left: 42px; top: 24px; width: 12px; height: 12px;
+    background: #b9afa6; border: 2.5px solid var(--ink); border-radius: 50%;
+  }
+  .critter-rat .ear { position: absolute; width: 10px; height: 10px; background: #b9afa6; border: 2px solid var(--ink); border-radius: 50%; top: 12px; }
+  .critter-rat .ear.e1 { left: 12px; }
+  .critter-rat .ear.e2 { left: 22px; }
+  .critter-rat .tail {
+    position: absolute; left: -6px; top: 30px; width: 20px; height: 6px;
+    border-top: 2.5px solid var(--ink); border-radius: 50%;
+    transform: rotate(15deg);
+  }
+  .critter-rat .eye { position: absolute; width: 3px; height: 3px; background: var(--ink); border-radius: 50%; top: 24px; left: 30px; }
+
+  /* wifi guy */
+  .critter-wifi .arc { position: absolute; border: 3px solid var(--ink); border-radius: 50%; border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; }
+  .critter-wifi .arc1 { width: 44px; height: 44px; left: 7px; top: 0px; border-color: var(--teal); border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; }
+  .critter-wifi .arc2 { width: 30px; height: 30px; left: 14px; top: 7px; border-color: var(--teal); border-bottom-color: transparent; border-left-color: transparent; border-right-color: transparent; }
+  .critter-wifi .dot { position: absolute; width: 9px; height: 9px; background: var(--teal); border: 2px solid var(--ink); border-radius: 50%; left: 24.5px; top: 22px; }
+  .critter-wifi .leg { position: absolute; width: 2.5px; height: 14px; background: var(--ink); top: 34px; }
+  .critter-wifi .leg.l1 { left: 24px; transform: rotate(-10deg); }
+  .critter-wifi .leg.l2 { left: 32px; transform: rotate(10deg); }
+  .critter-wifi .shoe { position: absolute; width: 8px; height: 5px; background: var(--ink); border-radius: 3px; top: 46px; }
+  .critter-wifi .shoe.s1 { left: 18px; }
+  .critter-wifi .shoe.s2 { left: 30px; }
+
+  /* toast */
+  .critter-toast .body {
+    position: absolute; left: 6px; top: 8px; width: 46px; height: 42px;
+    background: linear-gradient(160deg, #f2c98a, #d99c4f);
+    border: 2.5px solid var(--ink);
+    border-radius: 60% 60% 14px 14px;
+  }
+  .critter-toast .eye { position: absolute; width: 4px; height: 4px; background: var(--ink); border-radius: 50%; top: 26px; }
+  .critter-toast .eye.e1 { left: 18px; }
+  .critter-toast .eye.e2 { left: 34px; }
+  .critter-toast .mouth { position: absolute; left: 20px; top: 33px; width: 14px; height: 6px; border: 2px solid var(--ink); border-top: none; border-radius: 0 0 8px 8px; }
+  .critter-toast .steam { position: absolute; width: 2px; height: 8px; background: rgba(35,32,29,0.35); border-radius: 2px; top: -6px; }
+  .critter-toast .steam.st1 { left: 18px; transform: rotate(-8deg); }
+  .critter-toast .steam.st2 { left: 34px; transform: rotate(8deg); }
+
+  /* ghost blob */
+  .critter-ghost .body {
+    position: absolute; left: 8px; top: 6px; width: 40px; height: 36px;
+    background: rgba(255,255,255,0.92);
+    border: 2.5px solid var(--ink);
+    border-radius: 50% 50% 0 0;
+  }
+  .critter-ghost .wave { position: absolute; top: 38px; width: 10px; height: 10px; background: rgba(255,255,255,0.92); border: 2.5px solid var(--ink); border-top: none; border-radius: 0 0 10px 10px; }
+  .critter-ghost .wave.w1 { left: 8px; }
+  .critter-ghost .wave.w2 { left: 18px; }
+  .critter-ghost .wave.w3 { left: 28px; }
+  .critter-ghost .wave.w4 { left: 38px; }
+  .critter-ghost .eye { position: absolute; width: 4px; height: 5px; background: var(--ink); border-radius: 50%; top: 18px; }
+  .critter-ghost .eye.e1 { left: 18px; }
+  .critter-ghost .eye.e2 { left: 32px; }
+
+  /* wandering eyeball */
+  .critter-eye .white { position: absolute; left: 6px; top: 6px; width: 46px; height: 46px; background: #fff; border: 2.5px solid var(--ink); border-radius: 50%; }
+  .critter-eye .iris { position: absolute; left: 20px; top: 20px; width: 18px; height: 18px; background: var(--violet); border: 2px solid var(--ink); border-radius: 50%; }
+  .critter-eye .pupil { position: absolute; left: 26px; top: 26px; width: 6px; height: 6px; background: var(--ink); border-radius: 50%; }
+  .critter-eye .lash { position: absolute; width: 2px; height: 8px; background: var(--ink); top: 2px; }
+  .critter-eye .lash.l1 { left: 16px; transform: rotate(-20deg); }
+  .critter-eye .lash.l2 { left: 27px; }
+  .critter-eye .lash.l3 { left: 38px; transform: rotate(20deg); }
+
+  /* notice toast */
+  .notice {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 12.5px;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 90;
+  }
+  .notice.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* critter collection badge */
+  .critter-badge {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    background: var(--card-bg);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 8px 16px;
+    font-size: 11.5px;
+    cursor: pointer;
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.14);
+    z-index: 70;
+  }
+  .critter-panel {
+    position: fixed;
+    right: 16px;
+    bottom: 56px;
+    background: var(--card-bg);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-size: 12px;
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.14);
+    z-index: 70;
+    display: none;
+    min-width: 160px;
+  }
+  .critter-panel.show { display: block; }
+  .critter-panel div { padding: 3px 0; }
+  .critter-panel .got { color: var(--teal); }
+  .critter-panel .not-got { color: var(--ink-dim); }
 </style>
 </head>
 <body>
@@ -359,5 +519,167 @@
     <a href="privacy.html">privacy policy</a>
   </footer>
 </div>
+
+<div class="notice" id="notice"></div>
+<div class="critter-badge" id="critterBadge">critters: 0/6</div>
+<div class="critter-panel" id="critterPanel"></div>
+
+<script>
+  // ---------- logo click sounds (synthesized, no audio files) ----------
+  var audioCtx = null;
+  function ctx() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+  }
+  function tone(freq, dur, type, gainPeak, delay) {
+    var c = ctx();
+    var osc = c.createOscillator();
+    var gain = c.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(freq, c.currentTime + (delay || 0));
+    gain.gain.setValueAtTime(0.0001, c.currentTime + (delay || 0));
+    gain.gain.linearRampToValueAtTime(gainPeak || 0.2, c.currentTime + (delay || 0) + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + (delay || 0) + dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start(c.currentTime + (delay || 0));
+    osc.stop(c.currentTime + (delay || 0) + dur + 0.02);
+    return osc;
+  }
+  function sweep(f1, f2, dur, type, gainPeak) {
+    var c = ctx();
+    var osc = c.createOscillator();
+    var gain = c.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.setValueAtTime(f1, c.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(f2, c.currentTime + dur);
+    gain.gain.setValueAtTime(gainPeak || 0.2, c.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, c.currentTime + dur);
+    osc.connect(gain).connect(c.destination);
+    osc.start();
+    osc.stop(c.currentTime + dur + 0.02);
+  }
+  var logoSounds = [
+    function boing() { sweep(120, 400, 0.25, 'sine', 0.25); },
+    function honk() { tone(220, 0.18, 'sawtooth', 0.2); tone(180, 0.2, 'sawtooth', 0.18, 0.05); },
+    function slideUp() { sweep(200, 900, 0.3, 'triangle', 0.2); },
+    function slideDown() { sweep(900, 200, 0.3, 'triangle', 0.2); },
+    function kazoo() { tone(300, 0.12, 'square', 0.15); tone(340, 0.12, 'square', 0.15, 0.1); tone(300, 0.12, 'square', 0.15, 0.2); },
+    function recordScratch() { sweep(600, 80, 0.15, 'sawtooth', 0.22); sweep(80, 500, 0.1, 'sawtooth', 0.18, 0.15); },
+    function cashRegister() { tone(1200, 0.08, 'square', 0.15); tone(1600, 0.1, 'square', 0.15, 0.08); },
+    function laser() { sweep(1400, 200, 0.2, 'sawtooth', 0.18); },
+    function bubble() { sweep(400, 700, 0.1, 'sine', 0.2); sweep(700, 500, 0.1, 'sine', 0.15, 0.1); },
+    function drumHit() { tone(90, 0.15, 'sine', 0.3); },
+    function cowbell() { tone(560, 0.2, 'square', 0.18); tone(840, 0.2, 'square', 0.12); },
+    function sadTrombone() { sweep(300, 150, 0.5, 'sawtooth', 0.2); },
+    function spring() { sweep(150, 500, 0.08, 'triangle', 0.2); sweep(500, 150, 0.08, 'triangle', 0.18, 0.08); sweep(150, 350, 0.08, 'triangle', 0.14, 0.16); },
+    function blip() { tone(880, 0.08, 'square', 0.15); }
+  ];
+  var lastSoundIndex = -1;
+  function playRandomLogoSound() {
+    var i = Math.floor(Math.random() * logoSounds.length);
+    if (i === lastSoundIndex) i = (i + 1) % logoSounds.length;
+    lastSoundIndex = i;
+    logoSounds[i]();
+  }
+
+  var logoEl = document.querySelector('.logo-row h1');
+  logoEl.addEventListener('click', function () {
+    playRandomLogoSound();
+    logoEl.classList.remove('bonk');
+    void logoEl.offsetWidth;
+    logoEl.classList.add('bonk');
+  });
+
+  // ---------- collectible critters ----------
+  var CRITTER_KEY = 'wlg-critters';
+  var critters = [
+    { id: 'sock',  name: 'Lost Sock',        html: '<div class="body"></div><div class="foot"></div><div class="eye"></div>' },
+    { id: 'rat',   name: 'Suspicious Rat',   html: '<div class="tail"></div><div class="ear e1"></div><div class="ear e2"></div><div class="body"></div><div class="snout"></div><div class="eye"></div>' },
+    { id: 'wifi',  name: 'WiFi Guy',         html: '<div class="arc arc1"></div><div class="arc arc2"></div><div class="dot"></div><div class="leg l1"></div><div class="leg l2"></div><div class="shoe s1"></div><div class="shoe s2"></div>' },
+    { id: 'toast', name: 'Sentient Toast',   html: '<div class="steam st1"></div><div class="steam st2"></div><div class="body"></div><div class="eye e1"></div><div class="eye e2"></div><div class="mouth"></div>' },
+    { id: 'ghost', name: 'Ghost Blob',       html: '<div class="body"></div><div class="wave w1"></div><div class="wave w2"></div><div class="wave w3"></div><div class="wave w4"></div><div class="eye e1"></div><div class="eye e2"></div>' },
+    { id: 'eye',   name: 'Wandering Eyeball',html: '<div class="white"></div><div class="lash l1"></div><div class="lash l2"></div><div class="lash l3"></div><div class="iris"></div><div class="pupil"></div>' }
+  ];
+
+  function loadCollected() {
+    try { return JSON.parse(localStorage.getItem(CRITTER_KEY)) || []; } catch (e) { return []; }
+  }
+  function saveCollected(arr) {
+    try { localStorage.setItem(CRITTER_KEY, JSON.stringify(arr)); } catch (e) {}
+  }
+  var collected = loadCollected();
+
+  var noticeEl = document.getElementById('notice');
+  var noticeTimer = null;
+  function showNotice(text) {
+    noticeEl.textContent = text;
+    noticeEl.classList.add('show');
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(function () { noticeEl.classList.remove('show'); }, 2200);
+  }
+
+  var badgeEl = document.getElementById('critterBadge');
+  var panelEl = document.getElementById('critterPanel');
+  function renderBadge() {
+    badgeEl.textContent = 'critters: ' + collected.length + '/' + critters.length;
+    panelEl.innerHTML = critters.map(function (c) {
+      var got = collected.indexOf(c.id) !== -1;
+      return '<div class="' + (got ? 'got' : 'not-got') + '">' + (got ? c.name : '???') + '</div>';
+    }).join('');
+  }
+  renderBadge();
+  badgeEl.addEventListener('click', function () { panelEl.classList.toggle('show'); });
+
+  var activeCritterEl = null;
+  function spawnCritter() {
+    if (activeCritterEl) return;
+    var c = critters[Math.floor(Math.random() * critters.length)];
+    var margin = 70;
+    var x = margin + Math.random() * (window.innerWidth - margin * 2);
+    var y = margin + Math.random() * (window.innerHeight - margin * 2);
+
+    var el = document.createElement('div');
+    el.className = 'critter critter-' + c.id;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.innerHTML = c.html;
+    document.body.appendChild(el);
+    activeCritterEl = el;
+
+    var gone = false;
+    function remove() {
+      if (gone) return;
+      gone = true;
+      el.classList.add('leaving');
+      setTimeout(function () {
+        if (el.parentNode) el.parentNode.removeChild(el);
+        if (activeCritterEl === el) activeCritterEl = null;
+      }, 250);
+    }
+
+    el.addEventListener('click', function () {
+      if (gone) return;
+      if (collected.indexOf(c.id) === -1) {
+        collected.push(c.id);
+        saveCollected(collected);
+        renderBadge();
+        showNotice('caught: ' + c.name + '!');
+      } else {
+        showNotice(c.name + ' again. still counts as a friend.');
+      }
+      remove();
+    });
+
+    setTimeout(remove, 4000);
+    scheduleNextCritter();
+  }
+
+  function scheduleNextCritter() {
+    var delay = collected.length === 0 ? 15000 + Math.random() * 15000
+                                        : 5 * 60000 + Math.random() * 5 * 60000;
+    setTimeout(spawnCritter, delay);
+  }
+  scheduleNextCritter();
+</script>
 </body>
 </html>
