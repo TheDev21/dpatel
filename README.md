@@ -13,6 +13,12 @@ backend, no build step.
 
 ## Games
 
+- **Vacation Math** (`games/vacation-math/`) — not really a game, more a
+  toy: type in a budget and it estimates what kind of trip that could
+  realistically buy (destination tier, a cost breakdown table, a "you
+  can afford" list), based on typical-cost guesswork, not live flight/
+  hotel prices. Extremely low budgets get a joke result instead of a
+  full itinerary.
 - **Keep the Ball From Falling** (`games/keep-the-ball/`) — a ball falls,
   you move a paddle with your mouse/finger to bounce it, gravity ramps up
   the longer you survive. Canvas + hand-rolled physics (gravity, velocity,

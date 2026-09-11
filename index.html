@@ -211,6 +211,36 @@
     border: 1.5px solid #16102a;
   }
 
+  /* Vacation Math thumb */
+  .thumb.trip { background: linear-gradient(160deg, #fff3d6, #ffe3a8 60%, #ffd27a); }
+  .thumb.trip .word { color: #5a3d14; font-size: clamp(24px, 5.5vw, 34px); }
+  .thumb.trip .trip-path {
+    position: absolute; top: 22%; left: 14%;
+    width: 60%; height: 40%;
+    border: 2.5px dashed rgba(90,61,20,0.5);
+    border-radius: 50%;
+    border-bottom-color: transparent; border-left-color: transparent;
+    transform: rotate(-15deg);
+  }
+  .thumb.trip .trip-pin {
+    position: absolute; top: 20%; right: 16%;
+    width: 16px; height: 16px;
+    background: var(--red); border: 2.5px solid var(--ink);
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(45deg);
+  }
+  .thumb.trip .trip-case {
+    position: absolute; bottom: 16%; left: 16%;
+    width: 44px; height: 34px;
+    background: var(--teal); border: 2.5px solid var(--ink); border-radius: 6px;
+  }
+  .thumb.trip .trip-case-handle {
+    position: absolute; bottom: 44%; left: 26%;
+    width: 22px; height: 10px;
+    border: 2.5px solid var(--ink); border-bottom: none;
+    border-radius: 6px 6px 0 0;
+  }
+
   /* Keep the Ball From Falling thumb */
   .thumb.ball { background: linear-gradient(160deg, #d9ecf6, #bfe0f0 65%, #a9d3ea); }
   .thumb.ball .word { color: #14405a; font-size: clamp(24px, 5.5vw, 34px); }
@@ -505,6 +535,16 @@
   <p class="tagline">powered by spite and free time</p>
 
   <div class="grid" id="grid">
+
+    <a class="card" href="games/vacation-math/">
+      <div class="thumb trip">
+        <div class="trip-path"></div>
+        <div class="trip-pin"></div>
+        <div class="trip-case"></div>
+        <div class="trip-case-handle"></div>
+        <div class="word">VACATION<br>MATH</div>
+      </div>
+    </a>
 
     <a class="card" href="games/keep-the-ball/">
       <div class="thumb ball">
