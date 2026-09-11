@@ -53,14 +53,14 @@
   }
 
   .digits {
-    max-width: 720px;
+    max-width: 1000px;
     margin: 0 auto;
-    font-size: clamp(14px, 2.2vw, 18px);
-    line-height: 1.9;
+    font-size: clamp(28px, 5vw, 46px);
+    font-weight: 500;
+    line-height: 1.6;
     word-break: break-all;
     color: var(--ink);
   }
-  #sentinel { height: 1px; }
 </style>
 </head>
 <body>
@@ -68,7 +68,6 @@
 <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
 
 <div class="digits" id="digits">3.</div>
-<div id="sentinel"></div>
 
 <script>
   // ---------- unbounded spigot algorithm for the digits of pi ----------
@@ -103,7 +102,6 @@
   nextDigit(); // discard the leading "3" -- already shown in the markup
 
   var digitsEl = document.getElementById('digits');
-  var sentinel = document.getElementById('sentinel');
   var BATCH = 400;
   var generating = false;
 
@@ -127,12 +125,29 @@
     chunk();
   }
 
-  var observer = new IntersectionObserver(function (entries) {
-    if (entries[0].isIntersecting) generateBatch();
-  }, { rootMargin: '600px' });
-  observer.observe(sentinel);
+  // a plain scroll-position check instead of IntersectionObserver -- the
+  // observer only fires on enter/exit transitions, so once the page grows
+  // taller than the viewport but the sentinel just sits there continuously
+  // in range, it never fires again and generation silently stalls.
+  function nearBottom() {
+    return window.innerHeight + window.scrollY >= document.body.offsetHeight - 800;
+  }
+  function checkScroll() {
+    if (nearBottom()) generateBatch();
+  }
+  window.addEventListener('scroll', checkScroll);
+  window.addEventListener('resize', checkScroll);
 
   generateBatch();
+  // the first batch or two might not be enough to make the page
+  // scrollable at all -- keep topping it up until it is.
+  var fillInterval = setInterval(function () {
+    if (document.body.offsetHeight > window.innerHeight * 1.5) {
+      clearInterval(fillInterval);
+    } else if (!generating) {
+      generateBatch();
+    }
+  }, 50);
 </script>
 </body>
 </html>
