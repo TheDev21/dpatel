@@ -80,6 +80,7 @@
 
   .stage {
     position: relative;
+    margin: 0 auto;
     border: 3px solid var(--ink);
     border-radius: 20px;
     background: var(--card-bg);
@@ -87,7 +88,7 @@
     overflow: hidden;
     touch-action: none;
   }
-  canvas { display: block; width: 100%; height: auto; }
+  canvas { display: block; width: 100%; height: 100%; }
 
   .overlay {
     position: absolute;
@@ -151,6 +152,20 @@
   var canvas = document.getElementById('canvas');
   var ctx = canvas.getContext('2d');
   var W = canvas.width, H = canvas.height;
+  var stage = document.getElementById('stage');
+  var aspect = W / H;
+
+  function fitStage() {
+    var maxW = Math.min(420, window.innerWidth - 36);
+    var topOffset = stage.getBoundingClientRect().top;
+    var availableH = window.innerHeight - topOffset - 24;
+    var width = Math.min(maxW, availableH * aspect);
+    width = Math.max(width, 200);
+    stage.style.width = width + 'px';
+    stage.style.height = (width / aspect) + 'px';
+  }
+  fitStage();
+  window.addEventListener('resize', fitStage);
 
   var startOverlay = document.getElementById('startOverlay');
   var endOverlay = document.getElementById('endOverlay');
