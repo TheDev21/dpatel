@@ -76,14 +76,16 @@
     padding: 22px 24px;
     box-shadow: 5px 6px 0 rgba(28,79,102,0.16);
     margin-bottom: 18px;
+    text-align: left;
   }
-  .card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 14px; }
+  .card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 14px; text-align: center; }
 
   .budget-amount {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 3rem;
     color: var(--orange);
     margin-bottom: 4px;
+    text-align: center;
   }
   .budget-input-row {
     display: flex;
@@ -132,27 +134,19 @@
   .btn.secondary { background: var(--card-bg); color: var(--ink); }
   .btn.secondary:hover { background: var(--sky-deep); color: var(--ink); }
 
-  .tile-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .tile {
-    background: var(--card-bg);
-    border: 2.5px solid var(--ink);
-    border-radius: 14px;
-    padding: 14px 10px;
+  .field-label { font-size: 0.78rem; color: var(--ink-dim); margin: 14px 0 6px; }
+  .field-label:first-child { margin-top: 0; }
+  select {
+    width: 100%;
     font-family: 'DM Mono', monospace;
     font-size: 0.95rem;
+    padding: 12px 12px;
+    border: 2.5px solid var(--ink);
+    border-radius: 12px;
+    background: var(--card-bg);
+    color: var(--ink);
     cursor: pointer;
-    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-    box-shadow: 3px 4px 0 rgba(28,79,102,0.14);
   }
-  .tile:hover { transform: translateY(-2px); background: var(--sky); }
-  .tile.selected { background: var(--orange); color: #fff; border-color: var(--orange); font-weight: 500; }
-  .tile.selected:hover { background: var(--red); border-color: var(--red); }
-  .tile.wide { grid-column: 1 / -1; }
-  .tile .display { font-size: 1.05rem; }
 
   .switch-link {
     display: block;
@@ -167,19 +161,30 @@
   .dest-label { font-size: 0.75rem; color: var(--ink-dim); margin-bottom: 2px; }
   .dest-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; margin-bottom: 4px; }
   .dest-line { font-size: 0.82rem; color: var(--ink-dim); margin-bottom: 12px; font-style: italic; }
+  .fit-tag {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .fit-tag.yes { background: #dcf3e6; color: var(--teal); }
+  .fit-tag.no { background: #ffe1e6; color: var(--red); }
 
   table.breakdown { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
   table.breakdown td { padding: 6px 0; border-bottom: 1.5px dashed var(--sky-deep); }
   table.breakdown td:last-child { text-align: right; font-weight: 500; }
-  table.breakdown tr:last-child td { border-bottom: none; color: var(--teal); font-weight: 600; }
+  table.breakdown tr:last-child td { border-bottom: none; font-weight: 600; }
+  table.breakdown tr:last-child td.fits { color: var(--teal); }
+  table.breakdown tr:last-child td.short { color: var(--red); }
 
-  .empty-card p { margin: 0 0 4px; font-size: 0.88rem; color: var(--ink-dim); }
+  .empty-card p, .noairport-card p { margin: 0 0 4px; font-size: 0.88rem; color: var(--ink-dim); }
+  .noairport-card .big { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; margin-bottom: 8px; text-align: center; }
 
-  .joke-card .big { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; margin-bottom: 8px; }
+  .joke-card .big { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; margin-bottom: 8px; text-align: center; }
   .joke-card p { margin: 0 0 4px; font-size: 0.9rem; color: var(--ink-dim); }
-
-  .results-list { display: none; }
-  .results-list.show { display: block; }
+  .joke-card .big { text-align: center; }
 </style>
 </head>
 <body>
@@ -204,38 +209,30 @@
         <span>$5,000</span>
         <span>$10,000</span>
       </div>
-      <button class="btn" id="toDepartureBtn">next</button>
+      <button class="btn" id="toPickerBtn">next</button>
     </div>
   </div>
 
-  <!-- step 2: departure -->
-  <div class="step" id="stepDeparture">
+  <!-- step 2: departure + destination pickers -->
+  <div class="step" id="stepPicker">
     <div class="card">
-      <h2>where are you leaving from?</h2>
-      <div class="tile-grid">
-        <div class="tile" data-city="Washington, DC" data-domestic="1">Washington, DC</div>
-        <div class="tile" data-city="Atlanta" data-domestic="1">Atlanta</div>
-      </div>
-      <button class="btn" id="toTypeBtn">next</button>
+      <h2>where from, where to?</h2>
+
+      <div class="field-label">leaving from</div>
+      <select id="departureSelect">
+        <option value="surprise">Surprise me (random everything)</option>
+      </select>
+
+      <div class="field-label">going to</div>
+      <select id="destinationSelect">
+        <option value="surprise">Surprise me (pick something that fits)</option>
+      </select>
+
+      <button class="btn" id="goBtn">go</button>
     </div>
   </div>
 
-  <!-- step 3: trip type -->
-  <div class="step" id="stepType">
-    <div class="card">
-      <h2>what kind of trip?</h2>
-      <div class="tile-grid">
-        <div class="tile" data-type="beach">Beach</div>
-        <div class="tile" data-type="city">City</div>
-        <div class="tile" data-type="adventure">Adventure</div>
-        <div class="tile" data-type="food">Food</div>
-        <div class="tile" data-type="culture">Culture</div>
-        <div class="tile" data-type="surprise">Surprise Me</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- step 4: results -->
+  <!-- step 3: results -->
   <div class="step" id="stepResults">
     <div id="resultsBody"></div>
     <button class="switch-link" id="startOverBtn">start over</button>
@@ -247,8 +244,7 @@
   // ---------- step navigation ----------
   var steps = {
     budget: document.getElementById('stepBudget'),
-    departure: document.getElementById('stepDeparture'),
-    type: document.getElementById('stepType'),
+    picker: document.getElementById('stepPicker'),
     results: document.getElementById('stepResults')
   };
   function showStep(name) {
@@ -256,14 +252,17 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
+  function formatMoney(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
   // ---------- step 1: budget ----------
   var budgetInput = document.getElementById('budgetInput');
   var budgetSlider = document.getElementById('budgetSlider');
   var budgetAmount = document.getElementById('budgetAmount');
+  var trip = { budget: 1000 };
 
-  function formatMoney(n) {
-    return '$' + Math.round(n).toLocaleString('en-US');
-  }
   function syncFromSlider() {
     budgetInput.value = budgetSlider.value;
     budgetAmount.textContent = formatMoney(budgetSlider.value);
@@ -275,190 +274,17 @@
   }
   budgetSlider.addEventListener('input', syncFromSlider);
   budgetInput.addEventListener('input', syncFromInput);
-  document.getElementById('toDepartureBtn').addEventListener('click', function () {
-    trip.budget = Math.max(20, Math.min(10000, parseInt(budgetInput.value, 10) || 20));
-    if (trip.budget < 100) {
-      document.getElementById('resultsBody').innerHTML = jokeCardHTML(trip.budget);
-      showStep('results');
-      return;
-    }
-    showStep('departure');
-  });
-
-  // ---------- step 2: departure ----------
-  var trip = { budget: 1000, city: 'Washington, DC', domestic: true, type: 'surprise' };
-  var departureTiles = document.querySelectorAll('#stepDeparture .tile[data-city]');
-
-  departureTiles.forEach(function (tile) {
-    tile.addEventListener('click', function () {
-      trip.city = tile.dataset.city;
-      trip.domestic = tile.dataset.domestic === '1';
-      departureTiles.forEach(function (t) { t.classList.remove('selected'); });
-      tile.classList.add('selected');
-    });
-  });
-  document.getElementById('toTypeBtn').addEventListener('click', function () {
-    trip.budget = Math.max(20, Math.min(10000, parseInt(budgetInput.value, 10) || 20));
-    showStep('type');
-  });
-
-  // ---------- step 3: trip type ----------
-  document.querySelectorAll('#stepType .tile[data-type]').forEach(function (tile) {
-    tile.addEventListener('click', function () {
-      trip.type = tile.dataset.type;
-      if (trip.type === 'surprise') {
-        renderSurprise();
-      } else {
-        renderResultsList();
-      }
-      showStep('results');
-    });
-  });
-
-  document.getElementById('startOverBtn').addEventListener('click', function () {
-    showStep('budget');
-  });
-
-  // ---------- destinations ----------
-  // baseline typical costs for a realistic trip length at that destination --
-  // these are estimated ballpark figures, not live pricing.
-  var destinations = [
-    { name: 'Myrtle Beach',  region: 'domestic', cats: ['beach'],                    flight: 180, hotel: 300, food: 180, transport: 60,  activities: 130, nights: 4, line: "The ocean is free. Everything near it is not." },
-    { name: 'Savannah',      region: 'domestic', cats: ['culture', 'beach'],         flight: 190, hotel: 250, food: 160, transport: 50,  activities: 100, nights: 3, line: "Ghost tours and humidity, in equal measure." },
-    { name: 'Nashville',     region: 'domestic', cats: ['city', 'food'],             flight: 200, hotel: 240, food: 170, transport: 60,  activities: 130, nights: 3, line: "Boots optional. Regret is not." },
-    { name: 'New Orleans',   region: 'domestic', cats: ['food', 'culture'],          flight: 240, hotel: 260, food: 220, transport: 70,  activities: 110, nights: 3, line: "You will eat better than you can afford." },
-    { name: 'Austin',        region: 'domestic', cats: ['food', 'adventure'],        flight: 210, hotel: 270, food: 190, transport: 70,  activities: 140, nights: 3, line: "Breakfast tacos will fix nothing, but they'll help." },
-    { name: 'Chicago',       region: 'domestic', cats: ['city'],                     flight: 220, hotel: 300, food: 180, transport: 90,  activities: 120, nights: 3, line: "Deep-dish pizza and public transit malfunctions." },
-    { name: 'Denver',        region: 'domestic', cats: ['adventure'],                flight: 230, hotel: 280, food: 160, transport: 80,  activities: 170, nights: 3, line: "Mountains you will look at, not climb." },
-    { name: 'Portland',      region: 'domestic', cats: ['culture', 'food'],          flight: 220, hotel: 290, food: 200, transport: 60,  activities: 120, nights: 3, line: "Everyone here has a stronger opinion about coffee than you." },
-    { name: 'San Juan',      region: 'international', cats: ['beach'],               flight: 320, hotel: 350, food: 200, transport: 70,  activities: 160, nights: 4, line: "Technically still domestic paperwork, vacation-brain vibes." },
-    { name: 'Cancun',        region: 'international', cats: ['beach'],               flight: 400, hotel: 420, food: 230, transport: 80,  activities: 170, nights: 4, line: "A resort bracelet will make every decision for you." },
-    { name: 'Mexico City',   region: 'international', cats: ['city', 'culture', 'food'], flight: 380, hotel: 320, food: 220, transport: 90, activities: 140, nights: 4, line: "More museums than you'll actually visit, guaranteed." },
-    { name: 'Toronto',       region: 'international', cats: ['city', 'culture'],     flight: 280, hotel: 380, food: 240, transport: 90,  activities: 130, nights: 4, line: "Extremely polite, extremely overpriced." },
-    { name: 'Lima',          region: 'international', cats: ['food', 'adventure', 'culture'], flight: 520, hotel: 300, food: 220, transport: 100, activities: 180, nights: 5, line: "Ceviche now, questionable altitude decisions later." },
-    { name: 'Lisbon',        region: 'international', cats: ['culture', 'food', 'beach'], flight: 650, hotel: 420, food: 240, transport: 90, activities: 150, nights: 5, line: "Hills that will humble your cardio." },
-    { name: 'Bangkok',       region: 'international', cats: ['food', 'culture', 'adventure'], flight: 780, hotel: 300, food: 200, transport: 90, activities: 180, nights: 6, line: "Street food so good it makes your itinerary irrelevant." },
-    { name: 'Dubai',         region: 'international', cats: ['city', 'adventure'],   flight: 850, hotel: 520, food: 230, transport: 100, activities: 220, nights: 4, line: "You have entered Dubai with exactly enough money to become confused by Dubai." },
-    { name: 'Tokyo',         region: 'international', cats: ['city', 'culture', 'food'], flight: 900, hotel: 500, food: 280, transport: 150, activities: 200, nights: 5, line: "You can afford Tokyo. You just can't afford to act rich in Tokyo." },
-    { name: 'Iceland',       region: 'international', cats: ['adventure'],           flight: 700, hotel: 550, food: 260, transport: 140, activities: 230, nights: 4, line: "Beautiful. Also the wind will personally insult you." },
-    { name: 'Bali',          region: 'international', cats: ['beach', 'adventure'],  flight: 1100, hotel: 400, food: 250, transport: 130, activities: 220, nights: 7, line: "You'll post more photos than memories, and that's fine." },
-    { name: 'Paris',         region: 'international', cats: ['culture', 'city'],     flight: 950, hotel: 650, food: 300, transport: 120, activities: 220, nights: 5, line: "Everything is beautiful and slightly hostile to tourists." },
-    { name: 'Rome',          region: 'international', cats: ['culture', 'food'],     flight: 980, hotel: 680, food: 340, transport: 140, activities: 240, nights: 6, line: "Ancient ruins and modern gelato-based regret." },
-    { name: 'New Zealand',   region: 'international', cats: ['adventure'],           flight: 1300, hotel: 600, food: 320, transport: 180, activities: 280, nights: 7, line: "Every hobbit joke you're thinking of, someone there has already made." }
-  ];
-
-  function destTotal(d) {
-    var flight = d.flight;
-    if (trip.domestic && d.region === 'domestic') flight = Math.round(flight * 0.85);
-    return {
-      flight: flight,
-      hotel: d.hotel,
-      food: d.food,
-      transport: d.transport,
-      activities: d.activities,
-      total: flight + d.hotel + d.food + d.transport + d.activities
-    };
-  }
-
-  function affordable(budget, type) {
-    return destinations.filter(function (d) {
-      var fits = destTotal(d).total <= budget;
-      var matches = type === 'surprise' || d.cats.indexOf(type) !== -1;
-      return fits && matches;
-    });
-  }
-
-  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-
-  function destCardHTML(d) {
-    var c = destTotal(d);
-    var left = trip.budget - c.total;
-    return (
-      '<div class="card dest-card">' +
-        '<div class="dest-label">flying from ' + trip.city + '</div>' +
-        '<div class="dest-name">' + d.name + '</div>' +
-        '<div class="dest-line">' + d.line + '</div>' +
-        '<table class="breakdown">' +
-          '<tr><td>Flight</td><td>' + formatMoney(c.flight) + '</td></tr>' +
-          '<tr><td>Hotel — ' + d.nights + ' night' + (d.nights === 1 ? '' : 's') + '</td><td>' + formatMoney(c.hotel) + '</td></tr>' +
-          '<tr><td>Food</td><td>' + formatMoney(c.food) + '</td></tr>' +
-          '<tr><td>Transportation</td><td>' + formatMoney(c.transport) + '</td></tr>' +
-          '<tr><td>Activities</td><td>' + formatMoney(c.activities) + '</td></tr>' +
-          '<tr><td>Left over</td><td>' + formatMoney(left) + '</td></tr>' +
-        '</table>' +
-      '</div>'
-    );
-  }
-
-  function emptyCardHTML() {
-    return (
-      '<div class="card empty-card">' +
-        '<h2>nothing realistically fits that.</h2>' +
-        '<p>Either the budget is too tight for this kind of trip, or you\'re about to become someone\'s "how did you afford this" story.</p>' +
-        '<p>Try a bigger budget, a different trip type, or just hit surprise me.</p>' +
-      '</div>'
-    );
-  }
 
   var jokeTiers = [
-    {
-      max: 29,
-      lines: [
-        'You can visit the nearest city and buy lunch.',
-        'This is not a vacation. This is an errand with a worse mood.'
-      ]
-    },
-    {
-      max: 39,
-      lines: [
-        'You can afford lunch AND a small dessert.',
-        'Truly the Rockefeller of getting a Wendy\'s Frosty.'
-      ]
-    },
-    {
-      max: 49,
-      lines: [
-        'You can drive two towns over for a real sit-down lunch.',
-        'Ambitious of you to call this a "trip" and not "running an errand in a different zip code."'
-      ]
-    },
-    {
-      max: 59,
-      lines: [
-        'You can drive somewhere with a nice view, park, and eat a sandwich looking at it.',
-        'Congratulations on inventing the saddest possible picnic.'
-      ]
-    },
-    {
-      max: 69,
-      lines: [
-        'You could technically afford a motel room for a few hours.',
-        'We are not going to ask why. Neither is the front desk clerk, for a fee.'
-      ]
-    },
-    {
-      max: 79,
-      lines: [
-        'One night at a truly mediocre motel is now within reach.',
-        'The ice machine will be broken. It is always broken. This is the rule.'
-      ]
-    },
-    {
-      max: 89,
-      lines: [
-        'A full day trip: gas, one real meal, and a keychain you absolutely did not need.',
-        'You\'re one Groupon away from thinking you\'re a world traveler.'
-      ]
-    },
-    {
-      max: 99,
-      lines: [
-        'You are one skipped meal away from actually affording a real trip.',
-        'Go check the couch cushions. We believe in you, barely.'
-      ]
-    }
+    { max: 29, lines: ['You can visit the nearest city and buy lunch.', 'This is not a vacation. This is an errand with a worse mood.'] },
+    { max: 39, lines: ['You can afford lunch AND a small dessert.', 'Truly the Rockefeller of getting a Wendy\'s Frosty.'] },
+    { max: 49, lines: ['You can drive two towns over for a real sit-down lunch.', 'Ambitious of you to call this a "trip" and not "running an errand in a different zip code."'] },
+    { max: 59, lines: ['You can drive somewhere with a nice view, park, and eat a sandwich looking at it.', 'Congratulations on inventing the saddest possible picnic.'] },
+    { max: 69, lines: ['You could technically afford a motel room for a few hours.', 'We are not going to ask why. Neither is the front desk clerk, for a fee.'] },
+    { max: 79, lines: ['One night at a truly mediocre motel is now within reach.', 'The ice machine will be broken. It is always broken. This is the rule.'] },
+    { max: 89, lines: ['A full day trip: gas, one real meal, and a keychain you absolutely did not need.', 'You\'re one Groupon away from thinking you\'re a world traveler.'] },
+    { max: 99, lines: ['You are one skipped meal away from actually affording a real trip.', 'Go check the couch cushions. We believe in you, barely.'] }
   ];
-
   function jokeCardHTML(budget) {
     var tier = jokeTiers[jokeTiers.length - 1];
     for (var i = 0; i < jokeTiers.length; i++) {
@@ -467,52 +293,267 @@
     return (
       '<div class="card joke-card">' +
         '<div class="big">' + formatMoney(budget) + '</div>' +
-        '<p>Congratulations.</p>' +
-        tier.lines.map(function (line) { return '<p>' + line + '</p>'; }).join('') +
+        '<p style="text-align:center">Congratulations.</p>' +
+        tier.lines.map(function (line) { return '<p style="text-align:center">' + line + '</p>'; }).join('') +
       '</div>'
     );
   }
 
-  function renderResultsList() {
-    var body = document.getElementById('resultsBody');
+  document.getElementById('toPickerBtn').addEventListener('click', function () {
+    trip.budget = Math.max(20, Math.min(10000, parseInt(budgetInput.value, 10) || 20));
     if (trip.budget < 100) {
-      body.innerHTML = jokeCardHTML(trip.budget);
+      document.getElementById('resultsBody').innerHTML = jokeCardHTML(trip.budget);
+      showStep('results');
       return;
     }
-    var results = affordable(trip.budget, trip.type);
-    results.sort(function (a, b) { return destTotal(a).total - destTotal(b).total; });
-    results = results.slice(0, 6);
-    if (results.length === 0) {
-      body.innerHTML = emptyCardHTML();
-    } else {
-      body.innerHTML = results.map(destCardHTML).join('');
-    }
+    showStep('picker');
+  });
+
+  // ---------- country data ----------
+  // a scalable model instead of hand-authored destinations: every country
+  // gets a region "zone" (for a rough flight-distance estimate) and a cost
+  // tier (1 = budget, 2 = mid, 3 = premium) that drives daily hotel/food/
+  // activity/transport rates. numbers are estimates for a fun game, not
+  // real fares -- but every one of the ~195 countries gets a real result
+  // instead of a fixed shortlist.
+  var ZONE_ORDER = { 1: 0, 2: 1, 3: 2, 4: 3, 5: 3.5, 6: 4.5, 7: 5.5, 8: 5, 9: 6, 10: 6.5, 11: 7.5 };
+  var TIER_RATES = {
+    1: { hotel: 35, food: 18, activities: 12, transport: 8 },
+    2: { hotel: 85, food: 35, activities: 25, transport: 15 },
+    3: { hotel: 170, food: 60, activities: 45, transport: 25 }
+  };
+  var NIGHTS = 5;
+
+  // [name, zone, tier, major city]
+  var countryData = [
+    ['United States', 1, 3, 'Washington, DC'], ['Canada', 1, 3, 'Ottawa'], ['Mexico', 1, 2, 'Mexico City'],
+    ['Belize', 2, 2, 'Belize City'], ['Guatemala', 2, 1, 'Guatemala City'], ['Honduras', 2, 1, 'Tegucigalpa'],
+    ['El Salvador', 2, 1, 'San Salvador'], ['Nicaragua', 2, 1, 'Managua'], ['Costa Rica', 2, 2, 'San Jose'],
+    ['Panama', 2, 2, 'Panama City'], ['Cuba', 2, 1, 'Havana'], ['Jamaica', 2, 2, 'Kingston'],
+    ['Haiti', 2, 1, 'Port-au-Prince'], ['Dominican Republic', 2, 2, 'Santo Domingo'], ['Bahamas', 2, 3, 'Nassau'],
+    ['Barbados', 2, 3, 'Bridgetown'], ['Trinidad and Tobago', 2, 2, 'Port of Spain'], ['Saint Lucia', 2, 2, 'Castries'],
+    ['Grenada', 2, 2, "St. George's"], ['Saint Vincent and the Grenadines', 2, 2, 'Kingstown'],
+    ['Antigua and Barbuda', 2, 2, "St. John's"], ['Saint Kitts and Nevis', 2, 2, 'Basseterre'], ['Dominica', 2, 1, 'Roseau'],
+    ['Colombia', 3, 1, 'Bogota'], ['Venezuela', 3, 1, 'Caracas'], ['Guyana', 3, 1, 'Georgetown'],
+    ['Suriname', 3, 1, 'Paramaribo'], ['Ecuador', 3, 1, 'Quito'], ['Peru', 3, 1, 'Lima'],
+    ['Bolivia', 3, 1, 'La Paz'], ['Paraguay', 3, 1, 'Asuncion'], ['Chile', 3, 2, 'Santiago'],
+    ['Argentina', 3, 2, 'Buenos Aires'], ['Uruguay', 3, 2, 'Montevideo'], ['Brazil', 3, 2, 'Brasilia'],
+    ['United Kingdom', 4, 3, 'London'], ['Ireland', 4, 3, 'Dublin'], ['France', 4, 3, 'Paris'],
+    ['Germany', 4, 3, 'Berlin'], ['Netherlands', 4, 3, 'Amsterdam'], ['Belgium', 4, 3, 'Brussels'],
+    ['Luxembourg', 4, 3, 'Luxembourg City'], ['Switzerland', 4, 3, 'Bern'], ['Austria', 4, 3, 'Vienna'],
+    ['Denmark', 4, 3, 'Copenhagen'], ['Norway', 4, 3, 'Oslo'], ['Sweden', 4, 3, 'Stockholm'],
+    ['Finland', 4, 3, 'Helsinki'], ['Iceland', 4, 3, 'Reykjavik'],
+    ['Spain', 5, 2, 'Madrid'], ['Portugal', 5, 2, 'Lisbon'], ['Italy', 5, 3, 'Rome'],
+    ['Greece', 5, 2, 'Athens'], ['Poland', 5, 2, 'Warsaw'], ['Czechia', 5, 2, 'Prague'],
+    ['Slovakia', 5, 2, 'Bratislava'], ['Hungary', 5, 2, 'Budapest'], ['Romania', 5, 1, 'Bucharest'],
+    ['Bulgaria', 5, 1, 'Sofia'], ['Croatia', 5, 2, 'Zagreb'], ['Slovenia', 5, 2, 'Ljubljana'],
+    ['Serbia', 5, 1, 'Belgrade'], ['Bosnia and Herzegovina', 5, 1, 'Sarajevo'], ['Montenegro', 5, 2, 'Podgorica'],
+    ['North Macedonia', 5, 1, 'Skopje'], ['Albania', 5, 1, 'Tirana'], ['Kosovo', 5, 1, 'Pristina'],
+    ['Moldova', 5, 1, 'Chisinau'], ['Ukraine', 5, 1, 'Kyiv'], ['Belarus', 5, 1, 'Minsk'],
+    ['Russia', 5, 2, 'Moscow'], ['Estonia', 5, 2, 'Tallinn'], ['Latvia', 5, 2, 'Riga'],
+    ['Lithuania', 5, 2, 'Vilnius'], ['Malta', 5, 2, 'Valletta'], ['Cyprus', 5, 2, 'Nicosia'],
+    ['Turkey', 6, 2, 'Ankara'], ['Israel', 6, 3, 'Jerusalem'], ['Palestine', 6, 1, 'Ramallah'],
+    ['Jordan', 6, 2, 'Amman'], ['Lebanon', 6, 2, 'Beirut'], ['Syria', 6, 1, 'Damascus'],
+    ['Iraq', 6, 1, 'Baghdad'], ['Iran', 6, 1, 'Tehran'], ['Saudi Arabia', 6, 3, 'Riyadh'],
+    ['Yemen', 6, 1, "Sana'a"], ['Oman', 6, 2, 'Muscat'], ['United Arab Emirates', 6, 3, 'Abu Dhabi'],
+    ['Qatar', 6, 3, 'Doha'], ['Bahrain', 6, 2, 'Manama'], ['Kuwait', 6, 2, 'Kuwait City'],
+    ['Egypt', 6, 1, 'Cairo'], ['Libya', 6, 1, 'Tripoli'], ['Tunisia', 6, 1, 'Tunis'],
+    ['Algeria', 6, 1, 'Algiers'], ['Morocco', 6, 1, 'Rabat'], ['Sudan', 6, 1, 'Khartoum'],
+    ['Mauritania', 7, 1, 'Nouakchott'], ['Mali', 7, 1, 'Bamako'], ['Niger', 7, 1, 'Niamey'],
+    ['Chad', 7, 1, "N'Djamena"], ['Senegal', 7, 1, 'Dakar'], ['Gambia', 7, 1, 'Banjul'],
+    ['Guinea-Bissau', 7, 1, 'Bissau'], ['Guinea', 7, 1, 'Conakry'], ['Sierra Leone', 7, 1, 'Freetown'],
+    ['Liberia', 7, 1, 'Monrovia'], ['Ivory Coast', 7, 1, 'Yamoussoukro'], ['Ghana', 7, 1, 'Accra'],
+    ['Togo', 7, 1, 'Lome'], ['Benin', 7, 1, 'Porto-Novo'], ['Nigeria', 7, 1, 'Abuja'],
+    ['Cameroon', 7, 1, 'Yaounde'], ['Central African Republic', 7, 1, 'Bangui'], ['South Sudan', 7, 1, 'Juba'],
+    ['Ethiopia', 7, 1, 'Addis Ababa'], ['Eritrea', 7, 1, 'Asmara'], ['Djibouti', 7, 1, 'Djibouti City'],
+    ['Somalia', 7, 1, 'Mogadishu'], ['Kenya', 7, 1, 'Nairobi'], ['Uganda', 7, 1, 'Kampala'],
+    ['Rwanda', 7, 1, 'Kigali'], ['Burundi', 7, 1, 'Gitega'], ['Tanzania', 7, 1, 'Dodoma'],
+    ['Democratic Republic of the Congo', 7, 1, 'Kinshasa'], ['Republic of the Congo', 7, 1, 'Brazzaville'],
+    ['Gabon', 7, 1, 'Libreville'], ['Equatorial Guinea', 7, 1, 'Malabo'], ['Sao Tome and Principe', 7, 1, 'Sao Tome'],
+    ['Angola', 7, 1, 'Luanda'], ['Zambia', 7, 1, 'Lusaka'], ['Malawi', 7, 1, 'Lilongwe'],
+    ['Mozambique', 7, 1, 'Maputo'], ['Zimbabwe', 7, 1, 'Harare'], ['Botswana', 7, 2, 'Gaborone'],
+    ['Namibia', 7, 2, 'Windhoek'], ['South Africa', 7, 2, 'Pretoria'], ['Lesotho', 7, 1, 'Maseru'],
+    ['Eswatini', 7, 1, 'Mbabane'], ['Madagascar', 7, 1, 'Antananarivo'], ['Comoros', 7, 1, 'Moroni'],
+    ['Mauritius', 7, 2, 'Port Louis'], ['Seychelles', 7, 3, 'Victoria'], ['Cape Verde', 7, 1, 'Praia'],
+    ['Burkina Faso', 7, 1, 'Ouagadougou'],
+    ['Kazakhstan', 8, 2, 'Astana'], ['Uzbekistan', 8, 1, 'Tashkent'], ['Turkmenistan', 8, 1, 'Ashgabat'],
+    ['Tajikistan', 8, 1, 'Dushanbe'], ['Kyrgyzstan', 8, 1, 'Bishkek'], ['Afghanistan', 8, 1, 'Kabul'],
+    ['Pakistan', 8, 1, 'Islamabad'], ['India', 8, 1, 'New Delhi'], ['Nepal', 8, 1, 'Kathmandu'],
+    ['Bhutan', 8, 2, 'Thimphu'], ['Bangladesh', 8, 1, 'Dhaka'], ['Sri Lanka', 8, 1, 'Colombo'],
+    ['Maldives', 8, 3, 'Male'], ['Georgia', 8, 1, 'Tbilisi'], ['Armenia', 8, 1, 'Yerevan'],
+    ['Azerbaijan', 8, 2, 'Baku'],
+    ['Myanmar', 9, 1, 'Naypyidaw'], ['Thailand', 9, 1, 'Bangkok'], ['Laos', 9, 1, 'Vientiane'],
+    ['Cambodia', 9, 1, 'Phnom Penh'], ['Vietnam', 9, 1, 'Hanoi'], ['Malaysia', 9, 2, 'Kuala Lumpur'],
+    ['Singapore', 9, 3, 'Singapore'], ['Indonesia', 9, 1, 'Jakarta'], ['Brunei', 9, 2, 'Bandar Seri Begawan'],
+    ['Philippines', 9, 1, 'Manila'], ['Timor-Leste', 9, 1, 'Dili'],
+    ['China', 10, 2, 'Beijing'], ['Mongolia', 10, 1, 'Ulaanbaatar'], ['South Korea', 10, 2, 'Seoul'],
+    ['Japan', 10, 3, 'Tokyo'], ['Taiwan', 10, 2, 'Taipei'],
+    ['Australia', 11, 3, 'Canberra'], ['New Zealand', 11, 3, 'Wellington'], ['Papua New Guinea', 11, 1, 'Port Moresby'],
+    ['Fiji', 11, 2, 'Suva'], ['Solomon Islands', 11, 1, 'Honiara'], ['Vanuatu', 11, 2, 'Port Vila'],
+    ['Samoa', 11, 2, 'Apia'], ['Tonga', 11, 2, "Nuku'alofa"], ['Kiribati', 11, 1, 'Tarawa'],
+    ['Tuvalu', 11, 1, 'Funafuti'], ['Nauru', 11, 1, 'Yaren'], ['Palau', 11, 2, 'Ngerulmud'],
+    ['Micronesia', 11, 1, 'Palikir'], ['Marshall Islands', 11, 1, 'Majuro']
+  ];
+
+  var NO_AIRPORT = [
+    { name: 'Vatican City', line: 'Vatican City does not have an international airport. It is 0.17 square miles. You would overshoot the runway into Rome.' },
+    { name: 'Monaco', line: 'Monaco does not have an international airport. It has a heliport, and a helicopter is not in this budget, or possibly any budget.' },
+    { name: 'San Marino', line: 'San Marino does not have an international airport. You would fly into Italy and drive up a mountain, which defeats the point of picking San Marino.' },
+    { name: 'Andorra', line: 'Andorra does not have an international airport. It is famously reachable by "a very long bus ride from somewhere else."' },
+    { name: 'Liechtenstein', line: 'Liechtenstein does not have an international airport. It does not even have a regular one. You are flying into Zurich and driving.' }
+  ];
+
+  var countries = countryData.map(function (c) {
+    return { name: c[0], zone: c[1], tier: c[2], city: c[3], noAirport: false };
+  });
+  NO_AIRPORT.forEach(function (na) {
+    countries.push({ name: na.name, noAirport: true, line: na.line });
+  });
+  countries.sort(function (a, b) { return a.name.localeCompare(b.name); });
+
+  var flyableCountries = countries.filter(function (c) { return !c.noAirport; });
+
+  // ---------- populate the two selects ----------
+  var departureSelect = document.getElementById('departureSelect');
+  var destinationSelect = document.getElementById('destinationSelect');
+  countries.forEach(function (c) {
+    var opt1 = document.createElement('option');
+    opt1.value = c.name;
+    opt1.textContent = c.name + (c.noAirport ? ' (no international airport)' : '');
+    departureSelect.appendChild(opt1);
+
+    var opt2 = document.createElement('option');
+    opt2.value = c.name;
+    opt2.textContent = c.name + (c.noAirport ? ' (no international airport)' : '');
+    destinationSelect.appendChild(opt2);
+  });
+
+  function findCountry(name) {
+    for (var i = 0; i < countries.length; i++) { if (countries[i].name === name) return countries[i]; }
+    return null;
   }
 
-  // ---------- surprise me ----------
-  var surpriseShown = [];
-  function renderSurprise() {
-    var body = document.getElementById('resultsBody');
-    if (trip.budget < 100) {
-      body.innerHTML = jokeCardHTML(trip.budget);
-      return;
-    }
-    var pool = affordable(trip.budget, 'surprise');
-    if (pool.length === 0) {
-      body.innerHTML = emptyCardHTML();
-      return;
-    }
-    var remaining = pool.filter(function (d) { return surpriseShown.indexOf(d.name) === -1; });
-    if (remaining.length === 0) {
-      surpriseShown = [];
-      remaining = pool;
-    }
-    var choice = pick(remaining);
-    surpriseShown.push(choice.name);
-    body.innerHTML = destCardHTML(choice) +
-      '<button class="btn" id="nextSurpriseBtn">nope, next one</button>';
-    document.getElementById('nextSurpriseBtn').addEventListener('click', renderSurprise);
+  // ---------- cost estimate ----------
+  function flightCost(depZone, destZone) {
+    var diff = Math.abs(ZONE_ORDER[depZone] - ZONE_ORDER[destZone]);
+    return Math.round(180 + diff * 160);
   }
+  function estimateTrip(dep, dest) {
+    var rates = TIER_RATES[dest.tier];
+    var flight = dep.zone === dest.zone ? Math.round(flightCost(dep.zone, dest.zone) * 0.6) : flightCost(dep.zone, dest.zone);
+    var hotel = rates.hotel * NIGHTS;
+    var food = rates.food * NIGHTS;
+    var activities = rates.activities * NIGHTS;
+    var transport = rates.transport * NIGHTS;
+    return {
+      flight: flight, hotel: hotel, food: food, activities: activities, transport: transport,
+      total: flight + hotel + food + activities + transport, nights: NIGHTS
+    };
+  }
+
+  var destLines = [
+    'A real place. A real estimate. Emotionally, still made up.',
+    'This is what typical costs look like. Your actual mileage, and meltdowns, may vary.',
+    'Somewhere on Earth, for a somewhat realistic price.',
+    'This could genuinely be a trip. Wild.',
+    'A destination with an actual airport. We checked. Mostly.'
+  ];
+
+  function noAirportCardHTML(country) {
+    return (
+      '<div class="card noairport-card">' +
+        '<div class="big">' + country.name + '</div>' +
+        '<p>' + country.line + '</p>' +
+        '<p>Pick somewhere with a runway.</p>' +
+      '</div>'
+    );
+  }
+
+  function tripCardHTML(dep, dest) {
+    var c = estimateTrip(dep, dest);
+    var fits = c.total <= trip.budget;
+    var left = trip.budget - c.total;
+    return (
+      '<div class="card dest-card">' +
+        '<div class="dest-label">flying from ' + dep.name + ' (' + dep.city + ')</div>' +
+        '<div class="dest-name">' + dest.name + '</div>' +
+        '<div class="dest-line">' + pick(destLines) + '</div>' +
+        '<span class="fit-tag ' + (fits ? 'yes' : 'no') + '">' + (fits ? 'fits your budget' : 'does not fit your budget') + '</span>' +
+        '<table class="breakdown">' +
+          '<tr><td>Flight (estimate)</td><td>' + formatMoney(c.flight) + '</td></tr>' +
+          '<tr><td>Hotel — ' + c.nights + ' nights</td><td>' + formatMoney(c.hotel) + '</td></tr>' +
+          '<tr><td>Food</td><td>' + formatMoney(c.food) + '</td></tr>' +
+          '<tr><td>Local transportation</td><td>' + formatMoney(c.transport) + '</td></tr>' +
+          '<tr><td>Activities</td><td>' + formatMoney(c.activities) + '</td></tr>' +
+          '<tr><td>Total estimate</td><td>' + formatMoney(c.total) + '</td></tr>' +
+          '<tr><td>' + (fits ? 'Left over' : 'You are short') + '</td><td class="' + (fits ? 'fits' : 'short') + '">' + formatMoney(Math.abs(left)) + '</td></tr>' +
+        '</table>' +
+      '</div>'
+    );
+  }
+
+  function pickRandomFlyable(exclude) {
+    var pool = flyableCountries.filter(function (c) { return c.name !== exclude; });
+    return pick(pool);
+  }
+
+  // try a handful of random affordable pairs before giving up and just
+  // showing the cheapest possible pairing, so "surprise me" still respects
+  // the budget instead of being purely random.
+  function findAffordablePair(depFixed, destFixed) {
+    var attempts = 60;
+    for (var i = 0; i < attempts; i++) {
+      var dep = depFixed || pickRandomFlyable(destFixed ? destFixed.name : null);
+      var dest = destFixed || pickRandomFlyable(dep.name);
+      if (dep.name === dest.name) continue;
+      if (estimateTrip(dep, dest).total <= trip.budget) return { dep: dep, dest: dest };
+    }
+    // nothing affordable found -- fall back to the cheapest possible pair
+    // so the game is still honest instead of silently failing
+    var best = null, bestTotal = Infinity;
+    var depsToTry = depFixed ? [depFixed] : flyableCountries;
+    var destsToTry = destFixed ? [destFixed] : flyableCountries;
+    depsToTry.forEach(function (d) {
+      destsToTry.forEach(function (t) {
+        if (d.name === t.name) return;
+        var total = estimateTrip(d, t).total;
+        if (total < bestTotal) { bestTotal = total; best = { dep: d, dest: t }; }
+      });
+    });
+    return best;
+  }
+
+  document.getElementById('goBtn').addEventListener('click', function () {
+    var depName = departureSelect.value;
+    var destName = destinationSelect.value;
+    var body = document.getElementById('resultsBody');
+
+    var depSurprise = depName === 'surprise';
+    var destSurprise = destName === 'surprise';
+
+    var depCountry = depSurprise ? null : findCountry(depName);
+    var destCountry = destSurprise ? null : findCountry(destName);
+
+    if (depCountry && depCountry.noAirport) { body.innerHTML = noAirportCardHTML(depCountry); showStep('results'); return; }
+    if (destCountry && destCountry.noAirport) { body.innerHTML = noAirportCardHTML(destCountry); showStep('results'); return; }
+
+    if (!depSurprise && !destSurprise && depCountry.name === destCountry.name) {
+      body.innerHTML = '<div class="card empty-card"><h2>that is not a trip.</h2><p>Leaving from ' + depCountry.name + ' to go to ' + destCountry.name + ' is just staying home with extra steps.</p></div>';
+      showStep('results');
+      return;
+    }
+
+    var pair = findAffordablePair(
+      depSurprise ? null : depCountry,
+      destSurprise ? null : destCountry
+    );
+    body.innerHTML = tripCardHTML(pair.dep, pair.dest);
+    showStep('results');
+  });
+
+  document.getElementById('startOverBtn').addEventListener('click', function () {
+    showStep('budget');
+  });
 </script>
 </body>
 </html>
