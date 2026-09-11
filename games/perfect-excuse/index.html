@@ -6,7 +6,7 @@
 <title>Perfect Excuse — Weird Little Games</title>
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Caveat:wght@700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --pink: #f3e2c8;
@@ -36,25 +36,29 @@
 
   .corner-badge {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 22px;
+    left: 26px;
     z-index: 50;
-    transform: rotate(-6deg);
-    background: var(--card-bg);
-    border: 2.5px solid var(--ink);
-    border-radius: 14px;
-    padding: 8px 14px;
+    transform: rotate(25deg);
+    transform-origin: top left;
     text-align: center;
     color: var(--ink);
-    text-decoration: none;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 15px;
-    line-height: 1.15;
-    letter-spacing: 0.02em;
-    box-shadow: 3px 4px 0 rgba(35,32,29,0.15);
-    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    text-decoration: underline;
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+    font-size: 28px;
+    line-height: 1.05;
   }
-  .corner-badge:hover { transform: rotate(-6deg) translateY(-2px); box-shadow: 4px 6px 0 rgba(35,32,29,0.2); }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(25deg); }
+    15% { transform: rotate(12deg); }
+    30% { transform: rotate(36deg); }
+    45% { transform: rotate(16deg); }
+    60% { transform: rotate(32deg); }
+    75% { transform: rotate(21deg); }
+    90% { transform: rotate(27deg); }
+  }
   h1 { font-size: clamp(2.2rem, 7vw, 3rem); margin: 10px 0 2px; }
   h1 span { color: var(--red); }
   .tagline { text-align: center; font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 26px; }
