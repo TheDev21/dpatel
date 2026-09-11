@@ -130,6 +130,28 @@
   }
   .thumb .deco { position: absolute; z-index: 1; }
 
+  /* Give It a Minute thumb */
+  .thumb.paint { background: #f4efe6; align-items: flex-end; }
+  .thumb.paint .paint-splash {
+    position: absolute; top: -10%; left: -6%; width: 70%; height: 85%;
+    background: var(--orange);
+    border-radius: 44% 56% 62% 38% / 52% 48% 52% 48%;
+  }
+  .thumb.paint .paint-drip {
+    position: absolute; top: 62%; left: 30%; width: 10px; height: 22px;
+    background: var(--orange); border-radius: 0 0 6px 6px;
+  }
+  .thumb.paint .floor-strip {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 22%;
+    background: linear-gradient(180deg, #c8a97a, #b6935f);
+    border-top: 3px solid var(--ink);
+  }
+  .thumb.paint .roller {
+    position: absolute; bottom: 26%; right: 14%; z-index: 2;
+    transform: rotate(-18deg);
+  }
+  .thumb.paint .word { color: #4a2f14; font-size: clamp(24px, 5.5vw, 34px); position: relative; z-index: 2; }
+
   /* Doomscroll thumb */
   .thumb.doom { background: linear-gradient(160deg, #23283d, var(--navy)); }
   .thumb.doom .word { font-size: clamp(30px, 6vw, 42px); color: #ffe9d8; text-shadow: 2px 2px 0 rgba(255,90,31,0.5); }
@@ -671,6 +693,21 @@
         <span class="arrow a3">&#8593;</span>
         <div class="phone-shape"></div>
         <div class="word">DOOM<br>SCROLL</div>
+      </div>
+    </a>
+
+    <a class="card" href="games/give-it-a-minute/">
+      <div class="thumb paint">
+        <div class="paint-splash"></div>
+        <div class="paint-drip"></div>
+        <div class="roller">
+          <svg viewBox="0 0 34 34" width="30" height="30">
+            <rect x="6" y="8" width="20" height="12" rx="2" fill="#fff" stroke="#23201d" stroke-width="1.8"/>
+            <rect x="14" y="20" width="4" height="8" fill="#6b4a2f" stroke="#23201d" stroke-width="1.2"/>
+          </svg>
+        </div>
+        <div class="floor-strip"></div>
+        <div class="word">GIVE IT A<br>MINUTE</div>
       </div>
     </a>
 

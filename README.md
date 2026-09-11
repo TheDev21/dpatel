@@ -41,6 +41,17 @@ backend, no build step.
   carries over between visits. Includes a prestige loop ("go viral"):
   reset your run once you've scrolled far enough for permanent, stacking
   scroll-speed bonuses ("clout").
+- **Give It a Minute** (`games/give-it-a-minute/`) — you paint a wall
+  (pick brush size and any color from a real color wheel, freehand,
+  full-screen wall with a floor) and only once it's fully covered do
+  you find out the actual game is watching the paint dry. Drying takes
+  a randomized 2-6 minutes (weighted toward ~3), the percentage
+  advances unevenly with stalls and rare regressions rather than a
+  clean progress bar, and random pointless events (flies, a spider,
+  drips, knocks, "PAINT HAS STOPPED DRYING.") fire at unpredictable
+  intervals. A goofy WebAudio-generated cartoon loop (no audio files)
+  plays throughout. Answering "absolutely not" at the end lets you
+  paint and wait all over again with a fresh random duration.
 - **Startup Slot Machine** (`games/startup-slot-machine/`) — pull the
   lever, get a randomly generated absurd startup pitch with a rarity
   tier (common/rare/legendary/mythic). Three-reel spin with near-miss

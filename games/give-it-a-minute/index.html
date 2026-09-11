@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Give It a Minute — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23dfe9f2'/%3E%3Crect x='7' y='9' width='18' height='14' rx='2' fill='%23fff' stroke='%2323201d' stroke-width='1.8'/%3E%3Crect x='7' y='9' width='10' height='14' fill='%23ff5a1f'/%3E%3Crect x='13' y='4' width='4' height='6' rx='1' fill='%236b4a2f' stroke='%2323201d' stroke-width='1.4'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #eef2f6;
+    --ink: #23201d;
+    --ink-dim: #5a6068;
+    --card-bg: #fffdf9;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --teal: #1f8a70;
+    --wall-base: #f4efe6;
+    --floor-h: 84px;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 90;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (max-width: 960px) {
+    .corner-badge { top: 14px; left: 14px; font-size: 22px; }
+  }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+
+  .mute-btn {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    z-index: 90;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: var(--card-bg);
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 0 rgba(35,32,29,0.14);
+  }
+  .mute-btn:hover { background: #fff; }
+
+  /* ---- dialog screens: intro / done / yes / no ---- */
+  .dialog-wrap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 18px 60px;
+  }
+  .dialog-wrap.hidden { display: none; }
+  h1.title { font-size: clamp(2.2rem, 7vw, 3rem); margin: 0 0 2px; text-align: center; }
+  h1.title span { color: var(--orange); }
+  .tagline { text-align: center; font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 22px; }
+
+  .card {
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 22px;
+    box-shadow: 6px 7px 0 rgba(35,32,29,0.12);
+    padding: 26px 24px;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+  }
+  .step { display: none; }
+  .step.show { display: block; }
+
+  .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.25rem;
+    letter-spacing: 0.03em;
+    background: var(--orange);
+    color: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 12px 30px;
+    cursor: pointer;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.2);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: 5px 7px 0 rgba(35,32,29,0.24); }
+  .btn:active { transform: translateY(0); box-shadow: 2px 3px 0 rgba(35,32,29,0.2); }
+  .btn.ghost { background: var(--card-bg); color: var(--ink); }
+  .btn.small { font-size: 0.95rem; padding: 8px 18px; }
+  .btn-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+
+  .lines p { margin: 6px 0; font-size: 1.05rem; }
+  .lines p.big { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; letter-spacing: 0.02em; }
+
+  .win-row { display: flex; gap: 14px; justify-content: center; margin-top: 20px; }
+
+  /* ---- the wall stage: paint / reveal / dry all share this ---- */
+  .stage { position: fixed; inset: 0; display: none; }
+  .stage.show { display: block; }
+
+  #wallCanvas {
+    position: absolute;
+    top: 0; left: 0;
+    display: block;
+    touch-action: none;
+    cursor: crosshair;
+  }
+  .stage.locked #wallCanvas { cursor: default; }
+
+  .floor {
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: var(--floor-h);
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 90px),
+      linear-gradient(180deg, #c8a97a, #b6935f);
+    border-top: 4px solid var(--ink);
+    z-index: 2;
+  }
+
+  .wet-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    bottom: var(--floor-h);
+    pointer-events: none;
+    background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.55), transparent 60%),
+                linear-gradient(160deg, rgba(255,255,255,0.28), rgba(255,255,255,0) 55%);
+    mix-blend-mode: overlay;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 3;
+  }
+
+  .event-layer {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    bottom: var(--floor-h);
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 4;
+  }
+
+  .stage-topbar {
+    position: absolute;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    background: rgba(255, 253, 249, 0.92);
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    padding: 8px 18px;
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.14);
+    text-align: center;
+    max-width: min(90vw, 420px);
+  }
+  .coverage-row { font-size: 0.85rem; color: var(--ink-dim); }
+  .coverage-row b { color: var(--ink); font-size: 1rem; }
+  .reveal-lines p { margin: 3px 0; font-size: 1rem; }
+  .reveal-lines p.big { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; }
+  .dry-percent { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; }
+  .event-ticker {
+    min-height: 20px;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .event-ticker.show { opacity: 1; }
+
+  .toolbar-float {
+    position: absolute;
+    bottom: calc(var(--floor-h) + 14px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    background: rgba(255, 253, 249, 0.95);
+    border: 2.5px solid var(--ink);
+    border-radius: 18px;
+    padding: 12px 16px;
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.16);
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: min(94vw, 460px);
+  }
+  .brush-group { display: flex; gap: 8px; }
+  .brush-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: var(--card-bg);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 2px 2px 0 rgba(35,32,29,0.14);
+  }
+  .brush-btn .dot { border-radius: 50%; background: var(--ink); }
+  .brush-btn[data-size="small"] .dot { width: 6px; height: 6px; }
+  .brush-btn[data-size="medium"] .dot { width: 12px; height: 12px; }
+  .brush-btn[data-size="large"] .dot { width: 20px; height: 20px; }
+  .brush-btn.active { background: var(--orange); border-color: var(--ink); }
+  .brush-btn.active .dot { background: #fff; }
+
+  .color-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  #colorWheel { border-radius: 50%; border: 2.5px solid var(--ink); cursor: crosshair; box-shadow: 2px 2px 0 rgba(35,32,29,0.14); touch-action: none; }
+  .lightness-row { display: flex; align-items: center; gap: 8px; width: 120px; }
+  .lightness-row input[type="range"] { flex: 1; }
+  .swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--ink); flex: none; }
+
+  .fly, .spider { position: absolute; z-index: 5; }
+  .fly-body { width: 8px; height: 6px; border-radius: 50%; background: #2b2b2b; position: relative; }
+  .fly-body::before, .fly-body::after {
+    content: ""; position: absolute; top: -2px; width: 7px; height: 4px;
+    background: rgba(200,220,255,0.55); border-radius: 50%;
+  }
+  .fly-body::before { left: -4px; transform: rotate(-15deg); }
+  .fly-body::after { right: -4px; transform: rotate(15deg); }
+
+  .spider-body { width: 10px; height: 8px; border-radius: 50%; background: #1a1a1a; position: relative; }
+  .spider-body::before, .spider-body::after {
+    content: ""; position: absolute; top: 2px; width: 16px; height: 1.5px; background: #1a1a1a;
+  }
+  .spider-body::before { left: -8px; transform: rotate(-10deg); }
+  .spider-body::after { right: -8px; transform: rotate(10deg); }
+
+  .drip { position: absolute; width: 7px; border-radius: 0 0 6px 6px; z-index: 5; }
+  .bubble { position: absolute; border-radius: 50%; border: 1.5px solid rgba(35,32,29,0.35); background: rgba(255,255,255,0.35); z-index: 5; }
+  .crack { position: absolute; z-index: 5; opacity: 0; transition: opacity 0.3s ease; }
+  .passerby { position: absolute; bottom: 0; width: 16px; height: 52px; background: #23201d; border-radius: 6px 6px 0 0; opacity: 0.85; z-index: 6; }
+
+  body.shake { animation: shakeIt 0.4s ease; }
+  @keyframes shakeIt {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-5px) rotate(-0.3deg); }
+    40% { transform: translateX(5px) rotate(0.3deg); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+  }
+
+  .roller-icon { position: absolute; width: 34px; height: 34px; z-index: 5; }
+</style>
+</head>
+<body>
+<a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
+<button class="mute-btn" id="muteBtn" title="Music: On">&#9834;</button>
+
+<!-- dialog screens: intro / done / yes / no -->
+<div class="dialog-wrap" id="dialogWrap">
+  <h1 class="title">Give It a <span>Minute</span></h1>
+  <p class="tagline">a very small amount of interactive drying paint.</p>
+
+  <div class="step show" id="stepIntro">
+    <div class="card">
+      <div class="lines">
+        <p class="big">You've got a wall to paint.</p>
+        <p>Take your time.</p>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="startBtn">START PAINTING</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="stepDone">
+    <div class="card">
+      <div class="lines">
+        <p class="big">CONGRATULATIONS.</p>
+        <p>You watched paint dry.</p>
+        <p>You spent <b id="elapsedTimeLabel">0:00</b> doing this.</p>
+        <p style="margin-top:14px;">Was it worth it?</p>
+      </div>
+      <div class="win-row">
+        <button class="btn" id="yesBtn">YES</button>
+        <button class="btn ghost" id="noBtn">ABSOLUTELY NOT</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="stepYes">
+    <div class="card">
+      <div class="lines">
+        <p class="big">Good.</p>
+        <p>The paint has been notified.</p>
+      </div>
+      <div class="btn-row">
+        <a class="btn ghost small" href="../../index.html">back to games</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="step" id="stepNo">
+    <div class="card">
+      <div class="lines">
+        <p class="big">That's understandable.</p>
+        <p>You could always give it another minute.</p>
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="againBtn">DO IT AGAIN</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- the wall itself: full screen, shared by paint / reveal / dry -->
+<div class="stage" id="stage">
+  <canvas id="wallCanvas"></canvas>
+  <div class="wet-overlay" id="wetOverlay"></div>
+  <div class="event-layer" id="eventLayer"></div>
+  <div class="floor"></div>
+
+  <div class="stage-topbar" id="stageTopbar">
+    <div class="coverage-row" id="coverageRow">
+      Coverage: <b id="coverageLabel">0%</b>
+    </div>
+    <div class="reveal-lines" id="revealLines" style="display:none;"></div>
+    <div id="dryStatus" style="display:none;">
+      <div class="dry-percent" id="dryPercentLabel">Paint is 12% dry.</div>
+      <div class="event-ticker" id="eventTicker"></div>
+    </div>
+  </div>
+
+  <div class="toolbar-float" id="toolbarFloat">
+    <div class="brush-group">
+      <button class="brush-btn" data-size="small" title="small brush"><span class="dot"></span></button>
+      <button class="brush-btn active" data-size="medium" title="medium brush"><span class="dot"></span></button>
+      <button class="brush-btn" data-size="large" title="large brush"><span class="dot"></span></button>
+    </div>
+    <div class="color-picker">
+      <canvas id="colorWheel" width="90" height="90"></canvas>
+      <div class="lightness-row">
+        <span class="swatch" id="swatch"></span>
+        <input type="range" id="lightnessSlider" min="10" max="90" value="52">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- scenes ----------
+  // 'intro' | 'done' | 'yes' | 'no' use the centered dialog card.
+  // 'paint' | 'reveal' | 'dry' use the full-screen wall stage.
+  var dialogWrap = document.getElementById('dialogWrap');
+  var stage = document.getElementById('stage');
+  var dialogSteps = { stepIntro: document.getElementById('stepIntro'), stepDone: document.getElementById('stepDone'), stepYes: document.getElementById('stepYes'), stepNo: document.getElementById('stepNo') };
+  var stageTopbar = document.getElementById('stageTopbar');
+  var coverageRow = document.getElementById('coverageRow');
+  var revealLinesEl = document.getElementById('revealLines');
+  var dryStatusEl = document.getElementById('dryStatus');
+  var toolbarFloat = document.getElementById('toolbarFloat');
+
+  function setScene(name) {
+    var isDialog = (name === 'intro' || name === 'done' || name === 'yes' || name === 'no');
+    dialogWrap.classList.toggle('hidden', !isDialog);
+    stage.classList.toggle('show', !isDialog);
+    stage.classList.toggle('locked', name !== 'paint');
+    if (isDialog) {
+      Object.keys(dialogSteps).forEach(function (k) {
+        dialogSteps[k].classList.toggle('show', k === 'step' + name.charAt(0).toUpperCase() + name.slice(1));
+      });
+    }
+    coverageRow.style.display = name === 'paint' ? 'block' : 'none';
+    revealLinesEl.style.display = name === 'reveal' ? 'block' : 'none';
+    dryStatusEl.style.display = name === 'dry' ? 'block' : 'none';
+    toolbarFloat.style.display = name === 'paint' ? 'flex' : 'none';
+  }
+  setScene('intro');
+
+  // ---------- sound (WebAudio, no files, no external services) ----------
+  var audioCtx = null;
+  var musicOn = true;
+  var musicNodes = null;
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function playBlip(freq, dur, type, vol) {
+    ensureAudio();
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = type || 'sine';
+    osc.frequency.value = freq;
+    gain.gain.value = vol || 0.05;
+    osc.connect(gain).connect(audioCtx.destination);
+    var t = audioCtx.currentTime;
+    osc.start(t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.stop(t + dur + 0.02);
+  }
+  function playKnock() {
+    playBlip(120, 0.09, 'square', 0.07);
+    setTimeout(function () { playBlip(110, 0.09, 'square', 0.07); }, 180);
+  }
+
+  // goofy cartoon background loop -- a bouncy pentatonic pluck melody over
+  // a silly kick/tick beat, one fixed pattern that repeats seamlessly
+  // through both painting and drying. Deliberately way too cheerful for
+  // the task at hand -- that's the joke. One track only, no over-engineering.
+  var STEP_MS = 190;
+  var TUNE_SCALE = [261.6, 293.7, 329.6, 392.0, 440.0, 523.3, 587.3, 659.3, 784.0];
+  var MELODY = [4, 6, 5, 6, 4, 2, 4, null, 3, 5, 4, 5, 3, 1, 3, null];
+  var KICK_STEPS = { 0: true, 4: true, 8: true, 12: true };
+  var musicStep = 0;
+  var musicLoopCount = 0;
+
+  function playPluck(freq, t, vol) {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+    osc.connect(gain).connect(musicNodes.master);
+    osc.start(t);
+    osc.stop(t + 0.24);
+  }
+  function playKick(t) {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(160, t);
+    osc.frequency.exponentialRampToValueAtTime(50, t + 0.09);
+    gain.gain.setValueAtTime(0.5, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+    osc.connect(gain).connect(musicNodes.master);
+    osc.start(t);
+    osc.stop(t + 0.13);
+  }
+  function playTick(t) {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 2200;
+    gain.gain.setValueAtTime(0.06, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.02);
+    osc.connect(gain).connect(musicNodes.master);
+    osc.start(t);
+    osc.stop(t + 0.03);
+  }
+  function playHonk(t) {
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(220, t);
+    osc.frequency.linearRampToValueAtTime(330, t + 0.18);
+    gain.gain.setValueAtTime(0.09, t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+    osc.connect(gain).connect(musicNodes.master);
+    osc.start(t);
+    osc.stop(t + 0.24);
+  }
+  function musicStepTick() {
+    if (!musicNodes) return;
+    var t = audioCtx.currentTime;
+    if (KICK_STEPS[musicStep]) playKick(t);
+    playTick(t);
+    var noteIdx = MELODY[musicStep];
+    if (noteIdx !== null) playPluck(TUNE_SCALE[noteIdx], t, 0.16);
+    if (musicStep === 0) {
+      musicLoopCount++;
+      if (musicLoopCount % 3 === 0) playHonk(t + 0.02);
+    }
+    musicStep = (musicStep + 1) % MELODY.length;
+  }
+  function startMusic() {
+    if (musicNodes) return;
+    ensureAudio();
+    var master = audioCtx.createGain();
+    master.gain.value = musicOn ? 0.08 : 0;
+    master.connect(audioCtx.destination);
+    musicStep = 0;
+    musicLoopCount = 0;
+    musicNodes = { master: master, stepTimer: setInterval(musicStepTick, STEP_MS) };
+  }
+  function stopMusic() {
+    if (!musicNodes) return;
+    clearInterval(musicNodes.stepTimer);
+    musicNodes = null;
+  }
+  function setMusicVolume() {
+    if (musicNodes) musicNodes.master.gain.value = musicOn ? 0.08 : 0;
+  }
+  var muteBtn = document.getElementById('muteBtn');
+  muteBtn.addEventListener('click', function () {
+    musicOn = !musicOn;
+    muteBtn.title = musicOn ? 'Music: On' : 'Music: Off';
+    muteBtn.style.opacity = musicOn ? '1' : '0.5';
+    setMusicVolume();
+  });
+
+  // ---------- color wheel ----------
+  var colorWheel = document.getElementById('colorWheel');
+  var wheelCtx = colorWheel.getContext('2d');
+  var wheelRadius = colorWheel.width / 2;
+  function hslToRgb(h, s, l) {
+    s /= 100; l /= 100;
+    var c = (1 - Math.abs(2 * l - 1)) * s;
+    var x = c * (1 - Math.abs((h / 60) % 2 - 1));
+    var m = l - c / 2;
+    var r = 0, g = 0, b = 0;
+    if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; }
+    else if (h < 180) { g = c; b = x; } else if (h < 240) { g = x; b = c; }
+    else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+    return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+  }
+  function drawColorWheel() {
+    var img = wheelCtx.createImageData(colorWheel.width, colorWheel.height);
+    for (var y = 0; y < colorWheel.height; y++) {
+      for (var x = 0; x < colorWheel.width; x++) {
+        var dx = x - wheelRadius, dy = y - wheelRadius;
+        var dist = Math.sqrt(dx * dx + dy * dy);
+        var idx = (y * colorWheel.width + x) * 4;
+        if (dist <= wheelRadius) {
+          var hue = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+          var sat = Math.min(1, dist / wheelRadius) * 100;
+          var rgb = hslToRgb(hue, sat, 50);
+          img.data[idx] = rgb[0]; img.data[idx + 1] = rgb[1]; img.data[idx + 2] = rgb[2]; img.data[idx + 3] = 255;
+        } else {
+          img.data[idx + 3] = 0;
+        }
+      }
+    }
+    wheelCtx.putImageData(img, 0, 0);
+  }
+  drawColorWheel();
+
+  var currentHue = 16, currentSat = 100, currentLight = 52;
+  var lightnessSlider = document.getElementById('lightnessSlider');
+  var swatch = document.getElementById('swatch');
+  function currentColor() { return 'hsl(' + currentHue + ',' + currentSat + '%,' + currentLight + '%)'; }
+  function updateSwatch() { swatch.style.background = currentColor(); }
+  function pickFromWheel(clientX, clientY) {
+    var rect = colorWheel.getBoundingClientRect();
+    var scaleX = colorWheel.width / rect.width;
+    var scaleY = colorWheel.height / rect.height;
+    var x = (clientX - rect.left) * scaleX;
+    var y = (clientY - rect.top) * scaleY;
+    var dx = x - wheelRadius, dy = y - wheelRadius;
+    var dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > wheelRadius) dist = wheelRadius;
+    currentHue = (Math.atan2(dy, dx) * 180 / Math.PI + 360) % 360;
+    currentSat = Math.min(1, dist / wheelRadius) * 100;
+    updateSwatch();
+  }
+  var wheelDragging = false;
+  colorWheel.addEventListener('pointerdown', function (e) { wheelDragging = true; pickFromWheel(e.clientX, e.clientY); });
+  window.addEventListener('pointermove', function (e) { if (wheelDragging) pickFromWheel(e.clientX, e.clientY); });
+  window.addEventListener('pointerup', function () { wheelDragging = false; });
+  lightnessSlider.addEventListener('input', function () { currentLight = +this.value; updateSwatch(); });
+  updateSwatch();
+
+  // ---------- brush size ----------
+  var BRUSH_SIZES = { small: 8, medium: 20, large: 40 };
+  var currentBrush = 'medium';
+  document.querySelectorAll('.brush-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      document.querySelectorAll('.brush-btn').forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      currentBrush = btn.dataset.size;
+    });
+  });
+
+  // ---------- the wall canvas (full screen, above the floor) ----------
+  var wallCanvas = document.getElementById('wallCanvas');
+  var wallCtx = wallCanvas.getContext('2d');
+  var W = 0, H = 0;
+  var GRID_COLS = 80, GRID_ROWS = 50;
+  var cellW = 0, cellH = 0;
+  var grid = new Uint8Array(GRID_COLS * GRID_ROWS);
+  var paintedCount = 0;
+
+  function sizeWallToViewport() {
+    var floorH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--floor-h'), 10) || 84;
+    W = window.innerWidth;
+    H = Math.max(200, window.innerHeight - floorH);
+    wallCanvas.width = W;
+    wallCanvas.height = H;
+    wallCanvas.style.width = W + 'px';
+    wallCanvas.style.height = H + 'px';
+    cellW = W / GRID_COLS;
+    cellH = H / GRID_ROWS;
+    wallCtx.fillStyle = '#f4efe6';
+    wallCtx.fillRect(0, 0, W, H);
+  }
+  sizeWallToViewport();
+
+  var coverageLabel = document.getElementById('coverageLabel');
+  var COMPLETE_THRESHOLD = 96;
+  var paintingDone = false;
+
+  function markGrid(x, y, r) {
+    var minCol = Math.max(0, Math.floor((x - r) / cellW));
+    var maxCol = Math.min(GRID_COLS - 1, Math.floor((x + r) / cellW));
+    var minRow = Math.max(0, Math.floor((y - r) / cellH));
+    var maxRow = Math.min(GRID_ROWS - 1, Math.floor((y + r) / cellH));
+    for (var row = minRow; row <= maxRow; row++) {
+      for (var col = minCol; col <= maxCol; col++) {
+        var cx = col * cellW + cellW / 2, cy = row * cellH + cellH / 2;
+        var dx = cx - x, dy = cy - y;
+        if (dx * dx + dy * dy <= r * r) {
+          var idx = row * GRID_COLS + col;
+          if (!grid[idx]) { grid[idx] = 1; paintedCount++; }
+        }
+      }
+    }
+  }
+  function coveragePercent() { return Math.min(100, Math.round((paintedCount / (GRID_COLS * GRID_ROWS)) * 100)); }
+
+  function stampAt(x, y, color, radius) {
+    wallCtx.fillStyle = color;
+    for (var i = 0; i < 3; i++) {
+      var jx = x + (Math.random() - 0.5) * radius * 0.5;
+      var jy = y + (Math.random() - 0.5) * radius * 0.5;
+      var jr = radius * (0.75 + Math.random() * 0.4);
+      wallCtx.globalAlpha = 0.55 + Math.random() * 0.25;
+      wallCtx.beginPath();
+      wallCtx.arc(jx, jy, jr, 0, Math.PI * 2);
+      wallCtx.fill();
+    }
+    wallCtx.globalAlpha = 1;
+  }
+  function strokeSegment(x0, y0, x1, y1, color, radius) {
+    var dist = Math.hypot(x1 - x0, y1 - y0);
+    var steps = Math.max(1, Math.floor(dist / (radius * 0.4)));
+    for (var i = 0; i <= steps; i++) {
+      var t = i / steps;
+      var x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t;
+      stampAt(x, y, color, radius);
+      markGrid(x, y, radius);
+    }
+  }
+
+  var painting = false, lastX = 0, lastY = 0;
+  var coverageDirty = false;
+  function canvasPoint(e) {
+    var rect = wallCanvas.getBoundingClientRect();
+    var scaleX = W / rect.width, scaleY = H / rect.height;
+    var cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+    var cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+    return { x: cx * scaleX, y: cy * scaleY };
+  }
+  function refreshCoverageLabel() {
+    var pct = coveragePercent();
+    coverageLabel.textContent = (pct >= COMPLETE_THRESHOLD ? 100 : pct) + '%';
+    if (!paintingDone && pct >= COMPLETE_THRESHOLD) {
+      paintingDone = true;
+      setTimeout(finishPainting, 500);
+    }
+  }
+  function onPaintStart(e) {
+    if (paintingDone || stage.classList.contains('locked')) return;
+    e.preventDefault();
+    ensureAudio();
+    if (musicOn) startMusic();
+    painting = true;
+    var p = canvasPoint(e);
+    lastX = p.x; lastY = p.y;
+    var r = BRUSH_SIZES[currentBrush];
+    stampAt(p.x, p.y, currentColor(), r);
+    markGrid(p.x, p.y, r);
+    refreshCoverageLabel();
+  }
+  function onPaintMove(e) {
+    if (!painting || paintingDone) return;
+    e.preventDefault();
+    var p = canvasPoint(e);
+    var r = BRUSH_SIZES[currentBrush];
+    strokeSegment(lastX, lastY, p.x, p.y, currentColor(), r);
+    lastX = p.x; lastY = p.y;
+    if (!coverageDirty) {
+      coverageDirty = true;
+      requestAnimationFrame(function () { coverageDirty = false; refreshCoverageLabel(); });
+    }
+  }
+  function onPaintEnd() { painting = false; }
+
+  wallCanvas.addEventListener('pointerdown', onPaintStart);
+  wallCanvas.addEventListener('pointermove', onPaintMove);
+  window.addEventListener('pointerup', onPaintEnd);
+  wallCanvas.addEventListener('touchstart', onPaintStart, { passive: false });
+  wallCanvas.addEventListener('touchmove', onPaintMove, { passive: false });
+  wallCanvas.addEventListener('touchend', onPaintEnd);
+
+  document.getElementById('startBtn').addEventListener('click', function () {
+    ensureAudio();
+    startMusic();
+    setScene('paint');
+  });
+
+  // ---------- reveal + drying ----------
+  var dryDurationMs, dryStartTime, dryPercent, dryTimerHandle, eventTimerHandle;
+  var dryPercentLabel = document.getElementById('dryPercentLabel');
+  var eventTicker = document.getElementById('eventTicker');
+  var wetOverlay = document.getElementById('wetOverlay');
+  var eventLayer = document.getElementById('eventLayer');
+
+  function pickDryDuration() {
+    var roll = Math.random();
+    if (roll < 0.15) return 120000 + Math.random() * 30000;
+    if (roll < 0.65) return 150000 + Math.random() * 90000;
+    if (roll < 0.90) return 240000 + Math.random() * 60000;
+    return 300000 + Math.random() * 60000;
+  }
+
+  function finishPainting() {
+    setScene('reveal');
+    wetOverlay.style.opacity = '0.85';
+    revealLinesEl.innerHTML = '';
+    var seq = ['Nice.', 'The wall is painted.', 'Now… give it a minute.'];
+    var i = 0;
+    function nextLine() {
+      if (i < seq.length) {
+        var p = document.createElement('p');
+        p.className = i === 0 ? 'big' : '';
+        p.textContent = seq[i];
+        revealLinesEl.appendChild(p);
+        i++;
+        setTimeout(nextLine, 1000);
+      } else {
+        setTimeout(beginDrying, 900);
+      }
+    }
+    setTimeout(nextLine, 400);
+  }
+
+  var stallUntil = 0;
+  function beginDrying() {
+    setScene('dry');
+    dryDurationMs = pickDryDuration();
+    dryStartTime = Date.now();
+    dryPercent = 12;
+    stallUntil = 0;
+    updateDryDisplay();
+    scheduleDryTick();
+    scheduleNextEvent();
+  }
+
+  function updateDryDisplay() {
+    dryPercentLabel.textContent = 'Paint is ' + dryPercent + '% dry.';
+    wetOverlay.style.opacity = String(Math.max(0, (100 - dryPercent) / 100 * 0.85));
+  }
+
+  function scheduleDryTick() {
+    var delay = 500 + Math.random() * 500;
+    dryTimerHandle = setTimeout(function () {
+      tickDrying();
+      if (dryPercent < 100) scheduleDryTick();
+    }, delay);
+  }
+
+  function tickDrying() {
+    var now = Date.now();
+    if (now < stallUntil) return;
+    var elapsed = now - dryStartTime;
+    var targetPct = 12 + (elapsed / dryDurationMs) * 88;
+    var step = 0;
+    var r = Math.random();
+    if (dryPercent < targetPct - 1) {
+      if (r < 0.55) step = 1;
+      else if (r < 0.7) step = 2;
+      else step = 0;
+    } else {
+      if (r < 0.45) step = 1;
+      else step = 0;
+    }
+    if (r > 0.97 && dryPercent > 20 && dryPercent < 94) step = -1;
+    dryPercent = Math.max(0, Math.min(100, dryPercent + step));
+    if (elapsed > dryDurationMs * 1.4) dryPercent = 100;
+    updateDryDisplay();
+    if (dryPercent >= 100) {
+      dryPercent = 100;
+      updateDryDisplay();
+      clearTimeout(eventTimerHandle);
+      setTimeout(finishDrying, 700);
+    }
+  }
+
+  function finishDrying() {
+    var elapsedMs = Date.now() - dryStartTime;
+    var totalSec = Math.round(elapsedMs / 1000);
+    var mm = Math.floor(totalSec / 60), ss = totalSec % 60;
+    document.getElementById('elapsedTimeLabel').textContent = mm + ':' + (ss < 10 ? '0' : '') + ss;
+    stopMusic();
+    setScene('done');
+  }
+
+  // ---------- random pointless events ----------
+  function showTicker(text) {
+    eventTicker.textContent = text;
+    eventTicker.classList.add('show');
+    setTimeout(function () {
+      if (eventTicker.textContent === text) eventTicker.classList.remove('show');
+    }, 2600);
+  }
+  function stageSize() { return { w: W, h: H }; }
+
+  function eventFly() {
+    var size = stageSize();
+    var fly = document.createElement('div');
+    fly.className = 'fly';
+    var body = document.createElement('div');
+    body.className = 'fly-body';
+    fly.appendChild(body);
+    var x = Math.random() * (size.w - 40) + 10, y = Math.random() * (size.h - 40) + 10;
+    fly.style.left = x + 'px'; fly.style.top = y + 'px';
+    eventLayer.appendChild(fly);
+    var wanders = 4 + Math.floor(Math.random() * 4);
+    var i = 0;
+    function wander() {
+      if (!fly.parentNode) return;
+      if (i >= wanders) { fly.remove(); return; }
+      x = Math.max(6, Math.min(size.w - 12, x + (Math.random() - 0.5) * 80));
+      y = Math.max(6, Math.min(size.h - 12, y + (Math.random() - 0.5) * 60));
+      fly.style.transition = 'left 0.5s ease, top 0.5s ease';
+      fly.style.left = x + 'px'; fly.style.top = y + 'px';
+      i++;
+      setTimeout(wander, 500 + Math.random() * 500);
+    }
+    setTimeout(wander, 400);
+    setTimeout(function () { if (fly.parentNode) fly.remove(); }, wanders * 900 + 800);
+    showTicker('A fly lands on the wall.');
+  }
+  function eventSpider() {
+    var size = stageSize();
+    var spider = document.createElement('div');
+    spider.className = 'spider';
+    var body = document.createElement('div');
+    body.className = 'spider-body';
+    spider.appendChild(body);
+    var startLeft = Math.random() < 0.5;
+    var y = Math.random() * (size.h - 30) + 10;
+    spider.style.top = y + 'px';
+    spider.style.left = (startLeft ? -20 : size.w + 20) + 'px';
+    eventLayer.appendChild(spider);
+    var dur = 3500 + Math.random() * 2000;
+    spider.style.transition = 'left ' + (dur / 1000) + 's linear';
+    requestAnimationFrame(function () {
+      spider.style.left = (startLeft ? size.w + 20 : -20) + 'px';
+    });
+    setTimeout(function () { if (spider.parentNode) spider.remove(); }, dur + 200);
+    showTicker('A spider slowly walks across the wall.');
+  }
+  function eventDrip() {
+    var size = stageSize();
+    var drip = document.createElement('div');
+    drip.className = 'drip';
+    var colors = ['#ff5a1f', '#ff2d55', '#1f8a70', '#c98f00', '#3d95ce'];
+    drip.style.background = colors[Math.floor(Math.random() * colors.length)];
+    var x = Math.random() * (size.w - 20) + 10;
+    var startY = Math.random() * (size.h * 0.4);
+    drip.style.left = x + 'px';
+    drip.style.top = startY + 'px';
+    drip.style.height = '10px';
+    eventLayer.appendChild(drip);
+    var travel = size.h - startY - 10;
+    var dur = 4000 + Math.random() * 3000;
+    drip.style.transition = 'top ' + (dur / 1000) + 's ease-in, height 0.6s ease';
+    requestAnimationFrame(function () {
+      drip.style.top = (startY + travel) + 'px';
+      drip.style.height = '18px';
+    });
+    setTimeout(function () { if (drip.parentNode) drip.remove(); }, dur + 300);
+    showTicker('A paint drip appears.');
+  }
+  function eventBubble() {
+    var size = stageSize();
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    var d = 8 + Math.random() * 10;
+    b.style.width = d + 'px'; b.style.height = d + 'px';
+    b.style.left = (Math.random() * (size.w - d)) + 'px';
+    b.style.top = (Math.random() * (size.h - d)) + 'px';
+    b.style.transform = 'scale(0)';
+    b.style.transition = 'transform 0.4s ease';
+    eventLayer.appendChild(b);
+    requestAnimationFrame(function () { b.style.transform = 'scale(1)'; });
+    setTimeout(function () {
+      b.style.transform = 'scale(0)';
+      setTimeout(function () { if (b.parentNode) b.remove(); }, 400);
+    }, 1800 + Math.random() * 1200);
+    showTicker('A tiny paint bubble appears.');
+  }
+  function eventCrack() {
+    var size = stageSize();
+    var svgNS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(svgNS, 'svg');
+    svg.setAttribute('class', 'crack');
+    var x = Math.random() * (size.w - 60) + 20, y = Math.random() * (size.h - 40) + 10;
+    svg.setAttribute('width', '60'); svg.setAttribute('height', '40');
+    svg.style.left = x + 'px'; svg.style.top = y + 'px';
+    var path = document.createElementNS(svgNS, 'path');
+    path.setAttribute('d', 'M2 2 L18 14 L10 20 L28 34');
+    path.setAttribute('stroke', 'rgba(35,32,29,0.45)');
+    path.setAttribute('stroke-width', '1.5');
+    path.setAttribute('fill', 'none');
+    svg.appendChild(path);
+    eventLayer.appendChild(svg);
+    requestAnimationFrame(function () { svg.style.opacity = '1'; });
+    setTimeout(function () {
+      svg.style.opacity = '0';
+      setTimeout(function () { if (svg.parentNode) svg.remove(); }, 350);
+    }, 1600);
+    showTicker('A small crack appears… and then disappears.');
+  }
+  function eventPasserby() {
+    var size = stageSize();
+    var p = document.createElement('div');
+    p.className = 'passerby';
+    var fromLeft = Math.random() < 0.5;
+    p.style.left = (fromLeft ? -20 : size.w + 20) + 'px';
+    eventLayer.appendChild(p);
+    var dur = 1200 + Math.random() * 500;
+    p.style.transition = 'left ' + (dur / 1000) + 's linear';
+    requestAnimationFrame(function () { p.style.left = (fromLeft ? size.w + 20 : -20) + 'px'; });
+    setTimeout(function () { if (p.parentNode) p.remove(); }, dur + 100);
+    showTicker('Someone briefly walks past the wall.');
+  }
+  function eventKnock() { playKnock(); showTicker('Someone knocks on a door.'); }
+  function eventShake() {
+    document.body.classList.add('shake');
+    setTimeout(function () { document.body.classList.remove('shake'); }, 420);
+    showTicker('The screen briefly shakes.');
+  }
+  function eventCreak() { playBlip(70 + Math.random() * 30, 0.35, 'sawtooth', 0.03); showTicker('The wall makes a tiny creaking sound.'); }
+  function eventRoller() {
+    var size = stageSize();
+    var icon = document.createElement('div');
+    icon.className = 'roller-icon';
+    icon.innerHTML = '<svg viewBox="0 0 34 34" width="34" height="34"><rect x="6" y="8" width="20" height="12" rx="2" fill="#fff" stroke="#23201d" stroke-width="1.8"/><rect x="14" y="20" width="4" height="8" fill="#6b4a2f" stroke="#23201d" stroke-width="1.2"/></svg>';
+    var x = Math.random() * (size.w - 40) + 10, y = Math.random() * (size.h - 40) + 10;
+    icon.style.left = x + 'px'; icon.style.top = y + 'px';
+    eventLayer.appendChild(icon);
+    var jiggles = 5; var i = 0;
+    function jiggle() {
+      if (i >= jiggles) { icon.remove(); return; }
+      icon.style.transition = 'transform 0.15s ease';
+      icon.style.transform = 'translate(' + ((Math.random() - 0.5) * 14) + 'px,' + ((Math.random() - 0.5) * 10) + 'px) rotate(' + ((Math.random() - 0.5) * 20) + 'deg)';
+      i++;
+      setTimeout(jiggle, 150);
+    }
+    jiggle();
+    setTimeout(function () { if (icon.parentNode) icon.remove(); }, jiggles * 150 + 300);
+    showTicker('The roller mysteriously moves by itself.');
+  }
+  function textOnly(msg) { return function () { showTicker(msg); }; }
+  function eventStopDrying() {
+    showTicker('PAINT HAS STOPPED DRYING.');
+    stallUntil = Date.now() + 1800 + Math.random() * 1200;
+    setTimeout(function () { showTicker('Never mind.'); }, 2200);
+  }
+  function eventHumidityUp() { stallUntil = Math.max(stallUntil, Date.now() + 1500); showTicker('Humidity increased.'); }
+  function eventHumidityDown() { showTicker('Humidity decreased.'); }
+
+  var EVENTS = [
+    eventFly, eventFly,
+    eventSpider,
+    eventDrip, eventDrip,
+    eventBubble, eventBubble,
+    eventCrack,
+    eventPasserby,
+    eventKnock,
+    eventShake,
+    eventCreak,
+    eventRoller,
+    eventHumidityUp,
+    eventHumidityDown,
+    eventStopDrying,
+    textOnly('Paint is thinking…'),
+    textOnly('The paint seems nervous.'),
+    textOnly('Something feels wrong.'),
+    textOnly('Almost there. Don’t leave.'),
+    textOnly('Please remain patient.'),
+    textOnly('Paint has become emotionally attached to the wall.')
+  ];
+  var lastEventFn = null;
+  function scheduleNextEvent() {
+    var delay = 4500 + Math.random() * 7000;
+    eventTimerHandle = setTimeout(function () {
+      if (dryPercent >= 100) return;
+      var fn;
+      do { fn = EVENTS[Math.floor(Math.random() * EVENTS.length)]; } while (fn === lastEventFn && EVENTS.length > 1);
+      lastEventFn = fn;
+      fn();
+      scheduleNextEvent();
+    }, delay);
+  }
+
+  // ---------- ending buttons ----------
+  document.getElementById('yesBtn').addEventListener('click', function () { setScene('yes'); });
+  document.getElementById('noBtn').addEventListener('click', function () { setScene('no'); });
+  document.getElementById('againBtn').addEventListener('click', function () { resetGame(); });
+
+  function resetGame() {
+    clearTimeout(dryTimerHandle);
+    clearTimeout(eventTimerHandle);
+    eventLayer.innerHTML = '';
+    wetOverlay.style.opacity = '0';
+    sizeWallToViewport();
+    grid = new Uint8Array(GRID_COLS * GRID_ROWS);
+    paintedCount = 0;
+    paintingDone = false;
+    coverageLabel.textContent = '0%';
+    setScene('intro');
+  }
+
+</script>
+</body>
+</html>
