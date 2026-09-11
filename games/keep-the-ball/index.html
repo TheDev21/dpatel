@@ -252,6 +252,7 @@
 
     var gravity = Math.min(BASE_GRAVITY + state.elapsed * GRAVITY_RAMP, MAX_GRAVITY);
     state.vy += gravity * dt;
+    var prevBallBottom = state.ballY + BALL_R;
     state.ballX += state.vx * dt;
     state.ballY += state.vy * dt;
 
@@ -260,12 +261,15 @@
     if (state.ballX + BALL_R > W) { state.ballX = W - BALL_R; state.vx = -Math.abs(state.vx); }
     if (state.ballY - BALL_R < 0) { state.ballY = BALL_R; state.vy = Math.abs(state.vy); }
 
-    // paddle collision
+    // paddle collision -- swept check: did the ball's bottom edge cross the
+    // paddle's top plane this frame? (a plain position check misses fast
+    // balls that move further than the paddle's thickness in one frame)
     var py = H - 34;
+    var ballBottom = state.ballY + BALL_R;
     if (
       state.vy > 0 &&
-      state.ballY + BALL_R >= py &&
-      state.ballY + BALL_R <= py + PADDLE_H + 14 &&
+      prevBallBottom <= py &&
+      ballBottom >= py &&
       state.ballX > state.paddleX - PADDLE_W / 2 - BALL_R &&
       state.ballX < state.paddleX + PADDLE_W / 2 + BALL_R
     ) {
