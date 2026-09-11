@@ -324,75 +324,211 @@
   };
   var NIGHTS = 5;
 
-  // [name, zone, tier, major city, ISO 3166-1 alpha-2 code]
+  // { name, zone, tier, iso: ISO 3166-1 alpha-2 code, cities: recognizable
+  // major destinations, sized roughly to how many meaningful ones the
+  // country actually has -- not a fixed count for everyone. }
   var countryData = [
-    ['United States', 1, 3, 'Washington, DC', 'US'], ['Canada', 1, 3, 'Ottawa', 'CA'], ['Mexico', 1, 2, 'Mexico City', 'MX'],
-    ['Belize', 2, 2, 'Belize City', 'BZ'], ['Guatemala', 2, 1, 'Guatemala City', 'GT'], ['Honduras', 2, 1, 'Tegucigalpa', 'HN'],
-    ['El Salvador', 2, 1, 'San Salvador', 'SV'], ['Nicaragua', 2, 1, 'Managua', 'NI'], ['Costa Rica', 2, 2, 'San Jose', 'CR'],
-    ['Panama', 2, 2, 'Panama City', 'PA'], ['Cuba', 2, 1, 'Havana', 'CU'], ['Jamaica', 2, 2, 'Kingston', 'JM'],
-    ['Haiti', 2, 1, 'Port-au-Prince', 'HT'], ['Dominican Republic', 2, 2, 'Santo Domingo', 'DO'], ['Bahamas', 2, 3, 'Nassau', 'BS'],
-    ['Barbados', 2, 3, 'Bridgetown', 'BB'], ['Trinidad and Tobago', 2, 2, 'Port of Spain', 'TT'], ['Saint Lucia', 2, 2, 'Castries', 'LC'],
-    ['Grenada', 2, 2, "St. George's", 'GD'], ['Saint Vincent and the Grenadines', 2, 2, 'Kingstown', 'VC'],
-    ['Antigua and Barbuda', 2, 2, "St. John's", 'AG'], ['Saint Kitts and Nevis', 2, 2, 'Basseterre', 'KN'], ['Dominica', 2, 1, 'Roseau', 'DM'],
-    ['Colombia', 3, 1, 'Bogota', 'CO'], ['Venezuela', 3, 1, 'Caracas', 'VE'], ['Guyana', 3, 1, 'Georgetown', 'GY'],
-    ['Suriname', 3, 1, 'Paramaribo', 'SR'], ['Ecuador', 3, 1, 'Quito', 'EC'], ['Peru', 3, 1, 'Lima', 'PE'],
-    ['Bolivia', 3, 1, 'La Paz', 'BO'], ['Paraguay', 3, 1, 'Asuncion', 'PY'], ['Chile', 3, 2, 'Santiago', 'CL'],
-    ['Argentina', 3, 2, 'Buenos Aires', 'AR'], ['Uruguay', 3, 2, 'Montevideo', 'UY'], ['Brazil', 3, 2, 'Brasilia', 'BR'],
-    ['United Kingdom', 4, 3, 'London', 'GB'], ['Ireland', 4, 3, 'Dublin', 'IE'], ['France', 4, 3, 'Paris', 'FR'],
-    ['Germany', 4, 3, 'Berlin', 'DE'], ['Netherlands', 4, 3, 'Amsterdam', 'NL'], ['Belgium', 4, 3, 'Brussels', 'BE'],
-    ['Luxembourg', 4, 3, 'Luxembourg City', 'LU'], ['Switzerland', 4, 3, 'Bern', 'CH'], ['Austria', 4, 3, 'Vienna', 'AT'],
-    ['Denmark', 4, 3, 'Copenhagen', 'DK'], ['Norway', 4, 3, 'Oslo', 'NO'], ['Sweden', 4, 3, 'Stockholm', 'SE'],
-    ['Finland', 4, 3, 'Helsinki', 'FI'], ['Iceland', 4, 3, 'Reykjavik', 'IS'],
-    ['Spain', 5, 2, 'Madrid', 'ES'], ['Portugal', 5, 2, 'Lisbon', 'PT'], ['Italy', 5, 3, 'Rome', 'IT'],
-    ['Greece', 5, 2, 'Athens', 'GR'], ['Poland', 5, 2, 'Warsaw', 'PL'], ['Czechia', 5, 2, 'Prague', 'CZ'],
-    ['Slovakia', 5, 2, 'Bratislava', 'SK'], ['Hungary', 5, 2, 'Budapest', 'HU'], ['Romania', 5, 1, 'Bucharest', 'RO'],
-    ['Bulgaria', 5, 1, 'Sofia', 'BG'], ['Croatia', 5, 2, 'Zagreb', 'HR'], ['Slovenia', 5, 2, 'Ljubljana', 'SI'],
-    ['Serbia', 5, 1, 'Belgrade', 'RS'], ['Bosnia and Herzegovina', 5, 1, 'Sarajevo', 'BA'], ['Montenegro', 5, 2, 'Podgorica', 'ME'],
-    ['North Macedonia', 5, 1, 'Skopje', 'MK'], ['Albania', 5, 1, 'Tirana', 'AL'], ['Kosovo', 5, 1, 'Pristina', 'XK'],
-    ['Moldova', 5, 1, 'Chisinau', 'MD'], ['Ukraine', 5, 1, 'Kyiv', 'UA'], ['Belarus', 5, 1, 'Minsk', 'BY'],
-    ['Russia', 5, 2, 'Moscow', 'RU'], ['Estonia', 5, 2, 'Tallinn', 'EE'], ['Latvia', 5, 2, 'Riga', 'LV'],
-    ['Lithuania', 5, 2, 'Vilnius', 'LT'], ['Malta', 5, 2, 'Valletta', 'MT'], ['Cyprus', 5, 2, 'Nicosia', 'CY'],
-    ['Turkey', 6, 2, 'Ankara', 'TR'], ['Israel', 6, 3, 'Jerusalem', 'IL'], ['Palestine', 6, 1, 'Ramallah', 'PS'],
-    ['Jordan', 6, 2, 'Amman', 'JO'], ['Lebanon', 6, 2, 'Beirut', 'LB'], ['Syria', 6, 1, 'Damascus', 'SY'],
-    ['Iraq', 6, 1, 'Baghdad', 'IQ'], ['Iran', 6, 1, 'Tehran', 'IR'], ['Saudi Arabia', 6, 3, 'Riyadh', 'SA'],
-    ['Yemen', 6, 1, "Sana'a", 'YE'], ['Oman', 6, 2, 'Muscat', 'OM'], ['United Arab Emirates', 6, 3, 'Abu Dhabi', 'AE'],
-    ['Qatar', 6, 3, 'Doha', 'QA'], ['Bahrain', 6, 2, 'Manama', 'BH'], ['Kuwait', 6, 2, 'Kuwait City', 'KW'],
-    ['Egypt', 6, 1, 'Cairo', 'EG'], ['Libya', 6, 1, 'Tripoli', 'LY'], ['Tunisia', 6, 1, 'Tunis', 'TN'],
-    ['Algeria', 6, 1, 'Algiers', 'DZ'], ['Morocco', 6, 1, 'Rabat', 'MA'], ['Sudan', 6, 1, 'Khartoum', 'SD'],
-    ['Mauritania', 7, 1, 'Nouakchott', 'MR'], ['Mali', 7, 1, 'Bamako', 'ML'], ['Niger', 7, 1, 'Niamey', 'NE'],
-    ['Chad', 7, 1, "N'Djamena", 'TD'], ['Senegal', 7, 1, 'Dakar', 'SN'], ['Gambia', 7, 1, 'Banjul', 'GM'],
-    ['Guinea-Bissau', 7, 1, 'Bissau', 'GW'], ['Guinea', 7, 1, 'Conakry', 'GN'], ['Sierra Leone', 7, 1, 'Freetown', 'SL'],
-    ['Liberia', 7, 1, 'Monrovia', 'LR'], ['Ivory Coast', 7, 1, 'Yamoussoukro', 'CI'], ['Ghana', 7, 1, 'Accra', 'GH'],
-    ['Togo', 7, 1, 'Lome', 'TG'], ['Benin', 7, 1, 'Porto-Novo', 'BJ'], ['Nigeria', 7, 1, 'Abuja', 'NG'],
-    ['Cameroon', 7, 1, 'Yaounde', 'CM'], ['Central African Republic', 7, 1, 'Bangui', 'CF'], ['South Sudan', 7, 1, 'Juba', 'SS'],
-    ['Ethiopia', 7, 1, 'Addis Ababa', 'ET'], ['Eritrea', 7, 1, 'Asmara', 'ER'], ['Djibouti', 7, 1, 'Djibouti City', 'DJ'],
-    ['Somalia', 7, 1, 'Mogadishu', 'SO'], ['Kenya', 7, 1, 'Nairobi', 'KE'], ['Uganda', 7, 1, 'Kampala', 'UG'],
-    ['Rwanda', 7, 1, 'Kigali', 'RW'], ['Burundi', 7, 1, 'Gitega', 'BI'], ['Tanzania', 7, 1, 'Dodoma', 'TZ'],
-    ['Democratic Republic of the Congo', 7, 1, 'Kinshasa', 'CD'], ['Republic of the Congo', 7, 1, 'Brazzaville', 'CG'],
-    ['Gabon', 7, 1, 'Libreville', 'GA'], ['Equatorial Guinea', 7, 1, 'Malabo', 'GQ'], ['Sao Tome and Principe', 7, 1, 'Sao Tome', 'ST'],
-    ['Angola', 7, 1, 'Luanda', 'AO'], ['Zambia', 7, 1, 'Lusaka', 'ZM'], ['Malawi', 7, 1, 'Lilongwe', 'MW'],
-    ['Mozambique', 7, 1, 'Maputo', 'MZ'], ['Zimbabwe', 7, 1, 'Harare', 'ZW'], ['Botswana', 7, 2, 'Gaborone', 'BW'],
-    ['Namibia', 7, 2, 'Windhoek', 'NA'], ['South Africa', 7, 2, 'Pretoria', 'ZA'], ['Lesotho', 7, 1, 'Maseru', 'LS'],
-    ['Eswatini', 7, 1, 'Mbabane', 'SZ'], ['Madagascar', 7, 1, 'Antananarivo', 'MG'], ['Comoros', 7, 1, 'Moroni', 'KM'],
-    ['Mauritius', 7, 2, 'Port Louis', 'MU'], ['Seychelles', 7, 3, 'Victoria', 'SC'], ['Cape Verde', 7, 1, 'Praia', 'CV'],
-    ['Burkina Faso', 7, 1, 'Ouagadougou', 'BF'],
-    ['Kazakhstan', 8, 2, 'Astana', 'KZ'], ['Uzbekistan', 8, 1, 'Tashkent', 'UZ'], ['Turkmenistan', 8, 1, 'Ashgabat', 'TM'],
-    ['Tajikistan', 8, 1, 'Dushanbe', 'TJ'], ['Kyrgyzstan', 8, 1, 'Bishkek', 'KG'], ['Afghanistan', 8, 1, 'Kabul', 'AF'],
-    ['Pakistan', 8, 1, 'Islamabad', 'PK'], ['India', 8, 1, 'New Delhi', 'IN'], ['Nepal', 8, 1, 'Kathmandu', 'NP'],
-    ['Bhutan', 8, 2, 'Thimphu', 'BT'], ['Bangladesh', 8, 1, 'Dhaka', 'BD'], ['Sri Lanka', 8, 1, 'Colombo', 'LK'],
-    ['Maldives', 8, 3, 'Male', 'MV'], ['Georgia', 8, 1, 'Tbilisi', 'GE'], ['Armenia', 8, 1, 'Yerevan', 'AM'],
-    ['Azerbaijan', 8, 2, 'Baku', 'AZ'],
-    ['Myanmar', 9, 1, 'Naypyidaw', 'MM'], ['Thailand', 9, 1, 'Bangkok', 'TH'], ['Laos', 9, 1, 'Vientiane', 'LA'],
-    ['Cambodia', 9, 1, 'Phnom Penh', 'KH'], ['Vietnam', 9, 1, 'Hanoi', 'VN'], ['Malaysia', 9, 2, 'Kuala Lumpur', 'MY'],
-    ['Singapore', 9, 3, 'Singapore', 'SG'], ['Indonesia', 9, 1, 'Jakarta', 'ID'], ['Brunei', 9, 2, 'Bandar Seri Begawan', 'BN'],
-    ['Philippines', 9, 1, 'Manila', 'PH'], ['Timor-Leste', 9, 1, 'Dili', 'TL'],
-    ['China', 10, 2, 'Beijing', 'CN'], ['Mongolia', 10, 1, 'Ulaanbaatar', 'MN'], ['South Korea', 10, 2, 'Seoul', 'KR'],
-    ['Japan', 10, 3, 'Tokyo', 'JP'], ['Taiwan', 10, 2, 'Taipei', 'TW'],
-    ['Australia', 11, 3, 'Canberra', 'AU'], ['New Zealand', 11, 3, 'Wellington', 'NZ'], ['Papua New Guinea', 11, 1, 'Port Moresby', 'PG'],
-    ['Fiji', 11, 2, 'Suva', 'FJ'], ['Solomon Islands', 11, 1, 'Honiara', 'SB'], ['Vanuatu', 11, 2, 'Port Vila', 'VU'],
-    ['Samoa', 11, 2, 'Apia', 'WS'], ['Tonga', 11, 2, "Nuku'alofa", 'TO'], ['Kiribati', 11, 1, 'Tarawa', 'KI'],
-    ['Tuvalu', 11, 1, 'Funafuti', 'TV'], ['Nauru', 11, 1, 'Yaren', 'NR'], ['Palau', 11, 2, 'Ngerulmud', 'PW'],
-    ['Micronesia', 11, 1, 'Palikir', 'FM'], ['Marshall Islands', 11, 1, 'Majuro', 'MH']
+    { name: 'United States', zone: 1, tier: 3, iso: 'US', cities: ['New York City', 'Los Angeles', 'Chicago', 'Houston', 'Miami', 'Atlanta', 'Dallas', 'Las Vegas', 'Seattle', 'San Francisco', 'Boston', 'Washington, D.C.', 'Denver', 'Orlando', 'Honolulu'] },
+    { name: 'Canada', zone: 1, tier: 3, iso: 'CA', cities: ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Ottawa', 'Quebec City', 'Edmonton', 'Halifax'] },
+    { name: 'Mexico', zone: 1, tier: 2, iso: 'MX', cities: ['Mexico City', 'Cancun', 'Guadalajara', 'Monterrey', 'Puebla', 'Tulum', 'Oaxaca'] },
+
+    { name: 'Belize', zone: 2, tier: 2, iso: 'BZ', cities: ['Belize City', 'San Ignacio', 'Placencia'] },
+    { name: 'Guatemala', zone: 2, tier: 1, iso: 'GT', cities: ['Guatemala City', 'Antigua', 'Flores'] },
+    { name: 'Honduras', zone: 2, tier: 1, iso: 'HN', cities: ['Tegucigalpa', 'San Pedro Sula', 'Roatan'] },
+    { name: 'El Salvador', zone: 2, tier: 1, iso: 'SV', cities: ['San Salvador', 'Santa Ana'] },
+    { name: 'Nicaragua', zone: 2, tier: 1, iso: 'NI', cities: ['Managua', 'Granada', 'Leon'] },
+    { name: 'Costa Rica', zone: 2, tier: 2, iso: 'CR', cities: ['San Jose', 'Liberia', 'Tamarindo', 'Manuel Antonio'] },
+    { name: 'Panama', zone: 2, tier: 2, iso: 'PA', cities: ['Panama City', 'Bocas del Toro', 'David'] },
+    { name: 'Cuba', zone: 2, tier: 1, iso: 'CU', cities: ['Havana', 'Varadero', 'Santiago de Cuba'] },
+    { name: 'Jamaica', zone: 2, tier: 2, iso: 'JM', cities: ['Kingston', 'Montego Bay', 'Negril'] },
+    { name: 'Haiti', zone: 2, tier: 1, iso: 'HT', cities: ['Port-au-Prince', 'Cap-Haitien'] },
+    { name: 'Dominican Republic', zone: 2, tier: 2, iso: 'DO', cities: ['Santo Domingo', 'Punta Cana', 'Puerto Plata'] },
+    { name: 'Bahamas', zone: 2, tier: 3, iso: 'BS', cities: ['Nassau', 'Freeport'] },
+    { name: 'Barbados', zone: 2, tier: 3, iso: 'BB', cities: ['Bridgetown', 'Holetown'] },
+    { name: 'Trinidad and Tobago', zone: 2, tier: 2, iso: 'TT', cities: ['Port of Spain', 'Scarborough'] },
+    { name: 'Saint Lucia', zone: 2, tier: 2, iso: 'LC', cities: ['Castries', 'Soufriere'] },
+    { name: 'Grenada', zone: 2, tier: 2, iso: 'GD', cities: ["St. George's", 'Grand Anse'] },
+    { name: 'Saint Vincent and the Grenadines', zone: 2, tier: 2, iso: 'VC', cities: ['Kingstown', 'Bequia'] },
+    { name: 'Antigua and Barbuda', zone: 2, tier: 2, iso: 'AG', cities: ["St. John's", 'English Harbour'] },
+    { name: 'Saint Kitts and Nevis', zone: 2, tier: 2, iso: 'KN', cities: ['Basseterre', 'Charlestown'] },
+    { name: 'Dominica', zone: 2, tier: 1, iso: 'DM', cities: ['Roseau', 'Portsmouth'] },
+
+    { name: 'Colombia', zone: 3, tier: 1, iso: 'CO', cities: ['Bogota', 'Medellin', 'Cartagena', 'Cali'] },
+    { name: 'Venezuela', zone: 3, tier: 1, iso: 'VE', cities: ['Caracas', 'Maracaibo', 'Merida'] },
+    { name: 'Guyana', zone: 3, tier: 1, iso: 'GY', cities: ['Georgetown', 'Linden'] },
+    { name: 'Suriname', zone: 3, tier: 1, iso: 'SR', cities: ['Paramaribo', 'Nieuw Nickerie'] },
+    { name: 'Ecuador', zone: 3, tier: 1, iso: 'EC', cities: ['Quito', 'Guayaquil', 'Cuenca', 'Galapagos'] },
+    { name: 'Peru', zone: 3, tier: 1, iso: 'PE', cities: ['Lima', 'Cusco', 'Arequipa', 'Trujillo'] },
+    { name: 'Bolivia', zone: 3, tier: 1, iso: 'BO', cities: ['La Paz', 'Santa Cruz', 'Sucre'] },
+    { name: 'Paraguay', zone: 3, tier: 1, iso: 'PY', cities: ['Asuncion', 'Ciudad del Este'] },
+    { name: 'Chile', zone: 3, tier: 2, iso: 'CL', cities: ['Santiago', 'Valparaiso', 'Punta Arenas', 'San Pedro de Atacama'] },
+    { name: 'Argentina', zone: 3, tier: 2, iso: 'AR', cities: ['Buenos Aires', 'Cordoba', 'Mendoza', 'Bariloche', 'Ushuaia'] },
+    { name: 'Uruguay', zone: 3, tier: 2, iso: 'UY', cities: ['Montevideo', 'Punta del Este', 'Colonia del Sacramento'] },
+    { name: 'Brazil', zone: 3, tier: 2, iso: 'BR', cities: ['Rio de Janeiro', 'Sao Paulo', 'Brasilia', 'Salvador', 'Recife', 'Fortaleza', 'Manaus', 'Florianopolis', 'Foz do Iguacu', 'Belo Horizonte'] },
+
+    { name: 'United Kingdom', zone: 4, tier: 3, iso: 'GB', cities: ['London', 'Manchester', 'Edinburgh', 'Liverpool', 'Birmingham', 'Glasgow', 'Bristol'] },
+    { name: 'Ireland', zone: 4, tier: 3, iso: 'IE', cities: ['Dublin', 'Cork', 'Galway'] },
+    { name: 'France', zone: 4, tier: 3, iso: 'FR', cities: ['Paris', 'Lyon', 'Marseille', 'Nice', 'Bordeaux', 'Strasbourg'] },
+    { name: 'Germany', zone: 4, tier: 3, iso: 'DE', cities: ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne', 'Dresden', 'Stuttgart', 'Dusseldorf'] },
+    { name: 'Netherlands', zone: 4, tier: 3, iso: 'NL', cities: ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht'] },
+    { name: 'Belgium', zone: 4, tier: 3, iso: 'BE', cities: ['Brussels', 'Bruges', 'Antwerp', 'Ghent'] },
+    { name: 'Luxembourg', zone: 4, tier: 3, iso: 'LU', cities: ['Luxembourg City', 'Esch-sur-Alzette'] },
+    { name: 'Switzerland', zone: 4, tier: 3, iso: 'CH', cities: ['Zurich', 'Geneva', 'Bern', 'Lucerne', 'Interlaken'] },
+    { name: 'Austria', zone: 4, tier: 3, iso: 'AT', cities: ['Vienna', 'Salzburg', 'Innsbruck', 'Graz'] },
+    { name: 'Denmark', zone: 4, tier: 3, iso: 'DK', cities: ['Copenhagen', 'Aarhus', 'Odense'] },
+    { name: 'Norway', zone: 4, tier: 3, iso: 'NO', cities: ['Oslo', 'Bergen', 'Tromso', 'Trondheim'] },
+    { name: 'Sweden', zone: 4, tier: 3, iso: 'SE', cities: ['Stockholm', 'Gothenburg', 'Malmo'] },
+    { name: 'Finland', zone: 4, tier: 3, iso: 'FI', cities: ['Helsinki', 'Tampere', 'Rovaniemi'] },
+    { name: 'Iceland', zone: 4, tier: 3, iso: 'IS', cities: ['Reykjavik', 'Akureyri'] },
+
+    { name: 'Spain', zone: 5, tier: 2, iso: 'ES', cities: ['Madrid', 'Barcelona', 'Seville', 'Valencia', 'Granada', 'Ibiza'] },
+    { name: 'Portugal', zone: 5, tier: 2, iso: 'PT', cities: ['Lisbon', 'Porto', 'Faro', 'Sintra'] },
+    { name: 'Italy', zone: 5, tier: 3, iso: 'IT', cities: ['Rome', 'Milan', 'Venice', 'Florence', 'Naples', 'Bologna'] },
+    { name: 'Greece', zone: 5, tier: 2, iso: 'GR', cities: ['Athens', 'Santorini', 'Mykonos', 'Thessaloniki'] },
+    { name: 'Poland', zone: 5, tier: 2, iso: 'PL', cities: ['Warsaw', 'Krakow', 'Gdansk', 'Wroclaw'] },
+    { name: 'Czechia', zone: 5, tier: 2, iso: 'CZ', cities: ['Prague', 'Brno', 'Cesky Krumlov'] },
+    { name: 'Slovakia', zone: 5, tier: 2, iso: 'SK', cities: ['Bratislava', 'Kosice'] },
+    { name: 'Hungary', zone: 5, tier: 2, iso: 'HU', cities: ['Budapest', 'Debrecen'] },
+    { name: 'Romania', zone: 5, tier: 1, iso: 'RO', cities: ['Bucharest', 'Cluj-Napoca', 'Brasov'] },
+    { name: 'Bulgaria', zone: 5, tier: 1, iso: 'BG', cities: ['Sofia', 'Plovdiv', 'Varna'] },
+    { name: 'Croatia', zone: 5, tier: 2, iso: 'HR', cities: ['Zagreb', 'Split', 'Dubrovnik', 'Zadar'] },
+    { name: 'Slovenia', zone: 5, tier: 2, iso: 'SI', cities: ['Ljubljana', 'Bled'] },
+    { name: 'Serbia', zone: 5, tier: 1, iso: 'RS', cities: ['Belgrade', 'Novi Sad'] },
+    { name: 'Bosnia and Herzegovina', zone: 5, tier: 1, iso: 'BA', cities: ['Sarajevo', 'Mostar'] },
+    { name: 'Montenegro', zone: 5, tier: 2, iso: 'ME', cities: ['Podgorica', 'Kotor', 'Budva'] },
+    { name: 'North Macedonia', zone: 5, tier: 1, iso: 'MK', cities: ['Skopje', 'Ohrid'] },
+    { name: 'Albania', zone: 5, tier: 1, iso: 'AL', cities: ['Tirana', 'Saranda'] },
+    { name: 'Kosovo', zone: 5, tier: 1, iso: 'XK', cities: ['Pristina', 'Prizren'] },
+    { name: 'Moldova', zone: 5, tier: 1, iso: 'MD', cities: ['Chisinau', 'Balti'] },
+    { name: 'Ukraine', zone: 5, tier: 1, iso: 'UA', cities: ['Kyiv', 'Lviv', 'Odesa'] },
+    { name: 'Belarus', zone: 5, tier: 1, iso: 'BY', cities: ['Minsk', 'Brest'] },
+    { name: 'Russia', zone: 5, tier: 2, iso: 'RU', cities: ['Moscow', 'Saint Petersburg', 'Kazan', 'Sochi', 'Novosibirsk', 'Yekaterinburg', 'Vladivostok', 'Nizhny Novgorod'] },
+    { name: 'Estonia', zone: 5, tier: 2, iso: 'EE', cities: ['Tallinn', 'Tartu'] },
+    { name: 'Latvia', zone: 5, tier: 2, iso: 'LV', cities: ['Riga', 'Jurmala'] },
+    { name: 'Lithuania', zone: 5, tier: 2, iso: 'LT', cities: ['Vilnius', 'Kaunas'] },
+    { name: 'Malta', zone: 5, tier: 2, iso: 'MT', cities: ['Valletta', 'Sliema'] },
+    { name: 'Cyprus', zone: 5, tier: 2, iso: 'CY', cities: ['Nicosia', 'Limassol', 'Paphos'] },
+
+    { name: 'Turkey', zone: 6, tier: 2, iso: 'TR', cities: ['Istanbul', 'Ankara', 'Antalya', 'Cappadocia', 'Izmir', 'Bodrum'] },
+    { name: 'Israel', zone: 6, tier: 3, iso: 'IL', cities: ['Jerusalem', 'Tel Aviv', 'Haifa', 'Eilat'] },
+    { name: 'Palestine', zone: 6, tier: 1, iso: 'PS', cities: ['Ramallah', 'Bethlehem'] },
+    { name: 'Jordan', zone: 6, tier: 2, iso: 'JO', cities: ['Amman', 'Petra', 'Aqaba'] },
+    { name: 'Lebanon', zone: 6, tier: 2, iso: 'LB', cities: ['Beirut', 'Byblos'] },
+    { name: 'Syria', zone: 6, tier: 1, iso: 'SY', cities: ['Damascus', 'Aleppo'] },
+    { name: 'Iraq', zone: 6, tier: 1, iso: 'IQ', cities: ['Baghdad', 'Erbil'] },
+    { name: 'Iran', zone: 6, tier: 1, iso: 'IR', cities: ['Tehran', 'Isfahan', 'Shiraz'] },
+    { name: 'Saudi Arabia', zone: 6, tier: 3, iso: 'SA', cities: ['Riyadh', 'Jeddah', 'Mecca', 'AlUla'] },
+    { name: 'Yemen', zone: 6, tier: 1, iso: 'YE', cities: ["Sana'a", 'Aden'] },
+    { name: 'Oman', zone: 6, tier: 2, iso: 'OM', cities: ['Muscat', 'Salalah'] },
+    { name: 'United Arab Emirates', zone: 6, tier: 3, iso: 'AE', cities: ['Dubai', 'Abu Dhabi', 'Sharjah'] },
+    { name: 'Qatar', zone: 6, tier: 3, iso: 'QA', cities: ['Doha', 'Al Wakrah'] },
+    { name: 'Bahrain', zone: 6, tier: 2, iso: 'BH', cities: ['Manama', 'Muharraq'] },
+    { name: 'Kuwait', zone: 6, tier: 2, iso: 'KW', cities: ['Kuwait City', 'Al Ahmadi'] },
+    { name: 'Egypt', zone: 6, tier: 1, iso: 'EG', cities: ['Cairo', 'Luxor', 'Alexandria', 'Aswan', 'Sharm El Sheikh'] },
+    { name: 'Libya', zone: 6, tier: 1, iso: 'LY', cities: ['Tripoli', 'Benghazi'] },
+    { name: 'Tunisia', zone: 6, tier: 1, iso: 'TN', cities: ['Tunis', 'Sousse', 'Carthage'] },
+    { name: 'Algeria', zone: 6, tier: 1, iso: 'DZ', cities: ['Algiers', 'Oran', 'Constantine'] },
+    { name: 'Morocco', zone: 6, tier: 1, iso: 'MA', cities: ['Casablanca', 'Marrakech', 'Fez', 'Chefchaouen', 'Tangier'] },
+    { name: 'Sudan', zone: 6, tier: 1, iso: 'SD', cities: ['Khartoum', 'Port Sudan'] },
+
+    { name: 'Mauritania', zone: 7, tier: 1, iso: 'MR', cities: ['Nouakchott', 'Nouadhibou'] },
+    { name: 'Mali', zone: 7, tier: 1, iso: 'ML', cities: ['Bamako', 'Timbuktu'] },
+    { name: 'Niger', zone: 7, tier: 1, iso: 'NE', cities: ['Niamey', 'Zinder'] },
+    { name: 'Chad', zone: 7, tier: 1, iso: 'TD', cities: ["N'Djamena", 'Moundou'] },
+    { name: 'Senegal', zone: 7, tier: 1, iso: 'SN', cities: ['Dakar', 'Saint-Louis'] },
+    { name: 'Gambia', zone: 7, tier: 1, iso: 'GM', cities: ['Banjul', 'Serekunda'] },
+    { name: 'Guinea-Bissau', zone: 7, tier: 1, iso: 'GW', cities: ['Bissau'] },
+    { name: 'Guinea', zone: 7, tier: 1, iso: 'GN', cities: ['Conakry', 'Kankan'] },
+    { name: 'Sierra Leone', zone: 7, tier: 1, iso: 'SL', cities: ['Freetown', 'Bo'] },
+    { name: 'Liberia', zone: 7, tier: 1, iso: 'LR', cities: ['Monrovia'] },
+    { name: 'Ivory Coast', zone: 7, tier: 1, iso: 'CI', cities: ['Abidjan', 'Yamoussoukro'] },
+    { name: 'Ghana', zone: 7, tier: 1, iso: 'GH', cities: ['Accra', 'Kumasi', 'Cape Coast'] },
+    { name: 'Togo', zone: 7, tier: 1, iso: 'TG', cities: ['Lome'] },
+    { name: 'Benin', zone: 7, tier: 1, iso: 'BJ', cities: ['Cotonou', 'Porto-Novo'] },
+    { name: 'Nigeria', zone: 7, tier: 1, iso: 'NG', cities: ['Lagos', 'Abuja', 'Port Harcourt', 'Kano'] },
+    { name: 'Cameroon', zone: 7, tier: 1, iso: 'CM', cities: ['Yaounde', 'Douala'] },
+    { name: 'Central African Republic', zone: 7, tier: 1, iso: 'CF', cities: ['Bangui'] },
+    { name: 'South Sudan', zone: 7, tier: 1, iso: 'SS', cities: ['Juba'] },
+    { name: 'Ethiopia', zone: 7, tier: 1, iso: 'ET', cities: ['Addis Ababa', 'Lalibela', 'Gondar'] },
+    { name: 'Eritrea', zone: 7, tier: 1, iso: 'ER', cities: ['Asmara'] },
+    { name: 'Djibouti', zone: 7, tier: 1, iso: 'DJ', cities: ['Djibouti City'] },
+    { name: 'Somalia', zone: 7, tier: 1, iso: 'SO', cities: ['Mogadishu'] },
+    { name: 'Kenya', zone: 7, tier: 1, iso: 'KE', cities: ['Nairobi', 'Mombasa', 'Maasai Mara'] },
+    { name: 'Uganda', zone: 7, tier: 1, iso: 'UG', cities: ['Kampala', 'Entebbe'] },
+    { name: 'Rwanda', zone: 7, tier: 1, iso: 'RW', cities: ['Kigali'] },
+    { name: 'Burundi', zone: 7, tier: 1, iso: 'BI', cities: ['Gitega', 'Bujumbura'] },
+    { name: 'Tanzania', zone: 7, tier: 1, iso: 'TZ', cities: ['Dodoma', 'Dar es Salaam', 'Zanzibar', 'Arusha'] },
+    { name: 'Democratic Republic of the Congo', zone: 7, tier: 1, iso: 'CD', cities: ['Kinshasa', 'Lubumbashi'] },
+    { name: 'Republic of the Congo', zone: 7, tier: 1, iso: 'CG', cities: ['Brazzaville'] },
+    { name: 'Gabon', zone: 7, tier: 1, iso: 'GA', cities: ['Libreville'] },
+    { name: 'Equatorial Guinea', zone: 7, tier: 1, iso: 'GQ', cities: ['Malabo'] },
+    { name: 'Sao Tome and Principe', zone: 7, tier: 1, iso: 'ST', cities: ['Sao Tome'] },
+    { name: 'Angola', zone: 7, tier: 1, iso: 'AO', cities: ['Luanda'] },
+    { name: 'Zambia', zone: 7, tier: 1, iso: 'ZM', cities: ['Lusaka', 'Livingstone'] },
+    { name: 'Malawi', zone: 7, tier: 1, iso: 'MW', cities: ['Lilongwe', 'Blantyre'] },
+    { name: 'Mozambique', zone: 7, tier: 1, iso: 'MZ', cities: ['Maputo'] },
+    { name: 'Zimbabwe', zone: 7, tier: 1, iso: 'ZW', cities: ['Harare', 'Victoria Falls'] },
+    { name: 'Botswana', zone: 7, tier: 2, iso: 'BW', cities: ['Gaborone', 'Maun'] },
+    { name: 'Namibia', zone: 7, tier: 2, iso: 'NA', cities: ['Windhoek', 'Swakopmund'] },
+    { name: 'South Africa', zone: 7, tier: 2, iso: 'ZA', cities: ['Cape Town', 'Johannesburg', 'Durban', 'Pretoria', 'Port Elizabeth'] },
+    { name: 'Lesotho', zone: 7, tier: 1, iso: 'LS', cities: ['Maseru'] },
+    { name: 'Eswatini', zone: 7, tier: 1, iso: 'SZ', cities: ['Mbabane'] },
+    { name: 'Madagascar', zone: 7, tier: 1, iso: 'MG', cities: ['Antananarivo', 'Nosy Be'] },
+    { name: 'Comoros', zone: 7, tier: 1, iso: 'KM', cities: ['Moroni'] },
+    { name: 'Mauritius', zone: 7, tier: 2, iso: 'MU', cities: ['Port Louis', 'Grand Baie'] },
+    { name: 'Seychelles', zone: 7, tier: 3, iso: 'SC', cities: ['Victoria', 'Praslin'] },
+    { name: 'Cape Verde', zone: 7, tier: 1, iso: 'CV', cities: ['Praia', 'Sal'] },
+    { name: 'Burkina Faso', zone: 7, tier: 1, iso: 'BF', cities: ['Ouagadougou'] },
+
+    { name: 'Kazakhstan', zone: 8, tier: 2, iso: 'KZ', cities: ['Astana', 'Almaty'] },
+    { name: 'Uzbekistan', zone: 8, tier: 1, iso: 'UZ', cities: ['Tashkent', 'Samarkand', 'Bukhara'] },
+    { name: 'Turkmenistan', zone: 8, tier: 1, iso: 'TM', cities: ['Ashgabat'] },
+    { name: 'Tajikistan', zone: 8, tier: 1, iso: 'TJ', cities: ['Dushanbe'] },
+    { name: 'Kyrgyzstan', zone: 8, tier: 1, iso: 'KG', cities: ['Bishkek', 'Osh'] },
+    { name: 'Afghanistan', zone: 8, tier: 1, iso: 'AF', cities: ['Kabul'] },
+    { name: 'Pakistan', zone: 8, tier: 1, iso: 'PK', cities: ['Islamabad', 'Karachi', 'Lahore'] },
+    { name: 'India', zone: 8, tier: 1, iso: 'IN', cities: ['Mumbai', 'Delhi', 'Bengaluru', 'Hyderabad', 'Chennai', 'Kolkata', 'Ahmedabad', 'Pune', 'Jaipur', 'Goa', 'Kochi', 'Varanasi', 'Agra', 'Srinagar', 'Amritsar'] },
+    { name: 'Nepal', zone: 8, tier: 1, iso: 'NP', cities: ['Kathmandu', 'Pokhara'] },
+    { name: 'Bhutan', zone: 8, tier: 2, iso: 'BT', cities: ['Thimphu', 'Paro'] },
+    { name: 'Bangladesh', zone: 8, tier: 1, iso: 'BD', cities: ['Dhaka', 'Chittagong'] },
+    { name: 'Sri Lanka', zone: 8, tier: 1, iso: 'LK', cities: ['Colombo', 'Kandy', 'Galle'] },
+    { name: 'Maldives', zone: 8, tier: 3, iso: 'MV', cities: ['Male'] },
+    { name: 'Georgia', zone: 8, tier: 1, iso: 'GE', cities: ['Tbilisi', 'Batumi'] },
+    { name: 'Armenia', zone: 8, tier: 1, iso: 'AM', cities: ['Yerevan'] },
+    { name: 'Azerbaijan', zone: 8, tier: 2, iso: 'AZ', cities: ['Baku'] },
+
+    { name: 'Myanmar', zone: 9, tier: 1, iso: 'MM', cities: ['Yangon', 'Mandalay', 'Bagan'] },
+    { name: 'Thailand', zone: 9, tier: 1, iso: 'TH', cities: ['Bangkok', 'Chiang Mai', 'Phuket', 'Pattaya', 'Krabi'] },
+    { name: 'Laos', zone: 9, tier: 1, iso: 'LA', cities: ['Vientiane', 'Luang Prabang'] },
+    { name: 'Cambodia', zone: 9, tier: 1, iso: 'KH', cities: ['Phnom Penh', 'Siem Reap'] },
+    { name: 'Vietnam', zone: 9, tier: 1, iso: 'VN', cities: ['Hanoi', 'Ho Chi Minh City', 'Da Nang', 'Hoi An', 'Ha Long Bay'] },
+    { name: 'Malaysia', zone: 9, tier: 2, iso: 'MY', cities: ['Kuala Lumpur', 'Penang', 'Langkawi', 'Malacca'] },
+    { name: 'Singapore', zone: 9, tier: 3, iso: 'SG', cities: ['Singapore'] },
+    { name: 'Indonesia', zone: 9, tier: 1, iso: 'ID', cities: ['Jakarta', 'Bali', 'Yogyakarta', 'Surabaya', 'Bandung'] },
+    { name: 'Brunei', zone: 9, tier: 2, iso: 'BN', cities: ['Bandar Seri Begawan'] },
+    { name: 'Philippines', zone: 9, tier: 1, iso: 'PH', cities: ['Manila', 'Cebu', 'Boracay', 'Palawan', 'Davao'] },
+    { name: 'Timor-Leste', zone: 9, tier: 1, iso: 'TL', cities: ['Dili'] },
+
+    { name: 'China', zone: 10, tier: 2, iso: 'CN', cities: ['Beijing', 'Shanghai', "Xi'an", 'Guangzhou', 'Chengdu', 'Hong Kong', 'Guilin', 'Shenzhen', 'Hangzhou', 'Suzhou', 'Harbin', 'Kunming'] },
+    { name: 'Mongolia', zone: 10, tier: 1, iso: 'MN', cities: ['Ulaanbaatar'] },
+    { name: 'South Korea', zone: 10, tier: 2, iso: 'KR', cities: ['Seoul', 'Busan', 'Jeju', 'Incheon'] },
+    { name: 'Japan', zone: 10, tier: 3, iso: 'JP', cities: ['Tokyo', 'Osaka', 'Kyoto', 'Nagoya', 'Sapporo', 'Fukuoka', 'Hiroshima', 'Nara', 'Okinawa'] },
+    { name: 'Taiwan', zone: 10, tier: 2, iso: 'TW', cities: ['Taipei', 'Kaohsiung', 'Tainan'] },
+
+    { name: 'Australia', zone: 11, tier: 3, iso: 'AU', cities: ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Cairns', 'Gold Coast'] },
+    { name: 'New Zealand', zone: 11, tier: 3, iso: 'NZ', cities: ['Auckland', 'Wellington', 'Queenstown', 'Christchurch'] },
+    { name: 'Papua New Guinea', zone: 11, tier: 1, iso: 'PG', cities: ['Port Moresby'] },
+    { name: 'Fiji', zone: 11, tier: 2, iso: 'FJ', cities: ['Suva', 'Nadi'] },
+    { name: 'Solomon Islands', zone: 11, tier: 1, iso: 'SB', cities: ['Honiara'] },
+    { name: 'Vanuatu', zone: 11, tier: 2, iso: 'VU', cities: ['Port Vila'] },
+    { name: 'Samoa', zone: 11, tier: 2, iso: 'WS', cities: ['Apia'] },
+    { name: 'Tonga', zone: 11, tier: 2, iso: 'TO', cities: ["Nuku'alofa"] },
+    { name: 'Kiribati', zone: 11, tier: 1, iso: 'KI', cities: ['Tarawa'] },
+    { name: 'Tuvalu', zone: 11, tier: 1, iso: 'TV', cities: ['Funafuti'] },
+    { name: 'Nauru', zone: 11, tier: 1, iso: 'NR', cities: ['Yaren'] },
+    { name: 'Palau', zone: 11, tier: 2, iso: 'PW', cities: ['Ngerulmud', 'Koror'] },
+    { name: 'Micronesia', zone: 11, tier: 1, iso: 'FM', cities: ['Palikir'] },
+    { name: 'Marshall Islands', zone: 11, tier: 1, iso: 'MH', cities: ['Majuro'] }
   ];
 
   var NO_AIRPORT = [
@@ -404,7 +540,7 @@
   ];
 
   var countries = countryData.map(function (c) {
-    return { name: c[0], zone: c[1], tier: c[2], city: c[3], isoCode: c[4], noAirport: false };
+    return { name: c.name, zone: c.zone, tier: c.tier, cities: c.cities, isoCode: c.iso, noAirport: false };
   });
   NO_AIRPORT.forEach(function (na) {
     countries.push({ name: na.name, isoCode: na.isoCode, noAirport: true, line: na.line });
@@ -412,6 +548,21 @@
   countries.sort(function (a, b) { return a.name.localeCompare(b.name); });
 
   var flyableCountries = countries.filter(function (c) { return !c.noAirport; });
+
+  // countries with at least 2 cities -- the only ones that can host a
+  // domestic (same-country) Surprise Me trip
+  var domesticPool = flyableCountries.filter(function (c) { return c.cities.length >= 2; });
+
+  function pickCity(country) { return pick(country.cities); }
+
+  // picks two different cities within the same country -- never the same
+  // city as both origin and destination
+  function pickTwoCities(country) {
+    var a = pick(country.cities);
+    var b = a;
+    while (b === a) { b = pick(country.cities); }
+    return [a, b];
+  }
 
   // ---------- populate the two selects ----------
   var departureSelect = document.getElementById('departureSelect');
@@ -473,10 +624,12 @@
     var c = estimateTrip(dep, dest);
     var fits = c.total <= trip.budget;
     var left = trip.budget - c.total;
+    var depCity = pickCity(dep);
+    var destCity = pickCity(dest);
     return (
       '<div class="card dest-card">' +
-        '<div class="dest-label">flying from ' + dep.name + ' (' + dep.city + ')</div>' +
-        '<div class="dest-name">' + dest.name + '</div>' +
+        '<div class="dest-label">flying from ' + depCity + ', ' + dep.name + '</div>' +
+        '<div class="dest-name">' + destCity + ', ' + dest.name + '</div>' +
         '<div class="dest-line">' + pick(destLines) + '</div>' +
         '<span class="fit-tag ' + (fits ? 'yes' : 'no') + '">' + (fits ? 'fits your budget' : 'does not fit your budget') + '</span>' +
         '<table class="breakdown">' +
@@ -524,26 +677,12 @@
   }
 
   // ---------- domestic trips, for full Surprise Me in the $100-$400 range ----------
-  // [country, departure city, destination city, tier]
-  var DOMESTIC_TRIPS = [
-    ['United States', 'Atlanta', 'Orlando', 3], ['United Kingdom', 'London', 'Manchester', 3],
-    ['France', 'Paris', 'Lyon', 3], ['Japan', 'Tokyo', 'Osaka', 3], ['Germany', 'Berlin', 'Munich', 3],
-    ['Italy', 'Rome', 'Florence', 3], ['Spain', 'Madrid', 'Barcelona', 2], ['Canada', 'Toronto', 'Vancouver', 3],
-    ['Australia', 'Sydney', 'Melbourne', 3], ['South Korea', 'Seoul', 'Busan', 2], ['China', 'Beijing', 'Shanghai', 2],
-    ['Poland', 'Warsaw', 'Krakow', 2], ['Greece', 'Athens', 'Santorini', 2], ['Portugal', 'Lisbon', 'Porto', 2],
-    ['Turkey', 'Istanbul', 'Antalya', 2], ['Mexico', 'Mexico City', 'Cancun', 2], ['Brazil', 'Rio de Janeiro', 'Sao Paulo', 2],
-    ['Argentina', 'Buenos Aires', 'Mendoza', 2], ['South Africa', 'Cape Town', 'Johannesburg', 2],
-    ['India', 'Mumbai', 'Goa', 1], ['Thailand', 'Bangkok', 'Chiang Mai', 1], ['Vietnam', 'Hanoi', 'Ho Chi Minh City', 1],
-    ['Indonesia', 'Jakarta', 'Bali', 1], ['Philippines', 'Manila', 'Cebu', 1], ['Egypt', 'Cairo', 'Luxor', 1],
-    ['Morocco', 'Casablanca', 'Marrakech', 1], ['Peru', 'Lima', 'Cusco', 1], ['Colombia', 'Bogota', 'Cartagena', 1],
-    ['Kenya', 'Nairobi', 'Mombasa', 1], ['Nigeria', 'Lagos', 'Abuja', 1]
-  ].map(function (d) { return { country: d[0], from: d[1], to: d[2], tier: d[3] }; });
-
+  // uses the same unified country/city database -- no separate list.
   function domesticFlightCost(tier) { return tier === 1 ? 25 : tier === 2 ? 70 : 110; }
 
-  function estimateDomesticTrip(entry, nights) {
-    var rates = TIER_RATES[entry.tier];
-    var flight = domesticFlightCost(entry.tier);
+  function estimateDomesticTrip(country, nights) {
+    var rates = TIER_RATES[country.tier];
+    var flight = domesticFlightCost(country.tier);
     var hotel = rates.hotel * nights;
     var food = rates.food * nights;
     var activities = rates.activities * nights;
@@ -559,27 +698,34 @@
   function findAffordableDomesticTrip(budget) {
     var attempts = 60;
     for (var i = 0; i < attempts; i++) {
-      var entry = pick(DOMESTIC_TRIPS);
+      var country = pick(domesticPool);
       for (var nights = 4; nights >= 1; nights--) {
-        var est = estimateDomesticTrip(entry, nights);
-        if (est.total <= budget) return { entry: entry, est: est };
+        var est = estimateDomesticTrip(country, nights);
+        if (est.total <= budget) {
+          var cities = pickTwoCities(country);
+          return { country: country, from: cities[0], to: cities[1], est: est };
+        }
       }
     }
     var best = null, bestTotal = Infinity;
-    DOMESTIC_TRIPS.forEach(function (entry) {
-      var est = estimateDomesticTrip(entry, 1);
-      if (est.total < bestTotal) { bestTotal = est.total; best = { entry: entry, est: est }; }
+    domesticPool.forEach(function (country) {
+      var est = estimateDomesticTrip(country, 1);
+      if (est.total < bestTotal) { bestTotal = est.total; best = { country: country, est: est }; }
     });
+    var cities = pickTwoCities(best.country);
+    best.from = cities[0];
+    best.to = cities[1];
     return best;
   }
 
-  function domesticTripCardHTML(entry, est) {
+  function domesticTripCardHTML(trip_) {
+    var est = trip_.est;
     var fits = est.total <= trip.budget;
     var left = trip.budget - est.total;
     return (
       '<div class="card dest-card">' +
-        '<div class="dest-label">domestic trip within ' + entry.country + '</div>' +
-        '<div class="dest-name">' + entry.from + ' &rarr; ' + entry.to + '</div>' +
+        '<div class="dest-label">domestic trip within ' + trip_.country.name + '</div>' +
+        '<div class="dest-name">' + trip_.from + ' &rarr; ' + trip_.to + '</div>' +
         '<div class="dest-line">Surprise Me kept this one inside the country, since that is what actually fit.</div>' +
         '<span class="fit-tag ' + (fits ? 'yes' : 'no') + '">' + (fits ? 'fits your budget' : 'does not fit your budget') + '</span>' +
         '<table class="breakdown">' +
@@ -609,7 +755,7 @@
     if (depSurprise || destSurprise) {
       if (trip.budget <= 400) {
         var domestic = findAffordableDomesticTrip(trip.budget);
-        body.innerHTML = domesticTripCardHTML(domestic.entry, domestic.est);
+        body.innerHTML = domesticTripCardHTML(domestic);
       } else {
         var surprisePair = findAffordablePair(null, null);
         body.innerHTML = tripCardHTML(surprisePair.dep, surprisePair.dest);
