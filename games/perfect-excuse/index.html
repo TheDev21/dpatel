@@ -84,6 +84,27 @@
   .scenario-btn:hover { transform: translateY(-3px); box-shadow: 5px 7px 0 rgba(35,32,29,0.18); background: #fff; }
   .scenario-label { font-family: 'Bebas Neue', sans-serif; font-size: 34px; letter-spacing: 0.02em; }
 
+  /* ---- decorative bubbles, fill empty space around the picker ---- */
+  .deco-bubble {
+    position: fixed;
+    background: var(--card-bg);
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+    padding: 8px 14px;
+    font-size: 12.5px;
+    max-width: 160px;
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.14);
+    pointer-events: none;
+    z-index: 1;
+  }
+  .deco-bubble.pink { background: var(--red); color: #fff; }
+  .deco-bubble.d1 { top: 18%; right: 8%;  transform: rotate(-4deg); }
+  .deco-bubble.d2 { top: 42%; right: 4%;  transform: rotate(3deg); }
+  .deco-bubble.d3 { top: 66%; right: 10%; transform: rotate(-3deg); }
+  .deco-bubble.d4 { top: 30%; left: 4%;   transform: rotate(4deg); }
+  .deco-bubble.d5 { top: 58%; left: 6%;   transform: rotate(-2deg); }
+  @media (max-width: 1100px) { .deco-bubble { display: none; } }
+
   /* ---- game ---- */
   #game { display: none; }
   #game.show { display: block; }
@@ -175,6 +196,11 @@
   <p class="tagline">lie to someone, but make it grammatically compliant.</p>
 
   <div id="picker">
+    <div class="deco-bubble d1">the dog ate my calendar</div>
+    <div class="deco-bubble pink d2">it was a leap year thing</div>
+    <div class="deco-bubble d3">mercury was in retrograde</div>
+    <div class="deco-bubble pink d4">my alarm learned sarcasm</div>
+    <div class="deco-bubble d5">I was building character</div>
     <div class="scenario-grid" id="scenarioGrid"></div>
   </div>
 
