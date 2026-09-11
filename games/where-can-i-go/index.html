@@ -603,33 +603,34 @@
     var depSurprise = depName === 'surprise';
     var destSurprise = destName === 'surprise';
 
-    var depCountry = depSurprise ? null : findCountry(depName);
-    var destCountry = destSurprise ? null : findCountry(destName);
+    // Surprise Me on EITHER side hands the whole trip to the game -- any
+    // manually chosen country on the other side is not a constraint, it's
+    // simply ignored. Only "manual -> manual" keeps the fixed-country flow.
+    if (depSurprise || destSurprise) {
+      if (trip.budget <= 400) {
+        var domestic = findAffordableDomesticTrip(trip.budget);
+        body.innerHTML = domesticTripCardHTML(domestic.entry, domestic.est);
+      } else {
+        var surprisePair = findAffordablePair(null, null);
+        body.innerHTML = tripCardHTML(surprisePair.dep, surprisePair.dest);
+      }
+      showStep('results');
+      return;
+    }
 
-    if (depCountry && depCountry.noAirport) { body.innerHTML = noAirportCardHTML(depCountry); showStep('results'); return; }
-    if (destCountry && destCountry.noAirport) { body.innerHTML = noAirportCardHTML(destCountry); showStep('results'); return; }
+    var depCountry = findCountry(depName);
+    var destCountry = findCountry(destName);
 
-    if (!depSurprise && !destSurprise && depCountry.name === destCountry.name) {
+    if (depCountry.noAirport) { body.innerHTML = noAirportCardHTML(depCountry); showStep('results'); return; }
+    if (destCountry.noAirport) { body.innerHTML = noAirportCardHTML(destCountry); showStep('results'); return; }
+
+    if (depCountry.name === destCountry.name) {
       body.innerHTML = '<div class="card empty-card"><h2>that is not a trip.</h2><p>Leaving from ' + depCountry.name + ' to go to ' + destCountry.name + ' is just staying home with extra steps.</p></div>';
       showStep('results');
       return;
     }
 
-    // full Surprise Me (no manual departure or destination at all): the game
-    // decides everything. $100-$400 stays domestic since that's realistically
-    // what fits; $401+ uses the normal international surprise logic below.
-    if (depSurprise && destSurprise && trip.budget <= 400) {
-      var domestic = findAffordableDomesticTrip(trip.budget);
-      body.innerHTML = domesticTripCardHTML(domestic.entry, domestic.est);
-      showStep('results');
-      return;
-    }
-
-    var pair = findAffordablePair(
-      depSurprise ? null : depCountry,
-      destSurprise ? null : destCountry
-    );
-    body.innerHTML = tripCardHTML(pair.dep, pair.dest);
+    body.innerHTML = tripCardHTML(depCountry, destCountry);
     showStep('results');
   });
 
