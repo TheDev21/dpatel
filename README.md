@@ -14,11 +14,13 @@ backend, no build step.
 ## Games
 
 - **Where Can I Go?** (`games/where-can-i-go/`) — not really a game, more a
-  toy: type in a budget and it estimates what kind of trip that could
-  realistically buy (destination tier, a cost breakdown table, a "you
-  can afford" list), based on typical-cost guesswork, not live flight/
-  hotel prices. Extremely low budgets get a joke result instead of a
-  full itinerary.
+  toy: pick a budget, a departure city, and a trip type (beach/city/
+  adventure/food/culture/surprise me), and it shows real destinations
+  that actually fit that budget with a full cost breakdown (flight/
+  hotel/food/transport/activities/left over) per destination, based on
+  typical-cost guesswork, not live flight/hotel prices. "Surprise me"
+  reveals one destination at a time with a "nope, next one" reroll.
+  Extremely low budgets get a joke result instead of a full itinerary.
 - **Keep the Ball From Falling** (`games/keep-the-ball/`) — a ball falls,
   you move a paddle with your mouse/finger to bounce it, gravity ramps up
   the longer you survive. Canvas + hand-rolled physics (gravity, velocity,

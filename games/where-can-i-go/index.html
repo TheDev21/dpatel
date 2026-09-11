@@ -9,21 +9,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --pink: #fbeae4;
-    --pink-deep: #f6dcd3;
+    --sky: #dff1f9;
+    --sky-deep: #c9e6f2;
     --ink: #23201d;
-    --ink-dim: #56504a;
-    --card-bg: #fffaf7;
+    --ink-dim: #4e5f66;
+    --card-bg: #ffffff;
     --orange: #ff5a1f;
     --red: #ff2d55;
     --teal: #1f8a70;
+    --navy: #1c4f66;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
     min-height: 100vh;
-    background: var(--pink);
-    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background: var(--sky);
+    background-image: radial-gradient(circle, rgba(28,79,102,0.06) 1px, transparent 1px);
     background-size: 26px 26px;
     color: var(--ink);
     font-family: 'DM Mono', monospace;
@@ -59,20 +60,25 @@
     90% { transform: rotate(-27deg); }
   }
 
-  .wrap { max-width: 480px; margin: 0 auto; text-align: center; }
+  .wrap { max-width: 540px; margin: 0 auto; text-align: center; }
 
   h1 { font-size: clamp(2.2rem, 7vw, 3rem); margin: 10px 0 2px; }
   h1 span { color: var(--orange); }
   .tagline { font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 26px; }
 
-  .budget-card {
+  .step { display: none; }
+  .step.show { display: block; }
+
+  .card {
     background: var(--card-bg);
     border: 3px solid var(--ink);
     border-radius: 20px;
     padding: 22px 24px;
-    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
-    margin-bottom: 20px;
+    box-shadow: 5px 6px 0 rgba(28,79,102,0.16);
+    margin-bottom: 18px;
   }
+  .card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 14px; }
+
   .budget-amount {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 3rem;
@@ -105,9 +111,10 @@
     justify-content: space-between;
     font-size: 0.68rem;
     color: var(--ink-dim);
-    margin-bottom: 16px;
+    margin-bottom: 4px;
   }
-  .plan-btn {
+
+  .btn {
     display: block;
     width: 100%;
     background: var(--orange);
@@ -119,49 +126,70 @@
     font-family: 'DM Mono', monospace;
     cursor: pointer;
     transition: background 0.15s ease, transform 0.15s ease;
+    margin-top: 14px;
   }
-  .plan-btn:hover { background: var(--red); transform: translateY(-2px); }
+  .btn:hover { background: var(--red); transform: translateY(-2px); }
+  .btn.secondary { background: var(--card-bg); color: var(--ink); }
+  .btn.secondary:hover { background: var(--sky-deep); color: var(--ink); }
 
-  #result { display: none; }
-  #result.show { display: block; }
-
-  .dest-card {
+  .tile-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .tile {
     background: var(--card-bg);
-    border: 3px solid var(--ink);
-    border-radius: 20px;
-    padding: 22px 24px;
-    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
-    margin-bottom: 16px;
-    text-align: left;
+    border: 2.5px solid var(--ink);
+    border-radius: 14px;
+    padding: 14px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+    box-shadow: 3px 4px 0 rgba(28,79,102,0.14);
   }
-  .dest-label { font-size: 0.75rem; color: var(--ink-dim); margin-bottom: 2px; }
-  .dest-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem; margin-bottom: 14px; }
+  .tile:hover { transform: translateY(-2px); background: var(--sky); }
+  .tile.wide { grid-column: 1 / -1; }
+  .tile .display { font-size: 1.05rem; }
 
-  table.breakdown { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  table.breakdown td { padding: 7px 0; border-bottom: 1.5px dashed var(--pink-deep); }
+  #customCityRow { display: none; margin-top: 12px; }
+  #customCityRow.show { display: block; }
+  #customCityRow input {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 0.9rem;
+    padding: 10px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 10px;
+    margin-bottom: 8px;
+  }
+
+  .switch-link {
+    display: block;
+    margin: 18px auto 0;
+    background: none; border: none; text-decoration: underline;
+    color: var(--ink-dim); font-family: 'DM Mono', monospace; font-size: 0.8rem;
+    cursor: pointer; padding: 0;
+  }
+  .switch-link:hover { color: var(--orange); }
+
+  .dest-card { text-align: left; }
+  .dest-label { font-size: 0.75rem; color: var(--ink-dim); margin-bottom: 2px; }
+  .dest-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; margin-bottom: 4px; }
+  .dest-line { font-size: 0.82rem; color: var(--ink-dim); margin-bottom: 12px; font-style: italic; }
+
+  table.breakdown { width: 100%; border-collapse: collapse; font-size: 0.83rem; }
+  table.breakdown td { padding: 6px 0; border-bottom: 1.5px dashed var(--sky-deep); }
   table.breakdown td:last-child { text-align: right; font-weight: 500; }
   table.breakdown tr:last-child td { border-bottom: none; color: var(--teal); font-weight: 600; }
 
-  .afford-card {
-    background: var(--card-bg);
-    border: 3px solid var(--ink);
-    border-radius: 20px;
-    padding: 22px 24px;
-    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
-    text-align: left;
-  }
-  .afford-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; margin: 0 0 10px; }
-  .afford-card ul { margin: 0; padding-left: 20px; font-size: 0.85rem; line-height: 1.9; }
+  .empty-card p { margin: 0 0 4px; font-size: 0.88rem; color: var(--ink-dim); }
 
-  .joke-card {
-    background: var(--card-bg);
-    border: 3px solid var(--ink);
-    border-radius: 20px;
-    padding: 28px 24px;
-    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
-  }
   .joke-card .big { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; margin-bottom: 8px; }
   .joke-card p { margin: 0 0 4px; font-size: 0.9rem; color: var(--ink-dim); }
+
+  .results-list { display: none; }
+  .results-list.show { display: block; }
 </style>
 </head>
 <body>
@@ -171,35 +199,85 @@
   <h1>Where Can I <span>Go?</span></h1>
   <p class="tagline">not a real booking tool. just typical-cost guesswork with attitude.</p>
 
-  <div class="budget-card">
-    <div class="budget-amount" id="budgetAmount">$1,000</div>
-    <div class="budget-input-row">
-      <span>$</span>
-      <input type="number" id="budgetInput" min="20" max="10000" step="10" value="1000">
+  <!-- step 1: budget -->
+  <div class="step show" id="stepBudget">
+    <div class="card">
+      <h2>how far can your money take you?</h2>
+      <div class="budget-amount" id="budgetAmount">$1,000</div>
+      <div class="budget-input-row">
+        <span>$</span>
+        <input type="number" id="budgetInput" min="20" max="10000" step="10" value="1000">
+      </div>
+      <input type="range" id="budgetSlider" min="20" max="10000" step="10" value="1000">
+      <div class="slider-labels">
+        <span>$20</span>
+        <span>$5,000</span>
+        <span>$10,000</span>
+      </div>
+      <button class="btn" id="toDepartureBtn">next</button>
     </div>
-    <input type="range" id="budgetSlider" min="20" max="10000" step="10" value="1000">
-    <div class="slider-labels">
-      <span>$20</span>
-      <span>$5000</span>
-      <span>$10000</span>
-    </div>
-    <button class="plan-btn" id="planBtn">plan my trip</button>
   </div>
 
-  <div id="result"></div>
+  <!-- step 2: departure -->
+  <div class="step" id="stepDeparture">
+    <div class="card">
+      <h2>where are you leaving from?</h2>
+      <div class="tile-grid">
+        <div class="tile" data-city="Washington, DC" data-domestic="1">Washington, DC</div>
+        <div class="tile" data-city="Atlanta" data-domestic="1">Atlanta</div>
+        <div class="tile wide" id="chooseCityTile">choose another city</div>
+      </div>
+      <div id="customCityRow">
+        <input type="text" id="customCityInput" placeholder="type your city">
+      </div>
+      <button class="btn" id="toTypeBtn">next</button>
+    </div>
+  </div>
+
+  <!-- step 3: trip type -->
+  <div class="step" id="stepType">
+    <div class="card">
+      <h2>what kind of trip?</h2>
+      <div class="tile-grid">
+        <div class="tile" data-type="beach">Beach</div>
+        <div class="tile" data-type="city">City</div>
+        <div class="tile" data-type="adventure">Adventure</div>
+        <div class="tile" data-type="food">Food</div>
+        <div class="tile" data-type="culture">Culture</div>
+        <div class="tile" data-type="surprise">Surprise Me</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- step 4: results -->
+  <div class="step" id="stepResults">
+    <div id="resultsBody"></div>
+    <button class="switch-link" id="startOverBtn">start over</button>
+  </div>
 
 </div>
 
 <script>
+  // ---------- step navigation ----------
+  var steps = {
+    budget: document.getElementById('stepBudget'),
+    departure: document.getElementById('stepDeparture'),
+    type: document.getElementById('stepType'),
+    results: document.getElementById('stepResults')
+  };
+  function showStep(name) {
+    Object.keys(steps).forEach(function (k) { steps[k].classList.toggle('show', k === name); });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- step 1: budget ----------
   var budgetInput = document.getElementById('budgetInput');
   var budgetSlider = document.getElementById('budgetSlider');
   var budgetAmount = document.getElementById('budgetAmount');
-  var resultEl = document.getElementById('result');
 
   function formatMoney(n) {
     return '$' + Math.round(n).toLocaleString('en-US');
   }
-
   function syncFromSlider() {
     budgetInput.value = budgetSlider.value;
     budgetAmount.textContent = formatMoney(budgetSlider.value);
@@ -211,110 +289,191 @@
   }
   budgetSlider.addEventListener('input', syncFromSlider);
   budgetInput.addEventListener('input', syncFromInput);
+  document.getElementById('toDepartureBtn').addEventListener('click', function () {
+    showStep('departure');
+  });
 
-  var tiers = [
-    {
-      max: 99,
-      joke: true
-    },
-    {
-      max: 499,
-      nights: 1,
-      destinations: ['a nearby beach town', 'the next state over', 'a random city three hours away', 'a shared lake house', 'your cousin\'s hometown']
-    },
-    {
-      max: 1499,
-      nights: 2,
-      destinations: ['Chicago', 'New Orleans', 'Nashville', 'Austin', 'Denver', 'Portland', 'Savannah']
-    },
-    {
-      max: 2999,
-      nights: 4,
-      destinations: ['Mexico City', 'Toronto', 'Vancouver', 'San Juan', 'the Bahamas (budget resort)', 'Lima']
-    },
-    {
-      max: 4999,
-      nights: 6,
-      destinations: ['Tokyo (budget route)', 'Lisbon', 'Bangkok', 'Prague', 'Iceland (off-season)', 'Seoul']
-    },
-    {
-      max: Infinity,
-      nights: 9,
-      destinations: ['Tokyo (comfortably)', 'Bali', 'Paris', 'New Zealand', 'the Amalfi Coast', 'wherever you actually want, bro']
+  // ---------- step 2: departure ----------
+  var trip = { budget: 1000, city: 'Washington, DC', domestic: true, type: 'surprise' };
+  var departureTiles = document.querySelectorAll('#stepDeparture .tile[data-city]');
+  var chooseCityTile = document.getElementById('chooseCityTile');
+  var customCityRow = document.getElementById('customCityRow');
+  var customCityInput = document.getElementById('customCityInput');
+
+  departureTiles.forEach(function (tile) {
+    tile.addEventListener('click', function () {
+      trip.city = tile.dataset.city;
+      trip.domestic = tile.dataset.domestic === '1';
+      customCityRow.classList.remove('show');
+      departureTiles.forEach(function (t) { t.style.background = ''; });
+      chooseCityTile.style.background = '';
+      tile.style.background = 'var(--sky)';
+    });
+  });
+  chooseCityTile.addEventListener('click', function () {
+    customCityRow.classList.add('show');
+    departureTiles.forEach(function (t) { t.style.background = ''; });
+    chooseCityTile.style.background = 'var(--sky)';
+  });
+  document.getElementById('toTypeBtn').addEventListener('click', function () {
+    trip.budget = Math.max(20, Math.min(10000, parseInt(budgetInput.value, 10) || 20));
+    if (customCityRow.classList.contains('show') && customCityInput.value.trim()) {
+      trip.city = customCityInput.value.trim();
+      trip.domestic = false; // unknown city, no domestic discount assumed
     }
+    showStep('type');
+  });
+
+  // ---------- step 3: trip type ----------
+  document.querySelectorAll('#stepType .tile[data-type]').forEach(function (tile) {
+    tile.addEventListener('click', function () {
+      trip.type = tile.dataset.type;
+      if (trip.type === 'surprise') {
+        renderSurprise();
+      } else {
+        renderResultsList();
+      }
+      showStep('results');
+    });
+  });
+
+  document.getElementById('startOverBtn').addEventListener('click', function () {
+    showStep('budget');
+  });
+
+  // ---------- destinations ----------
+  // baseline typical costs for a realistic trip length at that destination --
+  // these are estimated ballpark figures, not live pricing.
+  var destinations = [
+    { name: 'Myrtle Beach',  region: 'domestic', cats: ['beach'],                    flight: 180, hotel: 300, food: 180, transport: 60,  activities: 130, nights: 4, line: "The ocean is free. Everything near it is not." },
+    { name: 'Savannah',      region: 'domestic', cats: ['culture', 'beach'],         flight: 190, hotel: 250, food: 160, transport: 50,  activities: 100, nights: 3, line: "Ghost tours and humidity, in equal measure." },
+    { name: 'Nashville',     region: 'domestic', cats: ['city', 'food'],             flight: 200, hotel: 240, food: 170, transport: 60,  activities: 130, nights: 3, line: "Boots optional. Regret is not." },
+    { name: 'New Orleans',   region: 'domestic', cats: ['food', 'culture'],          flight: 240, hotel: 260, food: 220, transport: 70,  activities: 110, nights: 3, line: "You will eat better than you can afford." },
+    { name: 'Austin',        region: 'domestic', cats: ['food', 'adventure'],        flight: 210, hotel: 270, food: 190, transport: 70,  activities: 140, nights: 3, line: "Breakfast tacos will fix nothing, but they'll help." },
+    { name: 'Chicago',       region: 'domestic', cats: ['city'],                     flight: 220, hotel: 300, food: 180, transport: 90,  activities: 120, nights: 3, line: "Deep-dish pizza and public transit malfunctions." },
+    { name: 'Denver',        region: 'domestic', cats: ['adventure'],                flight: 230, hotel: 280, food: 160, transport: 80,  activities: 170, nights: 3, line: "Mountains you will look at, not climb." },
+    { name: 'Portland',      region: 'domestic', cats: ['culture', 'food'],          flight: 220, hotel: 290, food: 200, transport: 60,  activities: 120, nights: 3, line: "Everyone here has a stronger opinion about coffee than you." },
+    { name: 'San Juan',      region: 'international', cats: ['beach'],               flight: 320, hotel: 350, food: 200, transport: 70,  activities: 160, nights: 4, line: "Technically still domestic paperwork, vacation-brain vibes." },
+    { name: 'Cancun',        region: 'international', cats: ['beach'],               flight: 400, hotel: 420, food: 230, transport: 80,  activities: 170, nights: 4, line: "A resort bracelet will make every decision for you." },
+    { name: 'Mexico City',   region: 'international', cats: ['city', 'culture', 'food'], flight: 380, hotel: 320, food: 220, transport: 90, activities: 140, nights: 4, line: "More museums than you'll actually visit, guaranteed." },
+    { name: 'Toronto',       region: 'international', cats: ['city', 'culture'],     flight: 280, hotel: 380, food: 240, transport: 90,  activities: 130, nights: 4, line: "Extremely polite, extremely overpriced." },
+    { name: 'Lima',          region: 'international', cats: ['food', 'adventure', 'culture'], flight: 520, hotel: 300, food: 220, transport: 100, activities: 180, nights: 5, line: "Ceviche now, questionable altitude decisions later." },
+    { name: 'Lisbon',        region: 'international', cats: ['culture', 'food', 'beach'], flight: 650, hotel: 420, food: 240, transport: 90, activities: 150, nights: 5, line: "Hills that will humble your cardio." },
+    { name: 'Bangkok',       region: 'international', cats: ['food', 'culture', 'adventure'], flight: 780, hotel: 300, food: 200, transport: 90, activities: 180, nights: 6, line: "Street food so good it makes your itinerary irrelevant." },
+    { name: 'Dubai',         region: 'international', cats: ['city', 'adventure'],   flight: 850, hotel: 520, food: 230, transport: 100, activities: 220, nights: 4, line: "You have entered Dubai with exactly enough money to become confused by Dubai." },
+    { name: 'Tokyo',         region: 'international', cats: ['city', 'culture', 'food'], flight: 900, hotel: 500, food: 280, transport: 150, activities: 200, nights: 5, line: "You can afford Tokyo. You just can't afford to act rich in Tokyo." },
+    { name: 'Iceland',       region: 'international', cats: ['adventure'],           flight: 700, hotel: 550, food: 260, transport: 140, activities: 230, nights: 4, line: "Beautiful. Also the wind will personally insult you." },
+    { name: 'Bali',          region: 'international', cats: ['beach', 'adventure'],  flight: 1100, hotel: 400, food: 250, transport: 130, activities: 220, nights: 7, line: "You'll post more photos than memories, and that's fine." },
+    { name: 'Paris',         region: 'international', cats: ['culture', 'city'],     flight: 950, hotel: 650, food: 300, transport: 120, activities: 220, nights: 5, line: "Everything is beautiful and slightly hostile to tourists." },
+    { name: 'Rome',          region: 'international', cats: ['culture', 'food'],     flight: 980, hotel: 680, food: 340, transport: 140, activities: 240, nights: 6, line: "Ancient ruins and modern gelato-based regret." },
+    { name: 'New Zealand',   region: 'international', cats: ['adventure'],           flight: 1300, hotel: 600, food: 320, transport: 180, activities: 280, nights: 7, line: "Every hobbit joke you're thinking of, someone there has already made." }
   ];
 
-  var transportModes = ['a round-trip flight', 'a very committed road trip', 'a train ticket and a dream', 'a rideshare that added up fast'];
-  var foodLines = ['food that is not quite fine dining', 'more convenience-store meals than planned', 'one nice dinner and a lot of regret snacks', 'street food, mostly'];
-  var activityLines = ['two or three actual attractions', 'one paid activity and a lot of walking around', 'a museum and a long nap', 'whatever\'s free plus one splurge'];
-  var drinkLines = ['enough questionable decisions to make it memorable', 'at least one drink you will not remember ordering', 'a bar tab that outlived the trip', 'a gift shop impulse buy you will not use again'];
+  function destTotal(d) {
+    var flight = d.flight;
+    if (trip.domestic && d.region === 'domestic') flight = Math.round(flight * 0.85);
+    return {
+      flight: flight,
+      hotel: d.hotel,
+      food: d.food,
+      transport: d.transport,
+      activities: d.activities,
+      total: flight + d.hotel + d.food + d.transport + d.activities
+    };
+  }
+
+  function affordable(budget, type) {
+    return destinations.filter(function (d) {
+      var fits = destTotal(d).total <= budget;
+      var matches = type === 'surprise' || d.cats.indexOf(type) !== -1;
+      return fits && matches;
+    });
+  }
 
   function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
-  function tierFor(budget) {
-    for (var i = 0; i < tiers.length; i++) {
-      if (budget <= tiers[i].max) return tiers[i];
-    }
-    return tiers[tiers.length - 1];
-  }
-
-  function renderJoke(budget) {
-    var hours = Math.max(1, Math.round(budget / 8));
-    resultEl.innerHTML =
-      '<div class="joke-card">' +
-      '<div class="big">' + formatMoney(budget) + '</div>' +
-      '<p>Congratulations.</p>' +
-      '<p>You can visit the nearest city and buy lunch.</p>' +
-      '<p>Trip duration: ' + hours + ' hour' + (hours === 1 ? '' : 's') + '.</p>' +
-      '</div>';
-  }
-
-  function renderTrip(budget, tier) {
-    var destination = pick(tier.destinations);
-    var transportation = budget * 0.28;
-    var hotel = budget * 0.26;
-    var food = budget * 0.15;
-    var activities = budget * 0.12;
-    var randomBs = budget * 0.04;
-    var remaining = budget - (transportation + hotel + food + activities + randomBs);
-
-    resultEl.innerHTML =
-      '<div class="dest-card">' +
-        '<div class="dest-label">your destination:</div>' +
-        '<div class="dest-name">' + destination + '</div>' +
+  function destCardHTML(d) {
+    var c = destTotal(d);
+    var left = trip.budget - c.total;
+    return (
+      '<div class="card dest-card">' +
+        '<div class="dest-label">flying from ' + trip.city + '</div>' +
+        '<div class="dest-name">' + d.name + '</div>' +
+        '<div class="dest-line">' + d.line + '</div>' +
         '<table class="breakdown">' +
-          '<tr><td>Transportation</td><td>' + formatMoney(transportation) + '</td></tr>' +
-          '<tr><td>Hotel — ' + tier.nights + ' night' + (tier.nights === 1 ? '' : 's') + '</td><td>' + formatMoney(hotel) + '</td></tr>' +
-          '<tr><td>Food</td><td>' + formatMoney(food) + '</td></tr>' +
-          '<tr><td>Activities</td><td>' + formatMoney(activities) + '</td></tr>' +
-          '<tr><td>Random bullshit</td><td>' + formatMoney(randomBs) + '</td></tr>' +
-          '<tr><td>Remaining</td><td>' + formatMoney(remaining) + '</td></tr>' +
+          '<tr><td>Flight</td><td>' + formatMoney(c.flight) + '</td></tr>' +
+          '<tr><td>Hotel — ' + d.nights + ' night' + (d.nights === 1 ? '' : 's') + '</td><td>' + formatMoney(c.hotel) + '</td></tr>' +
+          '<tr><td>Food</td><td>' + formatMoney(c.food) + '</td></tr>' +
+          '<tr><td>Transportation</td><td>' + formatMoney(c.transport) + '</td></tr>' +
+          '<tr><td>Activities</td><td>' + formatMoney(c.activities) + '</td></tr>' +
+          '<tr><td>Left over</td><td>' + formatMoney(left) + '</td></tr>' +
         '</table>' +
-      '</div>' +
-      '<div class="afford-card">' +
-        '<h2>you can afford:</h2>' +
-        '<ul>' +
-          '<li>' + pick(transportModes) + '</li>' +
-          '<li>' + tier.nights + ' night' + (tier.nights === 1 ? '' : 's') + ' in ' + destination + '</li>' +
-          '<li>' + pick(activityLines) + '</li>' +
-          '<li>' + pick(foodLines) + '</li>' +
-          '<li>' + pick(drinkLines) + '</li>' +
-        '</ul>' +
-      '</div>';
+      '</div>'
+    );
   }
 
-  function planTrip() {
-    var budget = Math.max(20, Math.min(10000, parseInt(budgetInput.value, 10) || 20));
-    var tier = tierFor(budget);
-    if (tier.joke) {
-      renderJoke(budget);
-    } else {
-      renderTrip(budget, tier);
+  function emptyCardHTML() {
+    return (
+      '<div class="card empty-card">' +
+        '<h2>nothing realistically fits that.</h2>' +
+        '<p>Either the budget is too tight for this kind of trip, or you\'re about to become someone\'s "how did you afford this" story.</p>' +
+        '<p>Try a bigger budget, a different trip type, or just hit surprise me.</p>' +
+      '</div>'
+    );
+  }
+
+  function jokeCardHTML(budget) {
+    var hours = Math.max(1, Math.round(budget / 8));
+    return (
+      '<div class="card joke-card">' +
+        '<div class="big">' + formatMoney(budget) + '</div>' +
+        '<p>Congratulations.</p>' +
+        '<p>You can visit the nearest city and buy lunch.</p>' +
+        '<p>Trip duration: ' + hours + ' hour' + (hours === 1 ? '' : 's') + '.</p>' +
+      '</div>'
+    );
+  }
+
+  function renderResultsList() {
+    var body = document.getElementById('resultsBody');
+    if (trip.budget < 100) {
+      body.innerHTML = jokeCardHTML(trip.budget);
+      return;
     }
-    resultEl.classList.add('show');
+    var results = affordable(trip.budget, trip.type);
+    results.sort(function (a, b) { return destTotal(a).total - destTotal(b).total; });
+    results = results.slice(0, 6);
+    if (results.length === 0) {
+      body.innerHTML = emptyCardHTML();
+    } else {
+      body.innerHTML = results.map(destCardHTML).join('');
+    }
   }
 
-  document.getElementById('planBtn').addEventListener('click', planTrip);
+  // ---------- surprise me ----------
+  var surpriseShown = [];
+  function renderSurprise() {
+    var body = document.getElementById('resultsBody');
+    if (trip.budget < 100) {
+      body.innerHTML = jokeCardHTML(trip.budget);
+      return;
+    }
+    var pool = affordable(trip.budget, 'surprise');
+    if (pool.length === 0) {
+      body.innerHTML = emptyCardHTML();
+      return;
+    }
+    var remaining = pool.filter(function (d) { return surpriseShown.indexOf(d.name) === -1; });
+    if (remaining.length === 0) {
+      surpriseShown = [];
+      remaining = pool;
+    }
+    var choice = pick(remaining);
+    surpriseShown.push(choice.name);
+    body.innerHTML = destCardHTML(choice) +
+      '<button class="btn" id="nextSurpriseBtn">nope, next one</button>';
+    document.getElementById('nextSurpriseBtn').addEventListener('click', renderSurprise);
+  }
 </script>
 </body>
 </html>
