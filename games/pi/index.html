@@ -43,8 +43,35 @@
   }
   .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
   @media (max-width: 960px) {
-    .corner-badge { top: 14px; left: 14px; font-size: 22px; }
+    /* on a long scrolling page like this one, a position:fixed badge
+       stays glued to the same spot on screen and ends up overlapping
+       whatever digits happen to be there once you scroll -- switching
+       to absolute lets it scroll away with the top of the page instead */
+    .corner-badge { position: absolute; top: 14px; left: 14px; font-size: 22px; }
   }
+
+  .scroll-top-btn {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translate(-50%, 20px);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 rgba(35,32,29,0.16);
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .scroll-top-btn.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
   @keyframes badgeWobble {
     0%, 100% { transform: rotate(-25deg); }
     15% { transform: rotate(-12deg); }
@@ -71,6 +98,13 @@
 <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
 
 <div class="digits" id="digits">3.</div>
+
+<button class="scroll-top-btn" id="scrollTopBtn" title="back to top" aria-label="scroll to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 19V5"/>
+    <path d="M5 12l7-7 7 7"/>
+  </svg>
+</button>
 
 <script>
   // ---------- unbounded spigot algorithm for the digits of pi ----------
@@ -151,6 +185,45 @@
       generateBatch();
     }
   }, 50);
+
+  // ---------- back-to-top button ----------
+  // only worth showing once you're far enough down that scrolling back
+  // up would actually take a while, and only once you've actually
+  // committed to scrolling up for a couple seconds (not just a stray
+  // flick), so it doesn't pop in and out on every little wiggle.
+  (function () {
+    var scrollTopBtn = document.getElementById('scrollTopBtn');
+    var lastY = window.scrollY;
+    var upScrollStart = null;
+    var ticking = false;
+    var FAR_DOWN = window.innerHeight * 1.5;
+    var HOLD_MS = 2000;
+
+    function evaluateScroll() {
+      var y = window.scrollY;
+      if (y < lastY - 1) {
+        if (upScrollStart === null) upScrollStart = Date.now();
+        if (y > FAR_DOWN && Date.now() - upScrollStart >= HOLD_MS) {
+          scrollTopBtn.classList.add('show');
+        }
+      } else if (y > lastY + 1) {
+        upScrollStart = null;
+        scrollTopBtn.classList.remove('show');
+      }
+      if (y <= FAR_DOWN) scrollTopBtn.classList.remove('show');
+      lastY = y;
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(evaluateScroll); }
+    }, { passive: true });
+
+    scrollTopBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollTopBtn.classList.remove('show');
+      upScrollStart = null;
+    });
+  })();
 </script>
 </body>
 </html>
