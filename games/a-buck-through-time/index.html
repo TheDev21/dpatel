@@ -109,13 +109,17 @@
     padding: 70px 22px;
     border-top: 3px dashed rgba(35,32,29,0.18);
   }
-  .era-label { font-size: 0.78rem; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  /* icon floats beside the label/title instead of stacked centered
+     above them -- reads like a page you're reading, not a hero banner */
+  .era .icon-badge, .era .icon-bill { float: left; margin: 0 18px 10px 0; }
+  .era-label { font-size: 0.78rem; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; padding-top: 6px; }
   .era-title { font-size: clamp(2rem, 6vw, 2.8rem); margin: 0 0 14px; }
   .era-title .accent { color: var(--orange); }
-  .era-body { font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px; }
+  .era-body { font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px; clear: both; }
 
   .receipt {
     padding-top: 4px;
+    clear: both;
   }
   .receipt-head {
     font-family: 'Bebas Neue', sans-serif;
@@ -139,17 +143,21 @@
   .fact-card {
     max-width: 640px;
     margin: 0 auto;
-    padding: 34px 22px;
-    text-align: center;
+    padding: 30px 22px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    text-align: left;
   }
   .fact-text h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 6px; color: var(--orange); }
-  .fact-text p { font-size: 0.88rem; line-height: 1.6; margin: 0 auto; max-width: 480px; text-align: left; color: var(--ink-dim); }
+  .fact-text p { font-size: 0.88rem; line-height: 1.6; margin: 0; color: var(--ink-dim); }
 
-  /* ---- hand-drawn icons ---- */
+  /* ---- hand-drawn icons, kept to the left rather than centered above
+     everything -- reads more like a written page than a hero banner ---- */
   .icon-badge {
-    width: 58px;
-    height: 58px;
-    margin: 0 auto 14px;
+    width: 72px;
+    height: 72px;
+    flex: none;
     border-radius: 50%;
     background: var(--card-bg);
     border: 2.5px solid var(--ink);
@@ -157,10 +165,10 @@
     align-items: center;
     justify-content: center;
   }
-  .icon-badge svg { width: 34px; height: 34px; display: block; }
+  .icon-badge svg { width: 44px; height: 44px; display: block; }
   .icon-bill {
-    width: 78px;
-    margin: 0 auto 14px;
+    width: 96px;
+    flex: none;
     border-radius: 6px;
     overflow: hidden;
   }
@@ -171,10 +179,9 @@
     margin: 0 auto;
     padding: 70px 22px 10px;
     border-top: 3px dashed rgba(35,32,29,0.18);
-    text-align: center;
   }
   .money-history-heading h2 { font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 0 0 8px; }
-  .money-history-heading p { font-size: 0.88rem; color: var(--ink-dim); max-width: 480px; margin: 0 auto; }
+  .money-history-heading p { font-size: 0.88rem; color: var(--ink-dim); max-width: 480px; margin: 0; }
 
   /* ---- 2001-2026 ticker ---- */
   .ticker-section {
@@ -183,8 +190,9 @@
     padding: 70px 22px;
     border-top: 3px dashed rgba(35,32,29,0.18);
   }
-  .ticker-intro { text-align: center; margin-bottom: 26px; }
-  .ticker-intro p { font-size: 0.85rem; color: var(--ink-dim); max-width: 480px; margin: 8px auto 0; }
+  .ticker-intro { margin-bottom: 26px; }
+  .ticker-intro .icon-badge { float: left; margin: 0 18px 10px 0; }
+  .ticker-intro p { font-size: 0.85rem; color: var(--ink-dim); max-width: 480px; margin: 8px 0 0; clear: both; }
   .ticker-row {
     display: grid;
     grid-template-columns: 56px 1fr 1fr 1fr;
@@ -343,9 +351,9 @@
   <div class="era-body">Rome didn't have dollars, obviously &mdash; but converting a dollar's rough buying power into the coinage of the day (denarii and asses), here's what it got you.</div>
   <div class="receipt">
     <div class="receipt-head">Roughly bought you:</div>
-    <div class="receipt-row"><span class="item">A day's wage, unskilled labor</span><span class="price">&asymp; covered</span></div>
-    <div class="receipt-row"><span class="item">A week of bread for one person</span><span class="price">&asymp; covered</span></div>
-    <div class="receipt-row"><span class="item">A jug of cheap wine</span><span class="price">&asymp; covered, with change</span></div>
+    <div class="receipt-row"><span class="item">Loaves of bread</span><span class="price">about 15</span></div>
+    <div class="receipt-row"><span class="item">Cups of cheap wine</span><span class="price">about 20</span></div>
+    <div class="receipt-row"><span class="item">Chickens</span><span class="price">1</span></div>
   </div>
   <div class="era-joke">*"$1" is doing a lot of translating-across-two-millennia work here. Take it as vibes, not economics.</div>
 </div>
@@ -360,9 +368,10 @@
   <div class="era-body">A skilled craftsman in medieval England might earn a few silver pennies a day. A dollar's worth of buying power went a long way &mdash; mostly toward things that would not survive refrigeration, which didn't exist yet either.</div>
   <div class="receipt">
     <div class="receipt-head">Roughly bought you:</div>
-    <div class="receipt-row"><span class="item">A live chicken</span><span class="price">yes</span></div>
-    <div class="receipt-row"><span class="item">A dozen eggs</span><span class="price">yes</span></div>
-    <div class="receipt-row"><span class="item">Enough ale to forget about the plague for one evening</span><span class="price">yes</span></div>
+    <div class="receipt-row"><span class="item">Loaves of bread</span><span class="price">about 8</span></div>
+    <div class="receipt-row"><span class="item">Dozens of eggs</span><span class="price">about 3</span></div>
+    <div class="receipt-row"><span class="item">Live chickens</span><span class="price">1</span></div>
+    <div class="receipt-row"><span class="item">Tankards of ale</span><span class="price">about 12</span></div>
   </div>
 </div>
 
@@ -377,8 +386,9 @@
   <div class="receipt">
     <div class="receipt-head">Roughly bought you:</div>
     <div class="receipt-row"><span class="item">A full day's labor</span><span class="price">$1.00</span></div>
-    <div class="receipt-row"><span class="item">A whole chicken</span><span class="price">yes, easily</span></div>
-    <div class="receipt-row"><span class="item">Shoes half-soled, with change left over</span><span class="price">yes</span></div>
+    <div class="receipt-row"><span class="item">Loaves of bread</span><span class="price">about 25</span></div>
+    <div class="receipt-row"><span class="item">Dozens of eggs</span><span class="price">about 12</span></div>
+    <div class="receipt-row"><span class="item">Whole chickens</span><span class="price">2</span></div>
   </div>
 </div>
 
@@ -391,7 +401,7 @@
     <div class="receipt-head">Roughly bought you:</div>
     <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.05 each)</span><span class="price">about 20</span></div>
     <div class="receipt-row"><span class="item">Milk (&asymp;$0.25/gal)</span><span class="price">4 gallons</span></div>
-    <div class="receipt-row"><span class="item">A haircut and a shave</span><span class="price">yes, with change</span></div>
+    <div class="receipt-row"><span class="item">A haircut and a shave (&asymp;$0.65 combined)</span><span class="price">1, with change</span></div>
   </div>
 </div>
 
@@ -526,7 +536,7 @@
       <svg viewBox="0 0 40 40"><rect x="6" y="18" width="24" height="15" rx="2" fill="#8fbf7a" stroke="#23201d" stroke-width="2.2"/><circle cx="28" cy="14" r="8" fill="#d9b969" stroke="#23201d" stroke-width="2.2"/><text x="25" y="18" font-family="Georgia, serif" font-size="9" fill="#23201d">$</text></svg>
     </div>
     <div class="era-label">2001 &rarr; 2026</div>
-    <h2 class="era-title" style="text-align:center;">Now it's <span class="accent">every year.</span></h2>
+    <h2 class="era-title">Now it's <span class="accent">every year.</span></h2>
     <p>From here on, prices change fast enough to track year by year: U.S. average gas price, the federal minimum wage, and a first-class postage stamp. Real historical U.S. averages, rounded for sanity &mdash; not exact to the penny.</p>
   </div>
   <div class="ticker-row head">
