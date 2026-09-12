@@ -115,18 +115,15 @@
   .era-body { font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px; }
 
   .receipt {
-    background: var(--card-bg);
-    border: 3px solid var(--ink);
-    border-radius: 14px;
-    padding: 18px 20px;
-    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
+    padding-top: 4px;
   }
   .receipt-head {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1.1rem;
+    color: var(--ink-dim);
     margin-bottom: 10px;
     padding-bottom: 8px;
-    border-bottom: 2px dashed var(--ink);
+    border-bottom: 1.5px dashed rgba(35,32,29,0.25);
   }
   .receipt-row {
     display: flex;
@@ -142,22 +139,9 @@
   .fact-card {
     max-width: 640px;
     margin: 0 auto;
-    padding: 40px 22px;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
+    padding: 34px 22px;
   }
-  .fact-icon {
-    flex: none;
-    width: 56px; height: 56px;
-    border-radius: 50%;
-    background: var(--gold);
-    border: 2.5px solid var(--ink);
-    display: flex; align-items: center; justify-content: center;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.1rem;
-  }
-  .fact-text h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 6px; }
+  .fact-text h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 6px; color: var(--orange); }
   .fact-text p { font-size: 0.88rem; line-height: 1.6; margin: 0; color: var(--ink-dim); }
 
   .money-history-heading {
@@ -264,11 +248,7 @@
   <div class="era-label">50,000 BC &mdash; give or take</div>
   <h1>A Buck Through <span>Time</span></h1>
   <p class="tagline">$1, dropped into every era of human history. Let's see how far it gets.</p>
-  <div class="receipt" style="max-width:360px;">
-    <div class="receipt-head">Caveman Era</div>
-    <div class="receipt-row"><span class="item">$1 could buy you</span><span class="price">nothing</span></div>
-    <div class="era-joke" style="margin-top:8px;">Money hasn't been invented yet. Here's a rock. It has, for now, exactly as much purchasing power as a dollar.</div>
-  </div>
+  <p style="font-size:0.95rem; color:var(--ink-dim); max-width:360px; margin:8px auto 0;">Money hasn't been invented yet. Here's a rock. It has, for now, exactly as much purchasing power as a dollar.</p>
   <p class="scroll-hint" style="margin-top:34px;">scroll down &darr;</p>
 </div>
 
@@ -279,7 +259,6 @@
 </div>
 
 <div class="fact-card">
-  <div class="fact-icon">?</div>
   <div class="fact-text">
     <h3>Barter (the long, annoying beginning)</h3>
     <p>For most of human history there was no money at all. If you wanted something, you traded something else for it directly &mdash; a chicken for a bag of grain, a favor for a favor. Worked fine, until you needed grain and the only guy with grain wanted a boat.</p>
@@ -287,7 +266,6 @@
 </div>
 
 <div class="fact-card">
-  <div class="fact-icon">&#128034;</div>
   <div class="fact-text">
     <h3>Shells, cattle, salt, and giant rocks</h3>
     <p>Eventually people needed something everyone agreed had value. Early societies used cattle, cowrie shells, salt (Roman soldiers were literally paid in it &mdash; that's where "salary" comes from), and on the island of Yap, enormous stone discs too heavy to move. Ownership just changed by reputation. The rock stayed exactly where it was.</p>
@@ -295,7 +273,6 @@
 </div>
 
 <div class="fact-card">
-  <div class="fact-icon">&#9737;</div>
   <div class="fact-text">
     <h3>The first actual coins (~600 BC)</h3>
     <p>The Kingdom of Lydia, in what's now Turkey, is credited with minting the first standardized metal coins, made of electrum &mdash; a natural gold-silver alloy. For the first time, a piece of money had a guaranteed, stamped value instead of "trust me, this cow is worth something."</p>
@@ -303,7 +280,6 @@
 </div>
 
 <div class="fact-card">
-  <div class="fact-icon">&#25152;</div>
   <div class="fact-text">
     <h3>The first paper money (~7th century, China)</h3>
     <p>Tang Dynasty China introduced paper currency, backed by real reserves of coins that merchants got tired of hauling around. It caught on so well that by the Song Dynasty, paper money was the standard &mdash; nearly a thousand years before Europe caught up.</p>
@@ -311,7 +287,6 @@
 </div>
 
 <div class="fact-card">
-  <div class="fact-icon">$</div>
   <div class="fact-text">
     <h3>Coins and bills become the default</h3>
     <p>By the time coinage and paper currency had spread globally through trade and colonization, "cash" &mdash; metal for small amounts, paper for larger ones &mdash; became the standard nearly everywhere. It took thousands of years of chickens, shells, and giant rocks to get here.</p>
