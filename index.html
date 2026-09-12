@@ -370,9 +370,10 @@
   }
   .thumb.buck .word {
     color: #4a2f14;
-    font-size: clamp(18px, 4.6vw, 26px);
+    font-size: clamp(16px, 4.2vw, 23px);
     position: relative;
     z-index: 3;
+    margin-top: 10px;
     text-shadow: 0 0 6px #fffcf3, 0 0 6px #fffcf3, 0 0 10px #fffcf3;
   }
   .thumb.buck .buck-swirl {
@@ -388,7 +389,7 @@
   }
   .thumb.buck .buck-bill {
     position: relative;
-    width: 78%;
+    width: 58%;
     z-index: 2;
   }
   .thumb.buck .buck-bill svg { display: block; width: 100%; height: auto; }
@@ -653,24 +654,11 @@
         <div class="buck-clock"></div>
         <div class="word">A BUCK<br>THROUGH TIME</div>
         <div class="buck-bill">
-          <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
-            <g transform="rotate(-9 130 75)">
-              <!-- a rectangle with straight short edges (real corners) and
-                   wavy long edges, like a bill caught mid-flutter rather
-                   than a free-floating ribbon -->
-              <path d="M14,52 Q65,8 130,46 Q195,84 246,38
-                       L246,104 Q195,146 130,108 Q65,70 14,112 Z"
-                    fill="#8ed9a0" stroke="#2f7a4a" stroke-width="6" stroke-linejoin="round"/>
-              <!-- corner ticks, one per real corner -->
-              <path d="M22,58 L14,52 L22,46" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M238,44 L246,38 L246,52" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M22,106 L14,112 L22,118" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M238,98 L246,104 L246,90" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <circle cx="196" cy="58" r="10" fill="#3f9a63"/>
-              <circle cx="62" cy="92" r="9" fill="#3f9a63"/>
-              <circle cx="130" cy="77" r="33" fill="#2f7a4a"/>
-              <text x="130" y="88" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="32" fill="#8ed9a0">$1</text>
-            </g>
+          <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="6" y="6" width="188" height="88" rx="8" fill="#8ed9a0" stroke="#2f7a4a" stroke-width="6"/>
+            <rect x="16" y="16" width="168" height="68" rx="4" fill="none" stroke="#3f9a63" stroke-width="2" stroke-dasharray="4 4"/>
+            <circle cx="100" cy="50" r="30" fill="#2f7a4a"/>
+            <text x="100" y="61" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="30" fill="#8ed9a0">$1</text>
           </svg>
         </div>
       </div>
