@@ -376,6 +376,22 @@
     92%  { opacity: 0.4; }
     100% { transform: translateY(-100vh); opacity: 0; }
   }
+
+  /* on a narrow screen the 3-column layout (icons | phone | icons) is way
+     too wide to fit, which forced the old single "scale everything down
+     uniformly" approach to shrink the whole thing to ~30% -- making the
+     phone (the actual game) tiny and the icons unreadable. Below this
+     width, stack it vertically instead and let each piece be its own
+     sensible size, with the page scrolling if it runs long. */
+  @media (max-width: 900px) {
+    html, body { overflow: auto; height: auto; min-height: 100vh; }
+    body { padding: 90px 16px 40px; align-items: flex-start; }
+    .stage-panel { transform: none !important; }
+    .game-row { flex-direction: column; align-items: center; gap: 28px; }
+    .apps-column { width: 100%; max-width: 380px; height: auto; }
+    .phone { width: min(84vw, 340px); height: auto; aspect-ratio: 400 / 800; }
+    .stage::before { width: 320px; height: 320px; }
+  }
 </style>
 </head>
 <body>
