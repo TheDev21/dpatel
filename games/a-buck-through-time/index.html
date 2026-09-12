@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Buck Through Time — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23e9ddb8'/%3E%3Crect x='4' y='11' width='24' height='13' rx='2' fill='%23c9a24a' stroke='%2323201d' stroke-width='1.8'/%3E%3Ccircle cx='16' cy='17.5' r='4' fill='%23e9ddb8' stroke='%2323201d' stroke-width='1.4'/%3E%3Cpath d='M9 6 L11 9 M23 6 L21 9' stroke='%2323201d' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f2ead9;
+    --bg-deep: #e9ddb8;
+    --ink: #23201d;
+    --ink-dim: #6b6252;
+    --card-bg: #fffcf3;
+    --green: #2e7d4f;
+    --orange: #ff5a1f;
+    --red: #c62d3a;
+    --gold: #c9a24a;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    padding-bottom: 60px;
+  }
+  h1, h2, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+
+  .corner-badge {
+    /* this whole page is one long scroll, like the pi digits page -- a
+       position:fixed badge would stay glued to the screen and overlap
+       every era as you scroll past it, so it's absolute (scrolls away
+       with the intro) instead. */
+    position: absolute;
+    top: 30px;
+    left: 14px;
+    z-index: 90;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (min-width: 961px) {
+    .corner-badge { top: 55px; left: 26px; font-size: 40px; }
+    .mute-btn { top: 34px; right: 30px; }
+  }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+
+  .mute-btn {
+    /* absolute, not fixed -- headings on this long page pass through
+       every screen position at one scroll depth or another, so no fixed
+       corner is ever safe. parked once near the intro instead, same
+       approach as the corner-badge. */
+    position: absolute;
+    top: 30px;
+    right: 18px;
+    z-index: 90;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: var(--card-bg);
+    cursor: pointer;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 0 rgba(35,32,29,0.14);
+  }
+  .mute-btn:hover { background: #fff; }
+
+  .intro {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 110px 20px 60px;
+  }
+  .intro h1 { font-size: clamp(2.4rem, 9vw, 4.2rem); margin: 0 0 6px; }
+  .intro h1 span { color: var(--green); }
+  .intro .tagline { font-size: 0.95rem; color: var(--ink-dim); max-width: 480px; margin: 0 0 30px; }
+  .scroll-hint { font-size: 0.8rem; color: var(--ink-dim); animation: bob 1.6s ease-in-out infinite; }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+
+  .era {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 70px 22px;
+    border-top: 3px dashed rgba(35,32,29,0.18);
+  }
+  .era-label { font-size: 0.78rem; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .era-title { font-size: clamp(2rem, 6vw, 2.8rem); margin: 0 0 14px; }
+  .era-title .accent { color: var(--orange); }
+  .era-body { font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px; }
+
+  .receipt {
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    padding: 18px 20px;
+    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
+  }
+  .receipt-head {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.3rem;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 2px dashed var(--ink);
+  }
+  .receipt-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.9rem;
+    padding: 5px 0;
+  }
+  .receipt-row .item { color: var(--ink); }
+  .receipt-row .price { color: var(--green); font-weight: 500; white-space: nowrap; }
+  .era-joke { margin-top: 14px; font-size: 0.85rem; color: var(--ink-dim); font-style: italic; }
+
+  .fact-card {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 40px 22px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .fact-icon {
+    flex: none;
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: 2.5px solid var(--ink);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+  }
+  .fact-text h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 6px; }
+  .fact-text p { font-size: 0.88rem; line-height: 1.6; margin: 0; color: var(--ink-dim); }
+
+  .money-history-heading {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 70px 22px 10px;
+    border-top: 3px dashed rgba(35,32,29,0.18);
+    text-align: center;
+  }
+  .money-history-heading h2 { font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 0 0 8px; }
+  .money-history-heading p { font-size: 0.88rem; color: var(--ink-dim); max-width: 480px; margin: 0 auto; }
+
+  /* ---- 2001-2026 ticker ---- */
+  .ticker-section {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 70px 22px;
+    border-top: 3px dashed rgba(35,32,29,0.18);
+  }
+  .ticker-intro { text-align: center; margin-bottom: 26px; }
+  .ticker-intro p { font-size: 0.85rem; color: var(--ink-dim); max-width: 480px; margin: 8px auto 0; }
+  .ticker-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 1fr 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-bottom: 1.5px dashed rgba(35,32,29,0.18);
+    font-size: 0.82rem;
+  }
+  .ticker-row.head {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-dim);
+    border-bottom: 2px solid var(--ink);
+  }
+  .ticker-year { font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; }
+  .ticker-val { display: flex; flex-direction: column; }
+  .ticker-val .amt { color: var(--ink); }
+  .ticker-val .delta { font-size: 0.68rem; }
+  .delta.up { color: var(--red); }
+  .delta.down { color: var(--green); }
+  .delta.flat { color: var(--ink-dim); }
+  .ticker-row.now { background: var(--bg-deep); border-radius: 10px; }
+
+  .ending {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 80px 22px 120px;
+    text-align: center;
+    border-top: 3px dashed rgba(35,32,29,0.18);
+  }
+  .ending h2 { font-size: clamp(2.2rem, 7vw, 3.2rem); margin: 0 0 14px; }
+  .ending p { font-size: 0.95rem; color: var(--ink-dim); max-width: 460px; margin: 0 auto 24px; }
+  .ending .btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+    background: var(--card-bg);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 26px;
+    cursor: pointer;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.2);
+  }
+
+  .scroll-top-btn {
+    position: fixed;
+    left: 50%;
+    bottom: 26px;
+    transform: translate(-50%, 20px);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 3px 3px 0 rgba(35,32,29,0.16);
+    z-index: 60;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .scroll-top-btn.show { opacity: 1; pointer-events: auto; transform: translate(-50%, 0); }
+
+  @media (max-width: 480px) {
+    .ticker-row { grid-template-columns: 42px 1fr 1fr 1fr; font-size: 0.72rem; }
+    .ticker-year { font-size: 0.9rem; }
+  }
+</style>
+</head>
+<body>
+<a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
+<button class="mute-btn" id="muteBtn" title="Sound: On">&#9834;</button>
+
+<!-- intro / caveman -->
+<div class="intro">
+  <div class="era-label">50,000 BC &mdash; give or take</div>
+  <h1>A Buck Through <span>Time</span></h1>
+  <p class="tagline">$1, dropped into every era of human history. Let's see how far it gets.</p>
+  <div class="receipt" style="max-width:360px;">
+    <div class="receipt-head">Caveman Era</div>
+    <div class="receipt-row"><span class="item">$1 could buy you</span><span class="price">nothing</span></div>
+    <div class="era-joke" style="margin-top:8px;">Money hasn't been invented yet. Here's a rock. It has, for now, exactly as much purchasing power as a dollar.</div>
+  </div>
+  <p class="scroll-hint" style="margin-top:34px;">scroll down &darr;</p>
+</div>
+
+<!-- history of money -->
+<div class="money-history-heading">
+  <h2>Before it was coins and bills&hellip;</h2>
+  <p>Money wasn't always metal discs and paper rectangles. Here's the actual, real history of how "money" became a thing at all.</p>
+</div>
+
+<div class="fact-card">
+  <div class="fact-icon">?</div>
+  <div class="fact-text">
+    <h3>Barter (the long, annoying beginning)</h3>
+    <p>For most of human history there was no money at all. If you wanted something, you traded something else for it directly &mdash; a chicken for a bag of grain, a favor for a favor. Worked fine, until you needed grain and the only guy with grain wanted a boat.</p>
+  </div>
+</div>
+
+<div class="fact-card">
+  <div class="fact-icon">&#128034;</div>
+  <div class="fact-text">
+    <h3>Shells, cattle, salt, and giant rocks</h3>
+    <p>Eventually people needed something everyone agreed had value. Early societies used cattle, cowrie shells, salt (Roman soldiers were literally paid in it &mdash; that's where "salary" comes from), and on the island of Yap, enormous stone discs too heavy to move. Ownership just changed by reputation. The rock stayed exactly where it was.</p>
+  </div>
+</div>
+
+<div class="fact-card">
+  <div class="fact-icon">&#9737;</div>
+  <div class="fact-text">
+    <h3>The first actual coins (~600 BC)</h3>
+    <p>The Kingdom of Lydia, in what's now Turkey, is credited with minting the first standardized metal coins, made of electrum &mdash; a natural gold-silver alloy. For the first time, a piece of money had a guaranteed, stamped value instead of "trust me, this cow is worth something."</p>
+  </div>
+</div>
+
+<div class="fact-card">
+  <div class="fact-icon">&#25152;</div>
+  <div class="fact-text">
+    <h3>The first paper money (~7th century, China)</h3>
+    <p>Tang Dynasty China introduced paper currency, backed by real reserves of coins that merchants got tired of hauling around. It caught on so well that by the Song Dynasty, paper money was the standard &mdash; nearly a thousand years before Europe caught up.</p>
+  </div>
+</div>
+
+<div class="fact-card">
+  <div class="fact-icon">$</div>
+  <div class="fact-text">
+    <h3>Coins and bills become the default</h3>
+    <p>By the time coinage and paper currency had spread globally through trade and colonization, "cash" &mdash; metal for small amounts, paper for larger ones &mdash; became the standard nearly everywhere. It took thousands of years of chickens, shells, and giant rocks to get here.</p>
+  </div>
+</div>
+
+<!-- Rome -->
+<div class="era">
+  <div class="era-label">Ancient Rome &middot; ~100 AD</div>
+  <h2 class="era-title">$1 in Rome<span class="accent">*</span></h2>
+  <div class="era-body">Rome didn't have dollars, obviously &mdash; but converting a dollar's rough buying power into the coinage of the day (denarii and asses), here's what it got you.</div>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A day's wage, unskilled labor</span><span class="price">&asymp; covered</span></div>
+    <div class="receipt-row"><span class="item">A week of bread for one person</span><span class="price">&asymp; covered</span></div>
+    <div class="receipt-row"><span class="item">A jug of cheap wine</span><span class="price">&asymp; covered, with change</span></div>
+  </div>
+  <div class="era-joke">*"$1" is doing a lot of translating-across-two-millennia work here. Take it as vibes, not economics.</div>
+</div>
+
+<!-- Middle Ages -->
+<div class="era">
+  <div class="era-label">Middle Ages &middot; ~1200 AD</div>
+  <h2 class="era-title">$1 in the <span class="accent">Middle Ages</span></h2>
+  <div class="era-body">A skilled craftsman in medieval England might earn a few silver pennies a day. A dollar's worth of buying power went a long way &mdash; mostly toward things that would not survive refrigeration, which didn't exist yet either.</div>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A live chicken</span><span class="price">yes</span></div>
+    <div class="receipt-row"><span class="item">A dozen eggs</span><span class="price">yes</span></div>
+    <div class="receipt-row"><span class="item">Enough ale to forget about the plague for one evening</span><span class="price">yes</span></div>
+  </div>
+</div>
+
+<!-- 1800s -->
+<div class="era">
+  <div class="era-label">United States &middot; 1800</div>
+  <h2 class="era-title">$1 in <span class="accent">1800</span></h2>
+  <div class="era-body">A full day's wage for an unskilled laborer was close to a dollar. That one coin was, quite literally, a day of someone's life.</div>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A full day's labor</span><span class="price">$1.00</span></div>
+    <div class="receipt-row"><span class="item">A whole chicken</span><span class="price">yes, easily</span></div>
+    <div class="receipt-row"><span class="item">Shoes half-soled, with change left over</span><span class="price">yes</span></div>
+  </div>
+</div>
+
+<!-- 1900s decades -->
+<div class="era">
+  <div class="era-label">1900</div>
+  <h2 class="era-title">$1 in <span class="accent">1900</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.05 each)</span><span class="price">about 20</span></div>
+    <div class="receipt-row"><span class="item">Milk (&asymp;$0.25/gal)</span><span class="price">4 gallons</span></div>
+    <div class="receipt-row"><span class="item">A haircut and a shave</span><span class="price">yes, with change</span></div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-label">1910</div>
+  <h2 class="era-title">$1 in <span class="accent">1910</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">Nickelodeon movie tickets (&asymp;$0.05)</span><span class="price">20 movies</span></div>
+    <div class="receipt-row"><span class="item">A loaf of bread</span><span class="price">&asymp;18</span></div>
+    <div class="receipt-row"><span class="item">A pound of coffee</span><span class="price">yes, roughly</span></div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-label">1920</div>
+  <h2 class="era-title">$1 in <span class="accent">1920</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$0.30/gal)</span><span class="price">&asymp;3.3 gallons</span></div>
+    <div class="receipt-row"><span class="item">A loaf of bread</span><span class="price">&asymp;10</span></div>
+    <div class="receipt-row"><span class="item">A Model T</span><span class="price">not even close</span></div>
+  </div>
+  <div class="era-joke">A new Model T ran about $300-$600. A dollar was never going to cut it, but it was fun to check.</div>
+</div>
+
+<div class="era">
+  <div class="era-label">1930</div>
+  <h2 class="era-title">$1 in <span class="accent">1930</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.09)</span><span class="price">&asymp;11</span></div>
+    <div class="receipt-row"><span class="item">Milk (&asymp;$0.14/qt)</span><span class="price">&asymp;7 quarts</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$0.24)</span><span class="price">4 movies</span></div>
+  </div>
+  <div class="era-joke">Great Depression pricing. A dollar mattered a lot more than the number on it suggests.</div>
+</div>
+
+<div class="era">
+  <div class="era-label">1940</div>
+  <h2 class="era-title">$1 in <span class="accent">1940</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$0.18/gal)</span><span class="price">&asymp;5.5 gallons</span></div>
+    <div class="receipt-row"><span class="item">A loaf of bread</span><span class="price">&asymp;10</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$0.24)</span><span class="price">4 movies</span></div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-label">1950</div>
+  <h2 class="era-title">$1 in <span class="accent">1950</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.12)</span><span class="price">&asymp;8</span></div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$0.27/gal)</span><span class="price">&asymp;3.7 gallons</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$0.46)</span><span class="price">2 movies</span></div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-label">1960</div>
+  <h2 class="era-title">$1 in <span class="accent">1960</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.20)</span><span class="price">5</span></div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$0.31/gal)</span><span class="price">&asymp;3.2 gallons</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$0.69)</span><span class="price">1, barely</span></div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-label">1970</div>
+  <h2 class="era-title">$1 in <span class="accent">1970</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.25)</span><span class="price">4</span></div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$0.36/gal)</span><span class="price">&asymp;2.8 gallons</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$1.55)</span><span class="price">not quite</span></div>
+  </div>
+  <div class="era-joke">This is the moment a single dollar stops being enough for a single movie ticket. It's all downhill from here.</div>
+</div>
+
+<div class="era">
+  <div class="era-label">1980</div>
+  <h2 class="era-title">$1 in <span class="accent">1980</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.50)</span><span class="price">2</span></div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$1.19/gal, oil crisis)</span><span class="price">&asymp;0.8 gallons</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$2.69)</span><span class="price">not even close</span></div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-label">1990</div>
+  <h2 class="era-title">$1 in <span class="accent">1990</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$0.70)</span><span class="price">1.4</span></div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$1.16/gal)</span><span class="price">&asymp;0.86 gallons</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$4.23)</span><span class="price">not even close</span></div>
+  </div>
+</div>
+
+<div class="era">
+  <div class="era-label">2000</div>
+  <h2 class="era-title">$1 in <span class="accent">2000</span></h2>
+  <div class="receipt">
+    <div class="receipt-head">Roughly bought you:</div>
+    <div class="receipt-row"><span class="item">A loaf of bread (&asymp;$1.20)</span><span class="price">not quite one</span></div>
+    <div class="receipt-row"><span class="item">Gasoline (&asymp;$1.51/gal)</span><span class="price">&asymp;0.66 gallons</span></div>
+    <div class="receipt-row"><span class="item">A movie ticket (&asymp;$5.39)</span><span class="price">not even close</span></div>
+  </div>
+  <div class="era-joke">A dollar can no longer reliably buy a single loaf of bread. This is where things get personal.</div>
+</div>
+
+<!-- 2001-2026 granular ticker -->
+<div class="ticker-section">
+  <div class="ticker-intro">
+    <div class="era-label">2001 &rarr; 2026</div>
+    <h2 class="era-title" style="text-align:center;">Now it's <span class="accent">every year.</span></h2>
+    <p>From here on, prices change fast enough to track year by year: U.S. average gas price, the federal minimum wage, and a first-class postage stamp. Real historical U.S. averages, rounded for sanity &mdash; not exact to the penny.</p>
+  </div>
+  <div class="ticker-row head">
+    <span>Year</span><span>Gas / gal</span><span>Min wage / hr</span><span>Stamp</span>
+  </div>
+  <div id="tickerBody"></div>
+</div>
+
+<!-- ending -->
+<div class="ending">
+  <h2>2026. Today.</h2>
+  <p id="endingText">Loading today's grim total&hellip;</p>
+  <button class="btn" id="doneBtn">okay, I've seen enough</button>
+</div>
+
+<button class="scroll-top-btn" id="scrollTopBtn" title="back to the beginning" aria-label="scroll to top">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M12 19V5"/>
+    <path d="M5 12l7-7 7 7"/>
+  </svg>
+</button>
+
+<script>
+  // ---------- sound (WebAudio, no files) ----------
+  var audioCtx = null;
+  var soundOn = true;
+  function ensureAudio() {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  }
+  function playTick() {
+    if (!soundOn) return;
+    ensureAudio();
+    var osc = audioCtx.createOscillator();
+    var gain = audioCtx.createGain();
+    osc.type = 'square';
+    osc.frequency.value = 1400;
+    gain.gain.value = 0.03;
+    osc.connect(gain).connect(audioCtx.destination);
+    var t = audioCtx.currentTime;
+    osc.start(t);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+    osc.stop(t + 0.04);
+  }
+  var muteBtn = document.getElementById('muteBtn');
+  muteBtn.addEventListener('click', function () {
+    soundOn = !soundOn;
+    muteBtn.title = soundOn ? 'Sound: On' : 'Sound: Off';
+    muteBtn.style.opacity = soundOn ? '1' : '0.5';
+  });
+
+  // ---------- 2001-2026 data ----------
+  // real U.S. annual averages (gas, EIA; federal minimum wage; USPS first-class
+  // stamp), rounded for a fun ticker rather than penny-exact bookkeeping.
+  var YEARS = [
+    { y: 2001, gas: 1.46, wage: 5.15, stamp: 0.34 },
+    { y: 2002, gas: 1.36, wage: 5.15, stamp: 0.37 },
+    { y: 2003, gas: 1.59, wage: 5.15, stamp: 0.37 },
+    { y: 2004, gas: 1.88, wage: 5.15, stamp: 0.37 },
+    { y: 2005, gas: 2.30, wage: 5.15, stamp: 0.37 },
+    { y: 2006, gas: 2.59, wage: 5.15, stamp: 0.39 },
+    { y: 2007, gas: 2.80, wage: 5.85, stamp: 0.41 },
+    { y: 2008, gas: 3.27, wage: 6.55, stamp: 0.42 },
+    { y: 2009, gas: 2.35, wage: 7.25, stamp: 0.44 },
+    { y: 2010, gas: 2.79, wage: 7.25, stamp: 0.44 },
+    { y: 2011, gas: 3.53, wage: 7.25, stamp: 0.44 },
+    { y: 2012, gas: 3.64, wage: 7.25, stamp: 0.45 },
+    { y: 2013, gas: 3.49, wage: 7.25, stamp: 0.46 },
+    { y: 2014, gas: 3.36, wage: 7.25, stamp: 0.49 },
+    { y: 2015, gas: 2.43, wage: 7.25, stamp: 0.49 },
+    { y: 2016, gas: 2.14, wage: 7.25, stamp: 0.47 },
+    { y: 2017, gas: 2.41, wage: 7.25, stamp: 0.49 },
+    { y: 2018, gas: 2.72, wage: 7.25, stamp: 0.50 },
+    { y: 2019, gas: 2.60, wage: 7.25, stamp: 0.55 },
+    { y: 2020, gas: 2.18, wage: 7.25, stamp: 0.55 },
+    { y: 2021, gas: 3.01, wage: 7.25, stamp: 0.58 },
+    { y: 2022, gas: 3.96, wage: 7.25, stamp: 0.60 },
+    { y: 2023, gas: 3.52, wage: 7.25, stamp: 0.66 },
+    { y: 2024, gas: 3.30, wage: 7.25, stamp: 0.68 },
+    { y: 2025, gas: 3.15, wage: 7.25, stamp: 0.73 },
+    { y: 2026, gas: 3.20, wage: 7.25, stamp: 0.78 }
+  ];
+
+  function fmt(n) { return '$' + n.toFixed(2); }
+  function deltaSpan(curr, prev, cheaperIsGood) {
+    if (prev === undefined) return '<span class="delta flat">&mdash;</span>';
+    var diff = curr - prev;
+    if (Math.abs(diff) < 0.005) return '<span class="delta flat">flat</span>';
+    var good = cheaperIsGood ? diff < 0 : diff > 0;
+    var cls = good ? 'down' : 'up';
+    var arrow = diff > 0 ? '&uarr;' : '&darr;';
+    return '<span class="delta ' + cls + '">' + arrow + ' ' + fmt(Math.abs(diff)) + '</span>';
+  }
+
+  var tickerBody = document.getElementById('tickerBody');
+  var rowsHtml = '';
+  YEARS.forEach(function (row, i) {
+    var prev = YEARS[i - 1];
+    var isNow = row.y === 2026;
+    rowsHtml +=
+      '<div class="ticker-row' + (isNow ? ' now' : '') + '">' +
+        '<span class="ticker-year">' + row.y + '</span>' +
+        '<span class="ticker-val"><span class="amt">' + fmt(row.gas) + '</span>' + deltaSpan(row.gas, prev && prev.gas, true) + '</span>' +
+        '<span class="ticker-val"><span class="amt">' + fmt(row.wage) + '</span>' + deltaSpan(row.wage, prev && prev.wage, false) + '</span>' +
+        '<span class="ticker-val"><span class="amt">' + fmt(row.stamp) + '</span>' + deltaSpan(row.stamp, prev && prev.stamp, true) + '</span>' +
+      '</div>';
+  });
+  tickerBody.innerHTML = rowsHtml;
+
+  // tick sound as ticker rows scroll into view, throttled so fast scrolling
+  // doesn't turn into a wall of noise
+  var lastTickTime = 0;
+  var observer = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        var now = Date.now();
+        if (now - lastTickTime > 90) { playTick(); lastTickTime = now; }
+      }
+    });
+  }, { threshold: 0.6 });
+  document.querySelectorAll('.ticker-row:not(.head)').forEach(function (row) { observer.observe(row); });
+
+  // ---------- ending punchline ----------
+  var last = YEARS[YEARS.length - 1];
+  var gasFraction = (1 / last.gas).toFixed(2);
+  document.getElementById('endingText').innerHTML =
+    '$1 today gets you about ' + gasFraction + ' of a gallon of gas, ' +
+    'roughly 8 minutes of federal minimum-wage work, and a little more than one postage stamp. ' +
+    'In 1900 it got you a haircut, a shave, and 20 loaves of bread. Progress.';
+
+  document.getElementById('doneBtn').addEventListener('click', function () {
+    window.location.href = '../../index.html';
+  });
+
+  // ---------- back-to-top button ----------
+  (function () {
+    var scrollTopBtn = document.getElementById('scrollTopBtn');
+    var lastY = window.scrollY;
+    var upScrollStart = null;
+    var ticking = false;
+    var FAR_DOWN = window.innerHeight * 1.5;
+    var HOLD_MS = 1000;
+
+    function evaluateScroll() {
+      var y = window.scrollY;
+      if (y < lastY - 1) {
+        if (upScrollStart === null) upScrollStart = Date.now();
+        if (y > FAR_DOWN && Date.now() - upScrollStart >= HOLD_MS) {
+          scrollTopBtn.classList.add('show');
+        }
+      } else if (y > lastY + 1) {
+        upScrollStart = null;
+        scrollTopBtn.classList.remove('show');
+      }
+      if (y <= FAR_DOWN) scrollTopBtn.classList.remove('show');
+      lastY = y;
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(evaluateScroll); }
+    }, { passive: true });
+
+    scrollTopBtn.addEventListener('click', function () {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollTopBtn.classList.remove('show');
+      upScrollStart = null;
+    });
+  })();
+</script>
+</body>
+</html>
