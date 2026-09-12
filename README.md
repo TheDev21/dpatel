@@ -65,9 +65,9 @@ backend, no build step.
   from today's date, so it's the same challenge for everyone until it
   resets at midnight. In-progress excuse saved to `localStorage` for the
   day.
-- **A Buck Through Time** (`games/a-buck-through-time/`) — *under
-  construction, not linked live yet.* A single long scroll showing what
-  $1 could buy throughout history: starts with a caveman cold open, a
+- **A Buck Through Time** (`games/a-buck-through-time/`) — a single long
+  scroll showing what $1 could buy throughout history: starts with a
+  caveman cold open, a
   quick history of money itself (barter → shells/cattle/salt/rocks →
   first coins → first paper money), then eras (Rome, Middle Ages, 1800s,
   each decade of the 1900s) shown as itemized receipts, before going
