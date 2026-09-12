@@ -654,17 +654,23 @@
         <div class="word">A BUCK<br>THROUGH TIME</div>
         <div class="buck-bill">
           <svg viewBox="0 0 260 150" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20,110 C65,20 120,155 165,75 C195,20 220,55 245,35"
-                  fill="none" stroke="#2f7a4a" stroke-width="76" stroke-linecap="round"/>
-            <path d="M20,110 C65,20 120,155 165,75 C195,20 220,55 245,35"
-                  fill="none" stroke="#8ed9a0" stroke-width="64" stroke-linecap="round"/>
-            <!-- corner-tick style accents near each end of the ribbon -->
-            <path d="M36,124 C30,132 22,136 14,137" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round"/>
-            <path d="M232,26 C239,20 247,17 255,17" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="188" cy="45" r="11" fill="#3f9a63"/>
-            <circle cx="70" cy="80" r="9" fill="#3f9a63"/>
-            <circle cx="128" cy="82" r="33" fill="#2f7a4a"/>
-            <text x="128" y="93" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="32" fill="#8ed9a0">$1</text>
+            <g transform="rotate(-9 130 75)">
+              <!-- a rectangle with straight short edges (real corners) and
+                   wavy long edges, like a bill caught mid-flutter rather
+                   than a free-floating ribbon -->
+              <path d="M14,52 Q65,8 130,46 Q195,84 246,38
+                       L246,104 Q195,146 130,108 Q65,70 14,112 Z"
+                    fill="#8ed9a0" stroke="#2f7a4a" stroke-width="6" stroke-linejoin="round"/>
+              <!-- corner ticks, one per real corner -->
+              <path d="M22,58 L14,52 L22,46" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M238,44 L246,38 L246,52" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22,106 L14,112 L22,118" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M238,98 L246,104 L246,90" fill="none" stroke="#3f9a63" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <circle cx="196" cy="58" r="10" fill="#3f9a63"/>
+              <circle cx="62" cy="92" r="9" fill="#3f9a63"/>
+              <circle cx="130" cy="77" r="33" fill="#2f7a4a"/>
+              <text x="130" y="88" text-anchor="middle" font-family="'Bebas Neue', sans-serif" font-size="32" fill="#8ed9a0">$1</text>
+            </g>
           </svg>
         </div>
       </div>
