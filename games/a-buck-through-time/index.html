@@ -425,7 +425,7 @@
     <div class="receipt-head">Roughly bought you:</div>
     <div class="receipt-row"><span class="item">Gasoline (&asymp;$0.30/gal)</span><span class="price">&asymp;3.3 gallons</span></div>
     <div class="receipt-row"><span class="item">A loaf of bread</span><span class="price">&asymp;10</span></div>
-    <div class="receipt-row"><span class="item">A Model T</span><span class="price">not even close</span></div>
+    <div class="receipt-row"><span class="item">A Model T (Ford's first mass-market car)</span><span class="price">not even close</span></div>
   </div>
   <div class="era-joke">A new Model T ran about $300-$600. A dollar was never going to cut it, but it was fun to check.</div>
 </div>
@@ -560,13 +560,180 @@
 </button>
 
 <script>
-  // ---------- sound (WebAudio, no files) ----------
+  // ---------- ambient build-up score (WebAudio, no files) ----------
+  // starts as a near-silent, sparse pad around "50,000 BC" and swells --
+  // louder, brighter, faster pulse -- as you scroll toward "today", as
+  // a musical mirror of the page's whole premise. Browsers block audio
+  // until a real user gesture, so it only starts on the first scroll/
+  // click/touch, not on page load.
   var audioCtx = null;
   var soundOn = true;
+  var musicStarted = false;
+  var masterGain, padFilter, leadGain;
+  var pulseTimer = null, leadTimer = null;
+
   function ensureAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
   }
+
+  function scrollProgress() {
+    var max = document.body.scrollHeight - window.innerHeight;
+    return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+  }
+
+  function startMusic() {
+    if (musicStarted) return;
+    musicStarted = true;
+    ensureAudio();
+
+    // a short slapback echo gives the whole thing room/drama instead of
+    // sounding like it's playing in a dead-flat box
+    // echo tap sits off to the side of the dry signal, not looped back
+    // through masterGain itself -- a self-loop there would let volume
+    // climb without bound every repeat
+    var delayNode = audioCtx.createDelay();
+    delayNode.delayTime.value = 0.34;
+    var feedback = audioCtx.createGain();
+    feedback.gain.value = 0.32;
+    var wet = audioCtx.createGain();
+    wet.gain.value = 0.5;
+    delayNode.connect(feedback).connect(delayNode);
+    delayNode.connect(wet).connect(audioCtx.destination);
+
+    masterGain = audioCtx.createGain();
+    masterGain.gain.value = 0.0001;
+    masterGain.connect(audioCtx.destination);
+    masterGain.connect(delayNode);
+
+    padFilter = audioCtx.createBiquadFilter();
+    padFilter.type = 'lowpass';
+    padFilter.frequency.value = 260;
+    padFilter.Q.value = 0.8;
+    padFilter.connect(masterGain);
+
+    // a slow, spread-out minor chord (D2/A2/D3/A3) -- a choir-pad drone,
+    // not a melody, so it can sit under the whole page without repeating
+    [73.42, 110.00, 146.83, 220.00].forEach(function (freq, i) {
+      var osc = audioCtx.createOscillator();
+      osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
+      osc.frequency.value = freq;
+      var voiceGain = audioCtx.createGain();
+      voiceGain.gain.value = 0.22;
+      var lfo = audioCtx.createOscillator();
+      lfo.frequency.value = 0.15 + i * 0.05;
+      var lfoGain = audioCtx.createGain();
+      lfoGain.gain.value = 5;
+      lfo.connect(lfoGain).connect(osc.detune);
+      lfo.start();
+      osc.connect(voiceGain).connect(padFilter);
+      osc.start();
+    });
+
+    // a soaring lead voice that stays silent early on and only fades in
+    // once you're well into the build -- the "opera singer walks in" bit
+    leadGain = audioCtx.createGain();
+    leadGain.gain.value = 0.0001;
+    leadGain.connect(masterGain);
+
+    updateMusicForScroll();
+    scheduleLeadMotif();
+  }
+
+  function updateMusicForScroll() {
+    if (!musicStarted) return;
+    var progress = scrollProgress();
+    var targetGain = soundOn ? (0.03 + Math.pow(progress, 1.3) * 0.22) : 0.0001;
+    var targetFreq = 220 + progress * 3600;
+    var t = audioCtx.currentTime;
+    masterGain.gain.cancelScheduledValues(t);
+    masterGain.gain.linearRampToValueAtTime(targetGain, t + 0.8);
+    padFilter.frequency.cancelScheduledValues(t);
+    padFilter.frequency.linearRampToValueAtTime(targetFreq, t + 0.8);
+    leadGain.gain.cancelScheduledValues(t);
+    leadGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.5) * 0.5 : 0.0001, t + 0.8);
+
+    // the pulse (a punchy low stab) speeds up as the build progresses
+    var delay = 1200 - progress * 950;
+    clearTimeout(pulseTimer);
+    pulseTimer = setTimeout(pulseBeat, delay);
+  }
+
+  function pulseBeat() {
+    if (!musicStarted) return;
+    if (soundOn) {
+      var progress = scrollProgress();
+      var t = audioCtx.currentTime;
+
+      // sub thump
+      var sub = audioCtx.createOscillator();
+      var subGain = audioCtx.createGain();
+      sub.type = 'sine';
+      sub.frequency.setValueAtTime(120, t);
+      sub.frequency.exponentialRampToValueAtTime(45, t + 0.22);
+      subGain.gain.setValueAtTime(0.0001, t);
+      subGain.gain.linearRampToValueAtTime(0.22 + progress * 0.18, t + 0.02);
+      subGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
+      sub.connect(subGain).connect(masterGain);
+      sub.start(t);
+      sub.stop(t + 0.55);
+
+      // a brassy stab layered on top once the build is past halfway,
+      // so the pulse itself gets more "orchestral" not just louder
+      if (progress > 0.4) {
+        var stab = audioCtx.createOscillator();
+        var stabFilter = audioCtx.createBiquadFilter();
+        var stabGain = audioCtx.createGain();
+        stab.type = 'sawtooth';
+        stab.frequency.value = 220 + progress * 40;
+        stabFilter.type = 'bandpass';
+        stabFilter.frequency.value = 600 + progress * 1400;
+        stabFilter.Q.value = 4;
+        stabGain.gain.setValueAtTime(0.0001, t);
+        stabGain.gain.linearRampToValueAtTime((progress - 0.4) * 0.28, t + 0.02);
+        stabGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+        stab.connect(stabFilter).connect(stabGain).connect(masterGain);
+        stab.start(t);
+        stab.stop(t + 0.4);
+      }
+    }
+    updateMusicForScroll();
+  }
+
+  // a short rising motif for the lead voice, only audible once leadGain
+  // has faded up (see updateMusicForScroll) -- repeats slowly so it reads
+  // as a phrase, not noise
+  var LEAD_MOTIF = [220, 261.63, 329.63, 392.00, 440.00];
+  function scheduleLeadMotif() {
+    if (!musicStarted) return;
+    var progress = scrollProgress();
+    if (soundOn && progress > 0.5) {
+      var t = audioCtx.currentTime;
+      LEAD_MOTIF.forEach(function (freq, i) {
+        var osc = audioCtx.createOscillator();
+        var g = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        var start = t + i * 0.3;
+        g.gain.setValueAtTime(0.0001, start);
+        g.gain.linearRampToValueAtTime(0.16, start + 0.08);
+        g.gain.exponentialRampToValueAtTime(0.0001, start + 0.32);
+        osc.connect(g).connect(leadGain);
+        osc.start(start);
+        osc.stop(start + 0.34);
+      });
+    }
+    clearTimeout(leadTimer);
+    leadTimer = setTimeout(scheduleLeadMotif, 2600);
+  }
+
+  ['scroll', 'click', 'touchstart'].forEach(function (evt) {
+    window.addEventListener(evt, startMusic, { once: true, passive: true });
+  });
+  window.addEventListener('scroll', function () {
+    if (musicStarted) updateMusicForScroll();
+  }, { passive: true });
+
   function playTick() {
     if (!soundOn) return;
     ensureAudio();
@@ -586,6 +753,7 @@
     soundOn = !soundOn;
     muteBtn.title = soundOn ? 'Sound: On' : 'Sound: Off';
     muteBtn.style.opacity = soundOn ? '1' : '0.5';
+    if (musicStarted) updateMusicForScroll();
   });
 
   // ---------- 2001-2026 data ----------
