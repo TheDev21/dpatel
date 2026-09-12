@@ -363,22 +363,38 @@
   }
 
   /* A Buck Through Time thumb */
-  .thumb.buck { background: linear-gradient(160deg, #f2ead9, #e9ddb8 65%); }
-  .thumb.buck .word { color: #4a3d1f; font-size: clamp(20px, 5vw, 28px); position: relative; z-index: 3; }
-  .thumb.buck .buck-swirl {
-    position: absolute; inset: 0;
-    background: repeating-conic-gradient(from 0deg, rgba(198,45,58,0.12) 0deg 14deg, transparent 14deg 28deg);
-    border-radius: 50%;
-    width: 140%; height: 140%; left: -20%; top: -20%;
-    animation: buckSpin 14s linear infinite;
+  .thumb.buck {
+    background: linear-gradient(160deg, #f2ead9, #e9ddb8 65%);
+    flex-direction: column;
+    gap: 10px;
   }
-  @keyframes buckSpin { to { transform: rotate(360deg); } }
+  .thumb.buck .word {
+    color: #4a2f14;
+    font-size: clamp(18px, 4.6vw, 26px);
+    position: relative;
+    z-index: 3;
+    background: rgba(255,252,243,0.82);
+    padding: 4px 12px;
+    border-radius: 8px;
+  }
+  .thumb.buck .buck-swirl {
+    /* sized off the box's diagonal (not just 140%) so the sunburst
+       always reaches every corner evenly -- a plain static wedge
+       pattern, no spin, so it can't ever look "half turned" */
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 200%; height: 200%;
+    transform: translate(-50%, -50%);
+    background: repeating-conic-gradient(rgba(198,45,58,0.12) 0deg 14deg, transparent 14deg 28deg);
+    border-radius: 50%;
+  }
   .thumb.buck .buck-bill {
-    position: absolute; bottom: 14%; left: 50%; transform: translateX(-50%) rotate(-4deg);
+    position: relative;
     width: 60%; aspect-ratio: 2 / 1;
     background: #8fbf7a; border: 3px solid var(--ink); border-radius: 6px;
     z-index: 2;
     display: flex; align-items: center; justify-content: center;
+    transform: rotate(-3deg);
   }
   .thumb.buck .buck-bill::before {
     content: ""; position: absolute; inset: 6px;
@@ -393,10 +409,6 @@
     font-family: 'Bebas Neue', sans-serif;
     font-size: clamp(10px, 3.4vw, 15px);
     color: #4a2f14;
-  }
-  .thumb.buck .buck-deer {
-    position: absolute; bottom: 26%; left: 50%; transform: translateX(-50%);
-    z-index: 3;
   }
   .thumb.buck .buck-clock {
     position: absolute; top: 10%; right: 8%;
@@ -657,31 +669,8 @@
       <div class="thumb buck">
         <div class="buck-swirl"></div>
         <div class="buck-clock"></div>
-        <div class="buck-bill"><div class="buck-bill-seal">$1</div></div>
-        <div class="buck-deer">
-          <svg viewBox="0 0 100 72" width="88" height="63">
-            <!-- antlers, drawn first so they sit behind/above the head clearly -->
-            <path d="M68,20 C67,10 61,3 54,0 M62,12 C61,8 57,6 53,6 M68,20 C71,9 78,3 85,1 M71,11 C73,7 77,5 81,6" stroke="#23201d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-            <!-- legs -->
-            <path d="M28,55 L25,70 M38,56 L37,71 M60,56 L63,71 M70,55 L75,70" stroke="#23201d" stroke-width="3.6" stroke-linecap="round" fill="none"/>
-            <!-- body -->
-            <ellipse cx="40" cy="48" rx="29" ry="17" fill="#b5895a" stroke="#23201d" stroke-width="3" transform="rotate(-3 40 48)"/>
-            <!-- tail -->
-            <path d="M12,38 C7,38 6,44 9,47 C12,48 14,44 12,38 Z" fill="#e9ddb8" stroke="#23201d" stroke-width="2"/>
-            <!-- neck + head -->
-            <path d="M62,36 C70,26 70,16 67,13 C77,13 82,23 80,33 C79,38 73,41 66,40 Z" fill="#b5895a" stroke="#23201d" stroke-width="3"/>
-            <!-- ear -->
-            <path d="M67,16 C63,11 64,6 69,7 C72,11 71,15 67,16 Z" fill="#8a6b3f" stroke="#23201d" stroke-width="2"/>
-            <!-- snout -->
-            <ellipse cx="82" cy="29" rx="7" ry="5" fill="#8a6b3f" stroke="#23201d" stroke-width="2.4"/>
-            <circle cx="87.5" cy="28" r="1.1" fill="#23201d"/>
-            <!-- eye -->
-            <circle cx="73" cy="22" r="1.6" fill="#23201d"/>
-            <!-- belly spot -->
-            <ellipse cx="35" cy="53" rx="12" ry="6" fill="#e9ddb8" opacity="0.6"/>
-          </svg>
-        </div>
         <div class="word">A BUCK<br>THROUGH TIME</div>
+        <div class="buck-bill"><div class="buck-bill-seal">$1</div></div>
       </div>
     </a>
 
