@@ -383,14 +383,33 @@
      phone (the actual game) tiny and the icons unreadable. Below this
      width, stack it vertically instead and let each piece be its own
      sensible size, with the page scrolling if it runs long. */
+  /* on mobile this stays a single non-scrolling screen like the desktop
+     version -- but instead of scaling the wide 3-column desktop layout
+     (icons | phone | icons, ~1200px) down to fit, which crushed the phone
+     to a sliver, the layout itself reflows first: phone on top, both
+     upgrade lists compressed into small horizontal scroll strips below
+     it. The existing fit-to-window script then only has to apply a mild
+     scale to this much narrower natural layout instead of a drastic one. */
   @media (max-width: 900px) {
-    html, body { overflow: auto; height: auto; min-height: 100vh; }
-    body { padding: 90px 16px 40px; align-items: flex-start; }
-    .stage-panel { transform: none !important; }
-    .game-row { flex-direction: column; align-items: center; gap: 28px; }
-    .apps-column { width: 100%; max-width: 380px; height: auto; }
-    .phone { width: min(84vw, 340px); height: auto; aspect-ratio: 400 / 800; }
-    .stage::before { width: 320px; height: 320px; }
+    .game-row { flex-direction: column; align-items: center; gap: 10px; }
+    .phone-column { order: -1; }
+    .apps-column {
+      width: 100%; max-width: 480px; height: auto;
+      display: block;
+    }
+    .apps-list {
+      flex-direction: row; overflow-x: auto; gap: 14px;
+      padding: 4px 6px 10px; -webkit-overflow-scrolling: touch;
+    }
+    .app-item {
+      flex-direction: column; align-items: center; text-align: center;
+      gap: 6px; width: 78px; flex-shrink: 0; padding: 6px;
+    }
+    .app-icon { width: 56px; height: 56px; border-radius: 16px; }
+    .app-icon svg { width: 28px; height: 28px; }
+    .app-name { font-size: 0.62rem; line-height: 1.2; }
+    .app-owned { font-size: 0.6rem; padding: 1px 7px; }
+    .app-cost { font-size: 0.62rem; }
   }
 </style>
 </head>
