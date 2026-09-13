@@ -134,7 +134,7 @@
   }
   .intro h1 { font-size: clamp(2.4rem, 9vw, 4.2rem); margin: 0 0 6px; }
   .intro h1 span { color: var(--green); }
-  .intro .tagline { font-size: 0.95rem; color: var(--ink-dim); max-width: 480px; margin: 0 0 30px; }
+  .intro .tagline { font-size: 1.08rem; color: var(--ink-dim); max-width: 480px; margin: 0 0 30px; }
   .scroll-hint { font-size: 0.8rem; color: var(--ink-dim); animation: bob 1.6s ease-in-out infinite; }
   @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
 
@@ -150,7 +150,7 @@
   .era-label { font-size: 0.78rem; color: var(--ink-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; padding-top: 6px; }
   .era-title { font-size: clamp(2rem, 6vw, 2.8rem); margin: 0 0 14px; }
   .era-title .accent { color: var(--orange); }
-  .era-body { font-size: 0.95rem; line-height: 1.6; margin-bottom: 18px; clear: both; }
+  .era-body { font-size: 1.05rem; line-height: 1.6; margin-bottom: 18px; clear: both; }
 
   .receipt {
     padding-top: 4px;
@@ -168,12 +168,12 @@
     display: flex;
     justify-content: space-between;
     gap: 10px;
-    font-size: 0.9rem;
+    font-size: 1rem;
     padding: 5px 0;
   }
   .receipt-row .item { color: var(--ink); }
   .receipt-row .price { color: var(--green); font-weight: 500; white-space: nowrap; }
-  .era-joke { margin-top: 14px; font-size: 0.85rem; color: var(--ink-dim); font-style: italic; }
+  .era-joke { margin-top: 14px; font-size: 0.95rem; color: var(--ink-dim); font-style: italic; }
 
   .fact-card {
     max-width: 640px;
@@ -185,7 +185,7 @@
     text-align: left;
   }
   .fact-text h3 { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; margin: 0 0 6px; color: var(--orange); }
-  .fact-text p { font-size: 0.88rem; line-height: 1.6; margin: 0; color: var(--ink-dim); }
+  .fact-text p { font-size: 1rem; line-height: 1.6; margin: 0; color: var(--ink-dim); }
 
   /* ---- hand-drawn icons, kept to the left rather than centered above
      everything -- reads more like a written page than a hero banner ---- */
@@ -216,7 +216,7 @@
     border-top: 3px dashed rgba(35,32,29,0.18);
   }
   .money-history-heading h2 { font-size: clamp(1.8rem, 5vw, 2.4rem); margin: 0 0 8px; }
-  .money-history-heading p { font-size: 0.88rem; color: var(--ink-dim); max-width: 480px; margin: 0; }
+  .money-history-heading p { font-size: 1rem; color: var(--ink-dim); max-width: 480px; margin: 0; }
 
   /* ---- 2001-2026 ticker ---- */
   .ticker-section {
@@ -227,7 +227,7 @@
   }
   .ticker-intro { margin-bottom: 26px; }
   .ticker-intro .icon-badge { float: left; margin: 0 18px 10px 0; }
-  .ticker-intro p { font-size: 0.85rem; color: var(--ink-dim); max-width: 480px; margin: 8px 0 0; clear: both; }
+  .ticker-intro p { font-size: 0.98rem; color: var(--ink-dim); max-width: 480px; margin: 8px 0 0; clear: both; }
   .ticker-row {
     display: grid;
     grid-template-columns: 56px 1fr 1fr 1fr;
@@ -261,7 +261,7 @@
     border-top: 3px dashed rgba(35,32,29,0.18);
   }
   .ending h2 { font-size: clamp(2.2rem, 7vw, 3.2rem); margin: 0 0 14px; }
-  .ending p { font-size: 0.95rem; color: var(--ink-dim); max-width: 460px; margin: 0 auto 24px; }
+  .ending p { font-size: 1.08rem; color: var(--ink-dim); max-width: 460px; margin: 0 auto 24px; }
   .ending .btn {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.1rem;
@@ -623,6 +623,22 @@
     return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
   }
 
+  // a small "orchestra": strings (the pad), 2 horns, a tuba/bass note, a
+  // brass stab (trumpets/trombones) on the pulse, and a harp arpeggio --
+  // built from a real i-VI-III-VII chord loop in D minor (Dm-Bb-F-C) so
+  // it's an actual repeating piece of music, not a single static drone
+  var CHORDS = [
+    { bass: 36.71,  strings: [73.42, 87.31, 110.00, 146.83],  horn: [174.61, 220.00], harp: [293.66, 349.23, 440.00, 587.33] },
+    { bass: 29.14,  strings: [58.27, 73.42, 87.31, 116.54],   horn: [146.83, 174.61], harp: [233.08, 293.66, 349.23, 466.16] },
+    { bass: 43.65,  strings: [87.31, 110.00, 130.81, 174.61], horn: [220.00, 261.63], harp: [349.23, 440.00, 523.25, 698.46] },
+    { bass: 32.70,  strings: [65.41, 82.41, 98.00, 130.81],   horn: [164.81, 196.00], harp: [261.63, 329.63, 392.00, 523.25] }
+  ];
+  var chordIndex = 0;
+  var stringOscs = [], hornOscs = [], bassOsc, hornGain, bassGain;
+  var chordTimer = null, harpTimer = null;
+  var harpStep = 0;
+  var CHORD_MS = 5000; // one full 4-chord loop = 20s, however long you sit still
+
   function startMusic() {
     if (musicStarted) return;
     musicStarted = true;
@@ -660,9 +676,9 @@
     padFilter.Q.value = 0.8;
     padFilter.connect(masterGain);
 
-    // a slow, spread-out minor chord (D2/A2/D3/A3) -- a choir-pad drone,
-    // not a melody, so it can sit under the whole page without repeating
-    [73.42, 110.00, 146.83, 220.00].forEach(function (freq, i) {
+    // "strings" -- 4 detuned voices standing in for the whole string
+    // section, chorused via slow per-voice vibrato LFOs
+    CHORDS[0].strings.forEach(function (freq, i) {
       var osc = audioCtx.createOscillator();
       osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
       osc.frequency.value = freq;
@@ -676,7 +692,32 @@
       lfo.start();
       osc.connect(voiceGain).connect(padFilter);
       osc.start();
+      stringOscs.push(osc);
     });
+
+    // "horns" -- 2 mellow mid-range voices, quieter than the strings,
+    // that only really become audible once the build is underway
+    hornGain = audioCtx.createGain();
+    hornGain.gain.value = 0.0001;
+    hornGain.connect(padFilter);
+    CHORDS[0].horn.forEach(function (freq) {
+      var osc = audioCtx.createOscillator();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      osc.connect(hornGain);
+      osc.start();
+      hornOscs.push(osc);
+    });
+
+    // "tuba" -- one sustained sub note reinforcing the chord root
+    bassGain = audioCtx.createGain();
+    bassGain.gain.value = 0.16;
+    bassGain.connect(masterGain);
+    bassOsc = audioCtx.createOscillator();
+    bassOsc.type = 'sine';
+    bassOsc.frequency.value = CHORDS[0].bass;
+    bassOsc.connect(bassGain);
+    bassOsc.start();
 
     // a soaring lead voice that stays silent early on and only fades in
     // once you're well into the build -- the "opera singer walks in" bit
@@ -685,21 +726,49 @@
     leadGain.connect(masterGain);
 
     updateMusicForScroll();
+    // hold on the opening chord for its full duration before the first
+    // change, rather than switching away from it immediately
+    chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
+    scheduleHarp();
     scheduleLeadMotif();
+  }
+
+  // moves strings/horns/tuba to the next chord in the progression on a
+  // fixed timer, independent of scrolling -- this is what makes it an
+  // actual looping piece of music instead of one static chord forever
+  function scheduleChordChange() {
+    if (!musicStarted) return;
+    chordIndex = (chordIndex + 1) % CHORDS.length;
+    var chord = CHORDS[chordIndex];
+    var t = audioCtx.currentTime;
+    stringOscs.forEach(function (osc, i) {
+      osc.frequency.cancelScheduledValues(t);
+      osc.frequency.linearRampToValueAtTime(chord.strings[i], t + 1.3);
+    });
+    hornOscs.forEach(function (osc, i) {
+      osc.frequency.cancelScheduledValues(t);
+      osc.frequency.linearRampToValueAtTime(chord.horn[i], t + 1.3);
+    });
+    bassOsc.frequency.cancelScheduledValues(t);
+    bassOsc.frequency.linearRampToValueAtTime(chord.bass, t + 1.3);
+    clearTimeout(chordTimer);
+    chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
   }
 
   function updateMusicForScroll() {
     if (!musicStarted) return;
     var progress = scrollProgress();
-    var targetGain = soundOn ? (0.05 + Math.pow(progress, 1.3) * 0.32) : 0.0001;
+    var targetGain = soundOn ? (0.05 + Math.pow(progress, 1.4) * 0.5) : 0.0001;
     var targetFreq = 220 + progress * 3600;
     var t = audioCtx.currentTime;
     masterGain.gain.cancelScheduledValues(t);
     masterGain.gain.linearRampToValueAtTime(targetGain, t + 0.8);
     padFilter.frequency.cancelScheduledValues(t);
     padFilter.frequency.linearRampToValueAtTime(targetFreq, t + 0.8);
+    hornGain.gain.cancelScheduledValues(t);
+    hornGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.15) * 0.4 : 0.0001, t + 0.8);
     leadGain.gain.cancelScheduledValues(t);
-    leadGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.5) * 0.5 : 0.0001, t + 0.8);
+    leadGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.5) * 0.6 : 0.0001, t + 0.8);
 
     // the pulse (a punchy low stab) speeds up as the build progresses
     var delay = 1200 - progress * 950;
@@ -707,57 +776,107 @@
     pulseTimer = setTimeout(pulseBeat, delay);
   }
 
+  var pulseCount = 0;
   function pulseBeat() {
     if (!musicStarted) return;
     if (soundOn) {
       var progress = scrollProgress();
+      var chord = CHORDS[chordIndex];
       var t = audioCtx.currentTime;
+      pulseCount++;
 
-      // sub thump
+      // sub thump, tied to the current chord's root -- the tuba hit
       var sub = audioCtx.createOscillator();
       var subGain = audioCtx.createGain();
       sub.type = 'sine';
-      sub.frequency.setValueAtTime(120, t);
-      sub.frequency.exponentialRampToValueAtTime(45, t + 0.22);
+      sub.frequency.setValueAtTime(chord.bass * 3, t);
+      sub.frequency.exponentialRampToValueAtTime(chord.bass, t + 0.22);
       subGain.gain.setValueAtTime(0.0001, t);
-      subGain.gain.linearRampToValueAtTime(0.3 + progress * 0.24, t + 0.02);
+      subGain.gain.linearRampToValueAtTime(0.3 + progress * 0.3, t + 0.02);
       subGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
       sub.connect(subGain).connect(masterGain);
       sub.start(t);
       sub.stop(t + 0.55);
 
-      // a brassy stab layered on top once the build is past halfway,
-      // so the pulse itself gets more "orchestral" not just louder
-      if (progress > 0.4) {
+      // brass stabs (trumpets/trombones) layer in once past a third of
+      // the way through, alternating a bright trumpet hit and a lower,
+      // slightly longer trombone hit so the pulse reads as two sections
+      // trading off, not just one louder blip
+      if (progress > 0.32) {
+        var isTrumpet = pulseCount % 2 === 0;
         var stab = audioCtx.createOscillator();
         var stabFilter = audioCtx.createBiquadFilter();
         var stabGain = audioCtx.createGain();
         stab.type = 'sawtooth';
-        stab.frequency.value = 220 + progress * 40;
+        stab.frequency.value = isTrumpet ? chord.horn[1] * 2 : chord.horn[0];
         stabFilter.type = 'bandpass';
-        stabFilter.frequency.value = 600 + progress * 1400;
+        stabFilter.frequency.value = isTrumpet ? 1400 + progress * 1200 : 500 + progress * 700;
         stabFilter.Q.value = 4;
+        var stabPeak = (progress - 0.32) * (isTrumpet ? 0.5 : 0.42);
+        var stabDur = isTrumpet ? 0.28 : 0.42;
         stabGain.gain.setValueAtTime(0.0001, t);
-        stabGain.gain.linearRampToValueAtTime((progress - 0.4) * 0.4, t + 0.02);
-        stabGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.35);
+        stabGain.gain.linearRampToValueAtTime(stabPeak, t + 0.015);
+        stabGain.gain.exponentialRampToValueAtTime(0.0001, t + stabDur);
         stab.connect(stabFilter).connect(stabGain).connect(masterGain);
         stab.start(t);
-        stab.stop(t + 0.4);
+        stab.stop(t + stabDur + 0.05);
       }
     }
     updateMusicForScroll();
   }
 
+  // harp -- a continuously looping plucked arpeggio through the current
+  // chord's notes. It runs the whole time (not gated behind a scroll
+  // threshold like the lead voice), just quieter and slower near the
+  // top, so the piece always feels like an actual loop, even if you
+  // stop scrolling
+  function harpPluck(freq, gainPeak) {
+    var t = audioCtx.currentTime;
+    var osc = audioCtx.createOscillator();
+    var overtone = audioCtx.createOscillator();
+    var g = audioCtx.createGain();
+    osc.type = 'triangle';
+    osc.frequency.value = freq;
+    overtone.type = 'sine';
+    overtone.frequency.value = freq * 2;
+    var overtoneGain = audioCtx.createGain();
+    overtoneGain.gain.value = 0.3;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.linearRampToValueAtTime(gainPeak, t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
+    osc.connect(g);
+    overtone.connect(overtoneGain).connect(g);
+    g.connect(masterGain);
+    osc.start(t);
+    overtone.start(t);
+    osc.stop(t + 0.95);
+    overtone.stop(t + 0.95);
+  }
+
+  function scheduleHarp() {
+    if (!musicStarted) return;
+    var progress = scrollProgress();
+    if (soundOn) {
+      var chord = CHORDS[chordIndex];
+      var note = chord.harp[harpStep % chord.harp.length];
+      harpPluck(note, 0.06 + progress * 0.22);
+      harpStep++;
+    }
+    var interval = 820 - progress * 580;
+    clearTimeout(harpTimer);
+    harpTimer = setTimeout(scheduleHarp, interval);
+  }
+
   // a short rising motif for the lead voice, only audible once leadGain
-  // has faded up (see updateMusicForScroll) -- repeats slowly so it reads
-  // as a phrase, not noise
-  var LEAD_MOTIF = [220, 261.63, 329.63, 392.00, 440.00];
+  // has faded up (see updateMusicForScroll) -- follows the current
+  // chord's harp notes so it always stays in key with the loop
   function scheduleLeadMotif() {
     if (!musicStarted) return;
     var progress = scrollProgress();
     if (soundOn && progress > 0.5) {
+      var chord = CHORDS[chordIndex];
       var t = audioCtx.currentTime;
-      LEAD_MOTIF.forEach(function (freq, i) {
+      chord.harp.forEach(function (freq, i) {
         var osc = audioCtx.createOscillator();
         var g = audioCtx.createGain();
         osc.type = 'triangle';
@@ -773,6 +892,45 @@
     }
     clearTimeout(leadTimer);
     leadTimer = setTimeout(scheduleLeadMotif, 2600);
+  }
+
+  // one big finale swell -- a full-orchestra hit plus a cymbal-like
+  // noise crash -- the moment the ending section scrolls into view
+  var finalePlayed = false;
+  function playFinale() {
+    if (finalePlayed || !musicStarted || !soundOn) return;
+    finalePlayed = true;
+    var t = audioCtx.currentTime;
+    var chord = CHORDS[chordIndex];
+
+    chord.harp.concat(chord.horn).forEach(function (freq) {
+      var osc = audioCtx.createOscillator();
+      var g = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(0.16, t + 0.05);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+      osc.connect(g).connect(masterGain);
+      osc.start(t);
+      osc.stop(t + 2.3);
+    });
+
+    // noise burst through a highpass filter, standing in for a cymbal
+    // crash under the final chord
+    var bufferSize = audioCtx.sampleRate * 1.2;
+    var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    var data = buffer.getChannelData(0);
+    for (var i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+    var noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    var noiseFilter = audioCtx.createBiquadFilter();
+    noiseFilter.type = 'highpass';
+    noiseFilter.frequency.value = 4000;
+    var noiseGain = audioCtx.createGain();
+    noiseGain.gain.value = 0.18;
+    noise.connect(noiseFilter).connect(noiseGain).connect(masterGain);
+    noise.start(t);
   }
 
   ['scroll', 'click', 'touchstart'].forEach(function (evt) {
@@ -902,6 +1060,13 @@
     });
   }, { threshold: 0.6 });
   document.querySelectorAll('.ticker-row:not(.head)').forEach(function (row) { observer.observe(row); });
+
+  var finaleObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) playFinale();
+    });
+  }, { threshold: 0.4 });
+  finaleObserver.observe(document.querySelector('.ending'));
 
   // ---------- ending punchline ----------
   var last = YEARS[YEARS.length - 1];
