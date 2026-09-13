@@ -635,7 +635,8 @@
   var audioCtx = null;
   var soundOn = true;
   var musicStarted = false;
-  var masterGain, padFilter, leadGain, outputGain;
+  var masterGain, masterFilter, padFilter, leadGain, outputGain;
+  var shimmerOscs = [], shimmerGain;
   var pulseTimer = null, leadTimer = null;
   var userVolume = 0.95;
   var musicStartTime = 0;
@@ -719,8 +720,17 @@
 
     masterGain = audioCtx.createGain();
     masterGain.gain.value = 0.0001;
-    masterGain.connect(outputGain);
-    masterGain.connect(delayNode);
+
+    // a gentle master-bus lowpass to glue everything together and take
+    // the digital edge off the raw sawtooths -- without this the mix
+    // reads as buzzy synth layers instead of one cohesive orchestra
+    masterFilter = audioCtx.createBiquadFilter();
+    masterFilter.type = 'lowpass';
+    masterFilter.frequency.value = 3400;
+    masterFilter.Q.value = 0.6;
+    masterGain.connect(masterFilter);
+    masterFilter.connect(outputGain);
+    masterFilter.connect(delayNode);
 
     padFilter = audioCtx.createBiquadFilter();
     padFilter.type = 'lowpass';
@@ -777,6 +787,27 @@
     leadGain.gain.value = 0.0001;
     leadGain.connect(masterGain);
 
+    // high shimmering strings, two octaves up with fast tremolo -- silent
+    // until deep in the climax, then trembles in for the "screaming
+    // strings" moment right before the finale hits
+    shimmerGain = audioCtx.createGain();
+    shimmerGain.gain.value = 0.0001;
+    shimmerGain.connect(masterGain);
+    var tremoloLfo = audioCtx.createOscillator();
+    tremoloLfo.frequency.value = 7.5;
+    var tremoloDepth = audioCtx.createGain();
+    tremoloDepth.gain.value = 0.08;
+    tremoloLfo.connect(tremoloDepth).connect(shimmerGain.gain);
+    tremoloLfo.start();
+    [CHORDS[0].strings[1], CHORDS[0].strings[3]].forEach(function (freq) {
+      var osc = audioCtx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq * 4;
+      osc.connect(shimmerGain);
+      osc.start();
+      shimmerOscs.push(osc);
+    });
+
     updateMusicSwell();
     // hold on the opening chord for its full duration before the first
     // change, rather than switching away from it immediately
@@ -789,21 +820,37 @@
   // moves strings/horns/tuba to the next chord in the progression on a
   // fixed timer, independent of scrolling -- this is what makes it an
   // actual looping piece of music instead of one static chord forever
-  function scheduleChordChange() {
-    if (!musicStarted) return;
-    chordIndex = (chordIndex + 1) % CHORDS.length;
+  // pushes every sustained voice (strings/horns/tuba/shimmer) toward the
+  // current chord times a slowly climbing "rise" factor -- that rise is
+  // the actual tension engine here (the classic Shepard/Dunkirk-clock
+  // trick: pitch that only ever climbs reads as unbearable anticipation
+  // in a way that volume alone doesn't). Called both on each chord
+  // change and every swell tick, so the climb is continuous, not stepped.
+  function applyChordFrequencies(glide) {
     var chord = CHORDS[chordIndex];
+    var rise = 1 + musicProgress() * 0.55;
     var t = audioCtx.currentTime;
     stringOscs.forEach(function (osc, i) {
       osc.frequency.cancelScheduledValues(t);
-      osc.frequency.linearRampToValueAtTime(chord.strings[i], t + 0.7);
+      osc.frequency.linearRampToValueAtTime(chord.strings[i] * rise, t + glide);
     });
     hornOscs.forEach(function (osc, i) {
       osc.frequency.cancelScheduledValues(t);
-      osc.frequency.linearRampToValueAtTime(chord.horn[i], t + 0.7);
+      osc.frequency.linearRampToValueAtTime(chord.horn[i] * rise, t + glide);
     });
     bassOsc.frequency.cancelScheduledValues(t);
-    bassOsc.frequency.linearRampToValueAtTime(chord.bass, t + 0.7);
+    bassOsc.frequency.linearRampToValueAtTime(chord.bass * rise, t + glide);
+    var shimmerNotes = [chord.strings[1], chord.strings[3]];
+    shimmerOscs.forEach(function (osc, i) {
+      osc.frequency.cancelScheduledValues(t);
+      osc.frequency.linearRampToValueAtTime(shimmerNotes[i] * 4 * rise, t + glide);
+    });
+  }
+
+  function scheduleChordChange() {
+    if (!musicStarted) return;
+    chordIndex = (chordIndex + 1) % CHORDS.length;
+    applyChordFrequencies(0.7);
     clearTimeout(chordTimer);
     chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
   }
@@ -811,9 +858,13 @@
   function updateMusicSwell() {
     if (!musicStarted) return;
     var progress = musicProgress();
-    var targetGain = soundOn ? (0.07 + Math.pow(progress, 1.2) * 0.62) : 0.0001;
-    var targetFreq = 220 + progress * 3600;
     var t = audioCtx.currentTime;
+
+    // a slow wobble riding on top of the overall climb -- without this
+    // the build reads as one flat, robotic ramp; with it, it breathes
+    var breathe = Math.sin(t * 0.35) * 0.035 * progress;
+    var targetGain = soundOn ? Math.max(0.0001, 0.06 + Math.pow(progress, 1.15) * 0.68 + breathe) : 0.0001;
+    var targetFreq = 220 + progress * 3600;
     masterGain.gain.cancelScheduledValues(t);
     masterGain.gain.linearRampToValueAtTime(targetGain, t + 0.8);
     padFilter.frequency.cancelScheduledValues(t);
@@ -822,6 +873,14 @@
     hornGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.15) * 0.4 : 0.0001, t + 0.8);
     leadGain.gain.cancelScheduledValues(t);
     leadGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.5) * 0.6 : 0.0001, t + 0.8);
+    // the shimmer only trembles in for the last stretch -- the
+    // "screaming strings" right before the finale lands
+    shimmerGain.gain.cancelScheduledValues(t);
+    shimmerGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.78) / 0.22 * 0.22 : 0.0001, t + 0.9);
+
+    // keep every sustained voice climbing continuously between chord
+    // changes, not just snapping to a new pitch every 3.2s
+    applyChordFrequencies(0.85);
 
     // the pulse (a punchy low stab) speeds up as the build progresses
     var delay = 900 - progress * 760;
@@ -926,12 +985,21 @@
   // like a countdown clock made of strings. Present early (unlike the
   // horns/lead), just quiet and slow at first.
   var ostinatoStep = 0;
+  // short-short-long over 3 notes (root, fifth, octave) instead of a
+  // plain back-and-forth two-note alternation -- reads as an actual
+  // minimalist motif (think Glass/Zimmer) rather than a metronome
+  var OSTINATO_PATTERN = [
+    { degree: 0, dur: 1 },
+    { degree: 2, dur: 1 },
+    { degree: 3, dur: 1.8 }
+  ];
   function scheduleOstinato() {
     if (!musicStarted) return;
     var progress = musicProgress();
+    var step = OSTINATO_PATTERN[ostinatoStep % OSTINATO_PATTERN.length];
     if (soundOn) {
       var chord = CHORDS[chordIndex];
-      var note = ostinatoStep % 2 === 0 ? chord.strings[0] * 2 : chord.strings[2] * 2;
+      var note = chord.strings[step.degree] * 2;
       var t = audioCtx.currentTime;
       var osc = audioCtx.createOscillator();
       var filt = audioCtx.createBiquadFilter();
@@ -941,18 +1009,19 @@
       filt.type = 'bandpass';
       filt.frequency.value = 500 + progress * 900;
       filt.Q.value = 3;
-      var peak = 0.1 + progress * 0.3;
+      var peak = 0.12 + progress * 0.34;
       g.gain.setValueAtTime(0.0001, t);
       g.gain.linearRampToValueAtTime(peak, t + 0.01);
       g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
       osc.connect(filt).connect(g).connect(masterGain);
       osc.start(t);
       osc.stop(t + 0.2);
-      ostinatoStep++;
     }
+    ostinatoStep++;
     // starts around a steady quarter-note-ish pace and accelerates into
     // a frantic near-16th-note pulse at full climax
-    var interval = 400 - progress * 290;
+    var baseInterval = 400 - progress * 290;
+    var interval = baseInterval * step.dur;
     clearTimeout(ostinatoTimer);
     ostinatoTimer = setTimeout(scheduleOstinato, interval);
   }
@@ -987,23 +1056,29 @@
   // one big finale swell -- a full-orchestra hit plus a cymbal-like
   // noise crash -- the moment the ending section scrolls into view
   var finalePlayed = false;
+  // the payoff: after a whole build in D minor, the finale resolves to
+  // the parallel D MAJOR (a "Picardy third") -- the classic way to make
+  // a long climb of tension land as relief/triumph instead of just
+  // stopping. Deliberately not whatever minor chord happens to be
+  // playing when you arrive.
+  var RESOLUTION_CHORD = [146.83, 185.00, 220.00, 293.66, 369.99, 440.00, 587.33];
   function playFinale() {
     if (finalePlayed || !musicStarted || !soundOn) return;
     finalePlayed = true;
     var t = audioCtx.currentTime;
-    var chord = CHORDS[chordIndex];
 
-    chord.harp.concat(chord.horn).forEach(function (freq) {
+    RESOLUTION_CHORD.forEach(function (freq, i) {
       var osc = audioCtx.createOscillator();
       var g = audioCtx.createGain();
-      osc.type = 'sawtooth';
+      osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
       osc.frequency.value = freq;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(0.16, t + 0.05);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 2.2);
+      var start = t + i * 0.03;
+      g.gain.setValueAtTime(0.0001, start);
+      g.gain.linearRampToValueAtTime(0.17, start + 0.08);
+      g.gain.exponentialRampToValueAtTime(0.0001, start + 3);
       osc.connect(g).connect(masterGain);
-      osc.start(t);
-      osc.stop(t + 2.3);
+      osc.start(start);
+      osc.stop(start + 3.1);
     });
 
     // noise burst through a highpass filter, standing in for a cymbal
