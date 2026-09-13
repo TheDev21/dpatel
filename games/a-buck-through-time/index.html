@@ -271,6 +271,13 @@
   }
   .ending h2 { font-size: clamp(2.2rem, 7vw, 3.2rem); margin: 0 0 14px; }
   .ending p { font-size: 1.08rem; color: var(--ink-dim); max-width: 460px; margin: 0 auto 24px; }
+  .ending .btn-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
   .ending .btn {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.1rem;
@@ -282,7 +289,14 @@
     padding: 10px 26px;
     cursor: pointer;
     box-shadow: 4px 5px 0 rgba(35,32,29,0.2);
+    display: inline-block;
   }
+  .ending .btn.secondary {
+    background: transparent;
+    color: var(--ink-dim);
+    box-shadow: none;
+  }
+  .ending .btn.secondary:hover { color: var(--orange); border-color: var(--orange); }
 
   .scroll-top-btn {
     position: fixed;
@@ -598,7 +612,10 @@
 <div class="ending">
   <h2>2026. Today.</h2>
   <p id="endingText">Loading today's grim total&hellip;</p>
-  <button class="btn" id="doneBtn">okay, I've seen enough</button>
+  <div class="btn-row">
+    <button class="btn" id="doneBtn">okay, I've seen enough</button>
+    <a class="btn secondary" href="https://www.instagram.com/pdev21" target="_blank" rel="noopener">if you liked it, follow on Instagram</a>
+  </div>
 </div>
 
 <button class="scroll-top-btn" id="scrollTopBtn" title="back to the beginning" aria-label="scroll to top">
@@ -620,9 +637,9 @@
   var musicStarted = false;
   var masterGain, padFilter, leadGain, outputGain;
   var pulseTimer = null, leadTimer = null;
-  var userVolume = 0.85;
+  var userVolume = 0.95;
   var musicStartTime = 0;
-  var BUILD_SECONDS = 45; // how long the swell takes to reach full climax
+  var BUILD_SECONDS = 22; // how long the swell takes to reach full climax
 
   function ensureAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -648,7 +665,11 @@
   // scrolled -- it swells from quiet to full climax over BUILD_SECONDS
   // and then holds there, looping, for as long as the page stays open
   function musicProgress() {
-    if (!musicStartTime) return 0;
+    // musicStartTime is a real audioCtx.currentTime value, which is 0.0
+    // right when the context is first created -- checking musicStarted
+    // instead of musicStartTime's truthiness avoids treating that literal
+    // 0 as "hasn't started yet" and getting stuck at 0% forever
+    if (!musicStarted) return 0;
     var elapsed = audioCtx.currentTime - musicStartTime;
     return Math.min(1, Math.max(0, elapsed / BUILD_SECONDS));
   }
@@ -665,9 +686,9 @@
   ];
   var chordIndex = 0;
   var stringOscs = [], hornOscs = [], bassOsc, hornGain, bassGain;
-  var chordTimer = null, harpTimer = null;
+  var chordTimer = null, harpTimer = null, ostinatoTimer = null;
   var harpStep = 0;
-  var CHORD_MS = 5000; // one full 4-chord loop = 20s, however long you sit still
+  var CHORD_MS = 3200; // one full 4-chord loop = ~13s -- a faster, more driving pace
 
   function startMusic() {
     if (musicStarted) return;
@@ -714,7 +735,7 @@
       osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
       osc.frequency.value = freq;
       var voiceGain = audioCtx.createGain();
-      voiceGain.gain.value = 0.3;
+      voiceGain.gain.value = 0.36;
       var lfo = audioCtx.createOscillator();
       lfo.frequency.value = 0.15 + i * 0.05;
       var lfoGain = audioCtx.createGain();
@@ -761,6 +782,7 @@
     // change, rather than switching away from it immediately
     chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
     scheduleHarp();
+    scheduleOstinato();
     scheduleLeadMotif();
   }
 
@@ -774,14 +796,14 @@
     var t = audioCtx.currentTime;
     stringOscs.forEach(function (osc, i) {
       osc.frequency.cancelScheduledValues(t);
-      osc.frequency.linearRampToValueAtTime(chord.strings[i], t + 1.3);
+      osc.frequency.linearRampToValueAtTime(chord.strings[i], t + 0.7);
     });
     hornOscs.forEach(function (osc, i) {
       osc.frequency.cancelScheduledValues(t);
-      osc.frequency.linearRampToValueAtTime(chord.horn[i], t + 1.3);
+      osc.frequency.linearRampToValueAtTime(chord.horn[i], t + 0.7);
     });
     bassOsc.frequency.cancelScheduledValues(t);
-    bassOsc.frequency.linearRampToValueAtTime(chord.bass, t + 1.3);
+    bassOsc.frequency.linearRampToValueAtTime(chord.bass, t + 0.7);
     clearTimeout(chordTimer);
     chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
   }
@@ -789,7 +811,7 @@
   function updateMusicSwell() {
     if (!musicStarted) return;
     var progress = musicProgress();
-    var targetGain = soundOn ? (0.05 + Math.pow(progress, 1.4) * 0.5) : 0.0001;
+    var targetGain = soundOn ? (0.07 + Math.pow(progress, 1.2) * 0.62) : 0.0001;
     var targetFreq = 220 + progress * 3600;
     var t = audioCtx.currentTime;
     masterGain.gain.cancelScheduledValues(t);
@@ -802,7 +824,7 @@
     leadGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.5) * 0.6 : 0.0001, t + 0.8);
 
     // the pulse (a punchy low stab) speeds up as the build progresses
-    var delay = 1200 - progress * 950;
+    var delay = 900 - progress * 760;
     clearTimeout(pulseTimer);
     pulseTimer = setTimeout(pulseBeat, delay);
   }
@@ -893,9 +915,46 @@
       harpPluck(note, 0.06 + progress * 0.22);
       harpStep++;
     }
-    var interval = 820 - progress * 580;
+    var interval = 620 - progress * 490;
     clearTimeout(harpTimer);
     harpTimer = setTimeout(scheduleHarp, interval);
+  }
+
+  // driving string ostinato -- the Oppenheimer-score move: instead of
+  // building tension purely with volume, a relentless repeating two-note
+  // figure that's present from the very start and keeps accelerating,
+  // like a countdown clock made of strings. Present early (unlike the
+  // horns/lead), just quiet and slow at first.
+  var ostinatoStep = 0;
+  function scheduleOstinato() {
+    if (!musicStarted) return;
+    var progress = musicProgress();
+    if (soundOn) {
+      var chord = CHORDS[chordIndex];
+      var note = ostinatoStep % 2 === 0 ? chord.strings[0] * 2 : chord.strings[2] * 2;
+      var t = audioCtx.currentTime;
+      var osc = audioCtx.createOscillator();
+      var filt = audioCtx.createBiquadFilter();
+      var g = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.value = note;
+      filt.type = 'bandpass';
+      filt.frequency.value = 500 + progress * 900;
+      filt.Q.value = 3;
+      var peak = 0.1 + progress * 0.3;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.linearRampToValueAtTime(peak, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      osc.connect(filt).connect(g).connect(masterGain);
+      osc.start(t);
+      osc.stop(t + 0.2);
+      ostinatoStep++;
+    }
+    // starts around a steady quarter-note-ish pace and accelerates into
+    // a frantic near-16th-note pulse at full climax
+    var interval = 400 - progress * 290;
+    clearTimeout(ostinatoTimer);
+    ostinatoTimer = setTimeout(scheduleOstinato, interval);
   }
 
   // a short rising motif for the lead voice, only audible once leadGain
@@ -973,20 +1032,6 @@
     if (musicStarted) updateMusicSwell();
   }, 700);
 
-  function playTick() {
-    if (!soundOn) return;
-    ensureAudio();
-    var osc = audioCtx.createOscillator();
-    var gain = audioCtx.createGain();
-    osc.type = 'square';
-    osc.frequency.value = 1400;
-    gain.gain.value = 0.03;
-    osc.connect(gain).connect(audioCtx.destination);
-    var t = audioCtx.currentTime;
-    osc.start(t);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
-    osc.stop(t + 0.04);
-  }
   function applyOutputGain() {
     if (!musicStarted || !outputGain) return;
     var t = audioCtx.currentTime;
@@ -1100,19 +1145,6 @@
       '</div>';
   });
   tickerBody.innerHTML = rowsHtml;
-
-  // tick sound as ticker rows scroll into view, throttled so fast scrolling
-  // doesn't turn into a wall of noise
-  var lastTickTime = 0;
-  var observer = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) {
-        var now = Date.now();
-        if (now - lastTickTime > 90) { playTick(); lastTickTime = now; }
-      }
-    });
-  }, { threshold: 0.6 });
-  document.querySelectorAll('.ticker-row:not(.head)').forEach(function (row) { observer.observe(row); });
 
   var finaleObserver = new IntersectionObserver(function (entries) {
     entries.forEach(function (entry) {
