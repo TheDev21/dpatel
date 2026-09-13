@@ -626,8 +626,23 @@
 
   function ensureAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
+    if (audioCtx.state === 'suspended' && !document.hidden) audioCtx.resume();
   }
+
+  // stop the music the moment the tab/window isn't the one you're
+  // looking at -- switch apps, minimize, or flip to another tab and it
+  // goes silent; come back and it picks up right where it left off.
+  // suspending the AudioContext also freezes audioCtx.currentTime, so
+  // the whole build (chords, harp tempo, the swell) pauses exactly in
+  // place instead of drifting ahead while you were away.
+  document.addEventListener('visibilitychange', function () {
+    if (!musicStarted || !audioCtx) return;
+    if (document.hidden) {
+      audioCtx.suspend();
+    } else if (soundOn) {
+      audioCtx.resume();
+    }
+  });
 
   // the build now runs on its own clock, not tied to how far you've
   // scrolled -- it swells from quiet to full climax over BUILD_SECONDS
