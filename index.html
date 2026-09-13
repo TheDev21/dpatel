@@ -632,9 +632,12 @@
     background: var(--ink);
     color: #fff;
     padding: 10px 18px;
-    border-radius: 999px;
+    border-radius: 18px;
     font-size: 12.5px;
     letter-spacing: 0.02em;
+    max-width: min(360px, 88vw);
+    text-align: center;
+    line-height: 1.5;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease, transform 0.2s ease;
@@ -928,7 +931,7 @@
     noticeEl.textContent = text;
     noticeEl.classList.add('show');
     clearTimeout(noticeTimer);
-    noticeTimer = setTimeout(function () { noticeEl.classList.remove('show'); }, 2200);
+    noticeTimer = setTimeout(function () { noticeEl.classList.remove('show'); }, 3600);
   }
 
   // ---------- heart: click it and find out ----------
@@ -937,16 +940,20 @@
     '<path d="M18 34 C4 22 2 12 8 7 C13 3 18 5 18 11 L15 16 L19 20 L14 24 L18 28 L13 31 L18 34 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round" transform="translate(-1.5,1)"/>' +
     '<path d="M22 34 C36 22 38 12 32 7 C27 3 22 5 22 11 L25 16 L21 20 L26 24 L22 28 L27 31 L22 34 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round" transform="translate(1.5,2)"/>';
   var HEART_BREAK_LINES = [
-    "Ouch. You broke my heart.",
-    "Well, that escalated quickly.",
-    "Rude. But fair, I click things too.",
-    "That's gonna need its own therapist now."
+    "Ouch. You actually broke my heart. I hope you're happy with yourself.",
+    "Well, that escalated quickly. I let my guard down for one second and this happens.",
+    "Rude. But fair, honestly — I click on things I shouldn't too.",
+    "That's gonna need its own therapist now, on top of the guy who made this site.",
+    "I opened up to you and this is what I get. Classic.",
+    "Some people just want to watch hearts break. Guess you're one of them."
   ];
   var HEART_FIX_LINES = [
-    "Phew. All patched up.",
-    "Good as new. Emotionally, though? Debatable.",
-    "Reunited and it feels so good.",
-    "Love wins. This time."
+    "Phew. All patched up. We don't talk about what just happened.",
+    "Good as new. Emotionally, though? Still a little debatable.",
+    "Reunited and it feels so good. Let's never speak of the incident again.",
+    "Love wins. This time. Don't push your luck.",
+    "Fixed. Scarred, but functional, which is basically the human condition.",
+    "Back together. I'm choosing to believe you didn't mean it."
   ];
   var heartBtn = document.getElementById('heartBtn');
   var heartSvg = heartBtn.querySelector('svg');
