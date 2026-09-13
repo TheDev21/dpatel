@@ -53,7 +53,7 @@
   .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
   @media (min-width: 961px) {
     .corner-badge { top: 55px; left: 26px; font-size: 40px; }
-    .sound-control { top: 34px; right: 30px; }
+    .sound-control { bottom: 30px; right: 30px; }
   }
   @keyframes badgeWobble {
     0%, 100% { transform: rotate(-25deg); }
@@ -66,12 +66,12 @@
   }
 
   .sound-control {
-    /* absolute, not fixed -- headings on this long page pass through
-       every screen position at one scroll depth or another, so no fixed
-       corner is ever safe. parked once near the intro instead, same
-       approach as the corner-badge. */
-    position: absolute;
-    top: 30px;
+    /* fixed, not absolute -- this one you actually want reachable at
+       any scroll depth (nobody should have to scroll back to the top
+       just to turn the music down near "1980"). Tucked in the bottom
+       corner, opposite the back-to-top button, so the two never collide. */
+    position: fixed;
+    bottom: 26px;
     right: 18px;
     z-index: 90;
   }
@@ -87,14 +87,23 @@
     align-items: center;
     justify-content: center;
     box-shadow: 3px 3px 0 rgba(35,32,29,0.14);
+    /* a permanently-fixed corner button will occasionally sit over a
+       heading on this content-dense page (there's no scroll depth that's
+       ever fully clear) -- dimming it by default keeps that from being
+       distracting, and it snaps to full opacity on hover/tap */
+    opacity: 0.7;
+    transition: opacity 0.15s ease, background 0.15s ease;
   }
-  .mute-btn:hover { background: #fff; }
+  .mute-btn:hover, .sound-control.open .mute-btn { background: #fff; opacity: 1; }
 
-  /* volume popover -- appears on hover (desktop) so a tap on the icon
-     itself stays a clean mute/unmute toggle, not a fiddly small target */
+  /* volume popover -- sits above the button since the button now lives
+     at the bottom of the screen. Shown via a JS-managed .open class
+     (not just :hover) because a mouse dragging the rotated slider can
+     stray outside the popover's own hit box mid-drag; CSS :hover alone
+     would close it right as someone tries to lower the volume. */
   .volume-pop {
     position: absolute;
-    top: 44px;
+    bottom: 44px;
     right: 0;
     width: 44px;
     height: 108px;
@@ -107,10 +116,10 @@
     justify-content: center;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-6px);
+    transform: translateY(6px);
     transition: opacity 0.15s ease, transform 0.15s ease;
   }
-  .sound-control:hover .volume-pop,
+  .sound-control.open .volume-pop,
   .sound-control:focus-within .volume-pop {
     opacity: 1;
     pointer-events: auto;
@@ -612,15 +621,21 @@
   var masterGain, padFilter, leadGain, outputGain;
   var pulseTimer = null, leadTimer = null;
   var userVolume = 0.85;
+  var musicStartTime = 0;
+  var BUILD_SECONDS = 45; // how long the swell takes to reach full climax
 
   function ensureAudio() {
     if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (audioCtx.state === 'suspended') audioCtx.resume();
   }
 
-  function scrollProgress() {
-    var max = document.body.scrollHeight - window.innerHeight;
-    return max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+  // the build now runs on its own clock, not tied to how far you've
+  // scrolled -- it swells from quiet to full climax over BUILD_SECONDS
+  // and then holds there, looping, for as long as the page stays open
+  function musicProgress() {
+    if (!musicStartTime) return 0;
+    var elapsed = audioCtx.currentTime - musicStartTime;
+    return Math.min(1, Math.max(0, elapsed / BUILD_SECONDS));
   }
 
   // a small "orchestra": strings (the pad), 2 horns, a tuba/bass note, a
@@ -643,10 +658,11 @@
     if (musicStarted) return;
     musicStarted = true;
     ensureAudio();
+    musicStartTime = audioCtx.currentTime;
 
     // outputGain is the one knob the volume slider and mute button
-    // actually touch -- masterGain underneath keeps doing the scroll-
-    // driven swell independently of whatever the user sets it to
+    // actually touch -- masterGain underneath keeps doing its own
+    // time-based swell independently of whatever the user sets it to
     outputGain = audioCtx.createGain();
     outputGain.gain.value = soundOn ? userVolume : 0.0001;
     outputGain.connect(audioCtx.destination);
@@ -725,7 +741,7 @@
     leadGain.gain.value = 0.0001;
     leadGain.connect(masterGain);
 
-    updateMusicForScroll();
+    updateMusicSwell();
     // hold on the opening chord for its full duration before the first
     // change, rather than switching away from it immediately
     chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
@@ -755,9 +771,9 @@
     chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
   }
 
-  function updateMusicForScroll() {
+  function updateMusicSwell() {
     if (!musicStarted) return;
-    var progress = scrollProgress();
+    var progress = musicProgress();
     var targetGain = soundOn ? (0.05 + Math.pow(progress, 1.4) * 0.5) : 0.0001;
     var targetFreq = 220 + progress * 3600;
     var t = audioCtx.currentTime;
@@ -780,7 +796,7 @@
   function pulseBeat() {
     if (!musicStarted) return;
     if (soundOn) {
-      var progress = scrollProgress();
+      var progress = musicProgress();
       var chord = CHORDS[chordIndex];
       var t = audioCtx.currentTime;
       pulseCount++;
@@ -822,7 +838,7 @@
         stab.stop(t + stabDur + 0.05);
       }
     }
-    updateMusicForScroll();
+    updateMusicSwell();
   }
 
   // harp -- a continuously looping plucked arpeggio through the current
@@ -855,7 +871,7 @@
 
   function scheduleHarp() {
     if (!musicStarted) return;
-    var progress = scrollProgress();
+    var progress = musicProgress();
     if (soundOn) {
       var chord = CHORDS[chordIndex];
       var note = chord.harp[harpStep % chord.harp.length];
@@ -868,11 +884,11 @@
   }
 
   // a short rising motif for the lead voice, only audible once leadGain
-  // has faded up (see updateMusicForScroll) -- follows the current
+  // has faded up (see updateMusicSwell) -- follows the current
   // chord's harp notes so it always stays in key with the loop
   function scheduleLeadMotif() {
     if (!musicStarted) return;
-    var progress = scrollProgress();
+    var progress = musicProgress();
     if (soundOn && progress > 0.5) {
       var chord = CHORDS[chordIndex];
       var t = audioCtx.currentTime;
@@ -936,9 +952,11 @@
   ['scroll', 'click', 'touchstart'].forEach(function (evt) {
     window.addEventListener(evt, startMusic, { once: true, passive: true });
   });
-  window.addEventListener('scroll', function () {
-    if (musicStarted) updateMusicForScroll();
-  }, { passive: true });
+  // the swell now runs on its own clock (see musicProgress), so it needs
+  // its own steady heartbeat to animate rather than piggybacking on scroll
+  setInterval(function () {
+    if (musicStarted) updateMusicSwell();
+  }, 700);
 
   function playTick() {
     if (!soundOn) return;
@@ -961,19 +979,39 @@
     outputGain.gain.linearRampToValueAtTime(soundOn ? userVolume : 0.0001, t + 0.06);
     // masterGain/leadGain also gate on soundOn, so unmuting needs this
     // refreshed too or they'd stay parked at near-zero until the next scroll
-    updateMusicForScroll();
+    updateMusicSwell();
   }
 
   var muteBtn = document.getElementById('muteBtn');
   muteBtn.addEventListener('click', function () {
     soundOn = !soundOn;
     muteBtn.title = soundOn ? 'Sound: On (tap to mute)' : 'Sound: Off (tap to unmute)';
-    muteBtn.style.opacity = soundOn ? '1' : '0.5';
+    muteBtn.style.opacity = soundOn ? '' : '0.5';
     applyOutputGain();
+  });
+
+  // keep the popover open for the whole drag, even if the pointer
+  // strays outside its hit box mid-drag (easy to do on a rotated
+  // slider) -- only close it once the pointer is both released and
+  // actually outside the control
+  var soundControl = document.querySelector('.sound-control');
+  var draggingVolume = false;
+  soundControl.addEventListener('mouseenter', function () { soundControl.classList.add('open'); });
+  soundControl.addEventListener('mouseleave', function () {
+    if (!draggingVolume) soundControl.classList.remove('open');
   });
 
   var volumeSlider = document.getElementById('volumeSlider');
   volumeSlider.value = Math.round(userVolume * 100);
+  volumeSlider.addEventListener('pointerdown', function () {
+    draggingVolume = true;
+    soundControl.classList.add('open');
+  });
+  window.addEventListener('pointerup', function () {
+    if (!draggingVolume) return;
+    draggingVolume = false;
+    if (!soundControl.matches(':hover')) soundControl.classList.remove('open');
+  });
   volumeSlider.addEventListener('input', function () {
     userVolume = volumeSlider.value / 100;
     // moving the slider up from zero (or down to zero) should also
@@ -981,7 +1019,7 @@
     if (userVolume > 0 && !soundOn) {
       soundOn = true;
       muteBtn.title = 'Sound: On (tap to mute)';
-      muteBtn.style.opacity = '1';
+      muteBtn.style.opacity = '';
     } else if (userVolume === 0 && soundOn) {
       soundOn = false;
       muteBtn.title = 'Sound: Off (tap to unmute)';
