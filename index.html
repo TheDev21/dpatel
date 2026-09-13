@@ -442,19 +442,37 @@
     justify-content: center;
     gap: 6px;
     margin: 0 0 24px;
-    font-size: 14px;
-    color: var(--ink-dim);
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--ink);
   }
   .about .with-love svg { display: block; }
-  .about .with-love .heart-beat {
+  .about .heart-btn {
+    background: none;
+    border: none;
+    padding: 2px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .about .heart-btn .heart-beat {
     animation: heartBeat 1.4s ease-in-out infinite;
     transform-origin: center;
   }
+  .about .heart-btn.broken .heart-beat { animation: none; }
+  .about .heart-btn.broken svg { animation: heartShatter 0.4s ease; }
   @keyframes heartBeat {
     0%, 100% { transform: scale(1); }
     25% { transform: scale(1.18); }
     40% { transform: scale(0.96); }
     55% { transform: scale(1.1); }
+  }
+  @keyframes heartShatter {
+    0% { transform: scale(1) rotate(0deg); }
+    30% { transform: scale(1.3) rotate(-8deg); }
+    60% { transform: scale(0.9) rotate(6deg); }
+    100% { transform: scale(1) rotate(0deg); }
   }
   .about .links {
     display: flex;
@@ -796,9 +814,11 @@
     <p>Hi, I'm Dev. I build things for a living and apparently also for free, at 2am, for fun.<br>This is that. No therapist has been consulted.</p>
     <div class="with-love">
       with
-      <svg class="heart-beat" viewBox="0 0 40 36" width="18" height="16">
-        <path d="M20 33 C4 22 2 12 8 7 C13 3 19 6 20 12 C21 6 27 3 32 7 C38 12 36 22 20 33 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
-      </svg>
+      <button class="heart-btn" id="heartBtn" aria-label="heart (click at your own risk)" title="click at your own risk">
+        <svg class="heart-beat" viewBox="0 0 40 36" width="18" height="16">
+          <path d="M20 33 C4 22 2 12 8 7 C13 3 19 6 20 12 C21 6 27 3 32 7 C38 12 36 22 20 33 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
+        </svg>
+      </button>
       love
     </div>
     <div class="links">
@@ -910,6 +930,35 @@
     clearTimeout(noticeTimer);
     noticeTimer = setTimeout(function () { noticeEl.classList.remove('show'); }, 2200);
   }
+
+  // ---------- heart: click it and find out ----------
+  var HEART_WHOLE = '<path d="M20 33 C4 22 2 12 8 7 C13 3 19 6 20 12 C21 6 27 3 32 7 C38 12 36 22 20 33 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>';
+  var HEART_BROKEN =
+    '<path d="M18 34 C4 22 2 12 8 7 C13 3 18 5 18 11 L15 16 L19 20 L14 24 L18 28 L13 31 L18 34 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round" transform="translate(-1.5,1)"/>' +
+    '<path d="M22 34 C36 22 38 12 32 7 C27 3 22 5 22 11 L25 16 L21 20 L26 24 L22 28 L27 31 L22 34 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round" transform="translate(1.5,2)"/>';
+  var HEART_BREAK_LINES = [
+    "Ouch. You broke my heart.",
+    "Well, that escalated quickly.",
+    "Rude. But fair, I click things too.",
+    "That's gonna need its own therapist now."
+  ];
+  var HEART_FIX_LINES = [
+    "Phew. All patched up.",
+    "Good as new. Emotionally, though? Debatable.",
+    "Reunited and it feels so good.",
+    "Love wins. This time."
+  ];
+  var heartBtn = document.getElementById('heartBtn');
+  var heartSvg = heartBtn.querySelector('svg');
+  var heartBroken = false;
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  heartBtn.addEventListener('click', function () {
+    heartBroken = !heartBroken;
+    heartSvg.innerHTML = heartBroken ? HEART_BROKEN : HEART_WHOLE;
+    heartBtn.classList.toggle('broken', heartBroken);
+    heartBtn.title = heartBroken ? 'click to fix it' : 'click at your own risk';
+    showNotice(heartBroken ? pick(HEART_BREAK_LINES) : pick(HEART_FIX_LINES));
+  });
 
   var badgeEl = document.getElementById('critterBadge');
   var panelEl = document.getElementById('critterPanel');
