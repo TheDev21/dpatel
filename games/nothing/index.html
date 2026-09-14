@@ -65,7 +65,10 @@
     line-height: 1.4;
     color: var(--ink);
     margin: 0 0 10px;
+    opacity: 1;
+    transition: opacity 3s ease;
   }
+  .line.faded { opacity: 0; }
   .line.typing::after {
     content: '';
     display: inline-block;
@@ -88,19 +91,22 @@
   var linesEl = document.getElementById('lines');
 
   function typeLine(text, speed, cb) {
-    var line = document.createElement('div');
-    line.className = 'line typing';
-    linesEl.appendChild(line);
-    var i = 0;
-    var iv = setInterval(function () {
-      line.textContent = text.slice(0, i + 1);
-      i++;
-      if (i >= text.length) {
-        clearInterval(iv);
-        line.classList.remove('typing');
-        if (cb) cb();
-      }
-    }, speed);
+    setTimeout(function () {
+      var line = document.createElement('div');
+      line.className = 'line typing';
+      linesEl.appendChild(line);
+      var i = 0;
+      var iv = setInterval(function () {
+        line.textContent = text.slice(0, i + 1);
+        i++;
+        if (i >= text.length) {
+          clearInterval(iv);
+          line.classList.remove('typing');
+          setTimeout(function () { line.classList.add('faded'); }, 4000);
+          if (cb) cb();
+        }
+      }, speed);
+    }, 1000);
   }
 
   setTimeout(function () {
