@@ -226,32 +226,33 @@
   }
   .event-ticker.show { opacity: 1; }
 
+  /* the whole brush+color panel drops down from the corner icon that
+     opens it (same corner as the sound button), instead of floating
+     separately in the middle of the wall */
   .toolbar-float {
-    position: absolute;
-    bottom: calc(var(--floor-h) + 14px);
-    left: 50%;
-    transform: translateX(-50%) translateY(10px) scale(0.96);
-    z-index: 20;
-    background: rgba(255, 253, 249, 0.95);
+    position: fixed;
+    top: 60px;
+    right: 14px;
+    z-index: 90;
+    background: rgba(255, 253, 249, 0.97);
     border: 2.5px solid var(--ink);
-    border-radius: 18px;
-    padding: 12px 16px;
+    border-radius: 16px;
+    padding: 14px;
     box-shadow: 3px 4px 0 rgba(35,32,29,0.16);
     display: flex;
     flex-direction: column;
     gap: 10px;
     align-items: center;
-    max-width: min(94vw, 460px);
-    /* hidden by default -- only appears once the palette icon is
-       clicked, instead of sitting on screen the whole time */
+    max-width: min(90vw, 220px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.16s ease, transform 0.16s ease;
+    transform: translateY(6px) scale(0.94);
+    transition: opacity 0.15s ease, transform 0.15s ease;
   }
   .toolbar-float.open {
     opacity: 1;
     pointer-events: auto;
-    transform: translateX(-50%) translateY(0) scale(1);
+    transform: translateY(0) scale(1);
   }
   .brush-group { display: flex; gap: 8px; }
   .brush-btn {
@@ -270,44 +271,6 @@
   .brush-btn.active { background: var(--orange); border-color: var(--ink); }
   .brush-btn.active .dot { background: #fff; }
 
-  /* eyedrop button (below the brush row) + the color popover it opens */
-  .eyedrop-wrap { position: relative; display: flex; justify-content: center; }
-  .eyedrop-btn {
-    width: 40px; height: 40px;
-    border-radius: 50%;
-    border: 2.5px solid var(--ink);
-    background: var(--card-bg);
-    cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 2px 2px 0 rgba(35,32,29,0.14);
-  }
-  .eyedrop-swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--ink); display: block; }
-
-  .color-popover {
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    margin-bottom: 10px;
-    transform: translateX(-50%) translateY(6px) scale(0.94);
-    background: rgba(255, 253, 249, 0.98);
-    border: 2.5px solid var(--ink);
-    border-radius: 16px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    box-shadow: 3px 4px 0 rgba(35,32,29,0.16);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s ease, transform 0.15s ease;
-    z-index: 5;
-  }
-  .color-popover.show {
-    opacity: 1;
-    pointer-events: auto;
-    transform: translateX(-50%) translateY(0) scale(1);
-  }
   #colorWheel { border-radius: 50%; border: 2.5px solid var(--ink); cursor: crosshair; box-shadow: 2px 2px 0 rgba(35,32,29,0.14); touch-action: none; }
   .lightness-row { display: flex; align-items: center; gap: 8px; width: 120px; }
   .lightness-row input[type="range"] { flex: 1; min-width: 0; }
@@ -358,15 +321,11 @@
 <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
 <button class="mute-btn" id="muteBtn" title="Music: On">&#9834;</button>
 <button class="palette-btn" id="paletteBtn" title="brush &amp; colors">
-  <svg viewBox="0 0 24 24" width="18" height="18">
-    <path d="M12 2.5 C12 2.5 5.2 11 5.2 15.4 A6.8 6.8 0 0 0 18.8 15.4 C18.8 11 12 2.5 12 2.5 Z" fill="url(#dropGrad)" stroke="#23201d" stroke-width="1.6" stroke-linejoin="round"/>
-    <defs>
-      <linearGradient id="dropGrad" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#ff5a1f"/>
-        <stop offset="50%" stop-color="#6a4fb0"/>
-        <stop offset="100%" stop-color="#1f8a70"/>
-      </linearGradient>
-    </defs>
+  <svg viewBox="0 0 24 40" width="15" height="24">
+    <ellipse cx="12" cy="6" rx="5.2" ry="6.2" fill="#23201d"/>
+    <rect x="6.8" y="11" width="10.4" height="6" rx="1" fill="#23201d"/>
+    <path d="M8,10.8 H16 M8,13 H16 M8,15.2 H16" stroke="#5a5550" stroke-width="0.9"/>
+    <path d="M8,17 L16,17 L12.7,38 C12.7,39 11.3,39 11.3,38 Z" fill="#e9e6df" stroke="#23201d" stroke-width="1.6" stroke-linejoin="round"/>
   </svg>
 </button>
 
@@ -452,27 +411,20 @@
       <button class="brush-btn active" data-size="medium" title="medium brush"><span class="dot"></span></button>
       <button class="brush-btn" data-size="large" title="large brush"><span class="dot"></span></button>
     </div>
-    <div class="eyedrop-wrap" id="eyedropWrap">
-      <button class="eyedrop-btn" id="eyedropBtn" title="pick a color">
-        <span class="eyedrop-swatch" id="swatch"></span>
-      </button>
-      <div class="color-popover" id="colorPopover">
-        <canvas id="colorWheel" width="90" height="90"></canvas>
-        <div class="lightness-row">
-          <span class="swatch-mini" id="swatchMini"></span>
-          <input type="range" id="lightnessSlider" min="10" max="90" value="52" title="lighter / darker">
-        </div>
-        <div class="preset-row" id="presetRow">
-          <button class="preset-btn" data-h="16" data-s="100" data-l="52" style="background:hsl(16,100%,52%)" title="orange"></button>
-          <button class="preset-btn" data-h="350" data-s="70" data-l="50" style="background:hsl(350,70%,50%)" title="red"></button>
-          <button class="preset-btn" data-h="48" data-s="90" data-l="55" style="background:hsl(48,90%,55%)" title="yellow"></button>
-          <button class="preset-btn" data-h="140" data-s="55" data-l="40" style="background:hsl(140,55%,40%)" title="green"></button>
-          <button class="preset-btn" data-h="200" data-s="70" data-l="50" style="background:hsl(200,70%,50%)" title="blue"></button>
-          <button class="preset-btn" data-h="258" data-s="40" data-l="48" style="background:hsl(258,40%,48%)" title="violet"></button>
-          <button class="preset-btn" data-h="0" data-s="0" data-l="12" style="background:hsl(0,0%,12%)" title="black"></button>
-          <button class="preset-btn" data-h="0" data-s="0" data-l="96" style="background:hsl(0,0%,96%)" title="white"></button>
-        </div>
-      </div>
+    <canvas id="colorWheel" width="90" height="90"></canvas>
+    <div class="lightness-row">
+      <span class="swatch-mini" id="swatchMini"></span>
+      <input type="range" id="lightnessSlider" min="10" max="90" value="52" title="lighter / darker">
+    </div>
+    <div class="preset-row" id="presetRow">
+      <button class="preset-btn" data-h="16" data-s="100" data-l="52" style="background:hsl(16,100%,52%)" title="orange"></button>
+      <button class="preset-btn" data-h="350" data-s="70" data-l="50" style="background:hsl(350,70%,50%)" title="red"></button>
+      <button class="preset-btn" data-h="48" data-s="90" data-l="55" style="background:hsl(48,90%,55%)" title="yellow"></button>
+      <button class="preset-btn" data-h="140" data-s="55" data-l="40" style="background:hsl(140,55%,40%)" title="green"></button>
+      <button class="preset-btn" data-h="200" data-s="70" data-l="50" style="background:hsl(200,70%,50%)" title="blue"></button>
+      <button class="preset-btn" data-h="258" data-s="40" data-l="48" style="background:hsl(258,40%,48%)" title="violet"></button>
+      <button class="preset-btn" data-h="0" data-s="0" data-l="12" style="background:hsl(0,0%,12%)" title="black"></button>
+      <button class="preset-btn" data-h="0" data-s="0" data-l="96" style="background:hsl(0,0%,96%)" title="white"></button>
     </div>
   </div>
 </div>
@@ -496,8 +448,9 @@
   function setToolbarOpen(open) {
     toolbarOpenState = open;
     toolbarFloat.classList.toggle('open', open);
-    if (!open) colorPopover.classList.remove('show');
   }
+  // the corner icon directly opens the brush+color panel -- one click,
+  // not a click into a panel that then needs a second click
   paletteBtn.addEventListener('click', function (e) {
     e.stopPropagation();
     setToolbarOpen(!toolbarOpenState);
@@ -507,25 +460,6 @@
     if (!toolbarOpenState) return;
     if (toolbarFloat.contains(e.target) || paletteBtn.contains(e.target)) return;
     setToolbarOpen(false);
-  });
-
-  // ---------- eyedrop: click opens the color wheel, mouse-out closes it ----------
-  var eyedropBtn = document.getElementById('eyedropBtn');
-  var eyedropWrap = document.getElementById('eyedropWrap');
-  var colorPopover = document.getElementById('colorPopover');
-  eyedropBtn.addEventListener('click', function (e) {
-    e.stopPropagation();
-    colorPopover.classList.add('show');
-  });
-  eyedropWrap.addEventListener('mouseleave', function () {
-    colorPopover.classList.remove('show');
-  });
-  // touch devices have no hover/mouseleave -- tapping outside the wheel
-  // area is the fallback way to close it there
-  document.addEventListener('pointerdown', function (e) {
-    if (!colorPopover.classList.contains('show')) return;
-    if (eyedropWrap.contains(e.target)) return;
-    colorPopover.classList.remove('show');
   });
 
   function setScene(name) {
@@ -735,11 +669,9 @@
 
   var currentHue = 16, currentSat = 100, currentLight = 52;
   var lightnessSlider = document.getElementById('lightnessSlider');
-  var swatch = document.getElementById('swatch');
   var swatchMini = document.getElementById('swatchMini');
   function currentColor() { return 'hsl(' + currentHue + ',' + currentSat + '%,' + currentLight + '%)'; }
   function updateSwatch() {
-    swatch.style.background = currentColor();
     swatchMini.style.background = currentColor();
   }
   function pickFromWheel(clientX, clientY) {
