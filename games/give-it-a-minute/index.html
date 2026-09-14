@@ -232,7 +232,11 @@
   .toolbar-float {
     position: fixed;
     top: 60px;
-    right: 14px;
+    /* aligned with the eyedropper icon's own right edge (it sits at
+       right:60px, to the left of the mute button), not the mute
+       button's edge -- otherwise the pop-open zoom looks like it's
+       coming from the wrong icon */
+    right: 60px;
     z-index: 90;
     background: rgba(255, 253, 249, 0.97);
     border: 2.5px solid var(--ink);
