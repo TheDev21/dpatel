@@ -130,27 +130,18 @@
   }
   .thumb .deco { position: absolute; z-index: 1; }
 
-  /* Give It a Minute thumb */
-  .thumb.paint { background: #f4efe6; align-items: flex-end; }
-  .thumb.paint .paint-splash {
-    position: absolute; top: -10%; left: -6%; width: 70%; height: 85%;
-    background: var(--orange);
-    border-radius: 44% 56% 62% 38% / 52% 48% 52% 48%;
+  /* Give It a Minute thumb -- one illustrated scene instead of stacked
+     abstract shapes: a half-painted wall, a roller+tray, and an
+     unimpressed cat watching the paint not-dry */
+  .thumb.paint { background: #f4efe6; padding: 0; }
+  .thumb.paint .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .thumb.paint .word {
+    color: #4a2f14;
+    font-size: clamp(22px, 5vw, 32px);
+    position: relative;
+    z-index: 2;
+    text-shadow: 0 0 6px #f4efe6, 0 0 6px #f4efe6, 0 0 10px #f4efe6;
   }
-  .thumb.paint .paint-drip {
-    position: absolute; top: 62%; left: 30%; width: 10px; height: 22px;
-    background: var(--orange); border-radius: 0 0 6px 6px;
-  }
-  .thumb.paint .floor-strip {
-    position: absolute; left: 0; right: 0; bottom: 0; height: 22%;
-    background: linear-gradient(180deg, #c8a97a, #b6935f);
-    border-top: 3px solid var(--ink);
-  }
-  .thumb.paint .roller {
-    position: absolute; bottom: 26%; right: 14%; z-index: 2;
-    transform: rotate(-18deg);
-  }
-  .thumb.paint .word { color: #4a2f14; font-size: clamp(24px, 5.5vw, 34px); position: relative; z-index: 2; }
 
   /* Doomscroll thumb */
   .thumb.doom { background: linear-gradient(160deg, #23283d, var(--navy)); }
@@ -707,15 +698,43 @@
 
     <a class="card" href="games/give-it-a-minute/">
       <div class="thumb paint">
-        <div class="paint-splash"></div>
-        <div class="paint-drip"></div>
-        <div class="roller">
-          <svg viewBox="0 0 34 34" width="30" height="30">
-            <rect x="6" y="8" width="20" height="12" rx="2" fill="#fff" stroke="#23201d" stroke-width="1.8"/>
-            <rect x="14" y="20" width="4" height="8" fill="#6b4a2f" stroke="#23201d" stroke-width="1.2"/>
-          </svg>
-        </div>
-        <div class="floor-strip"></div>
+        <svg class="scene" viewBox="0 0 320 200" preserveAspectRatio="xMidYMax slice">
+          <!-- wall, half painted -->
+          <rect x="0" y="0" width="320" height="160" fill="#f4efe6"/>
+          <path d="M0,4 C60,-6 40,150 130,140 C190,132 170,10 230,8 C270,6 260,90 320,70 L320,0 L0,0 Z"
+                fill="var(--orange)" opacity="0.94"/>
+          <path d="M132,138 C120,150 108,148 100,158" fill="none" stroke="var(--orange)" stroke-width="7" stroke-linecap="round" opacity="0.85"/>
+          <circle cx="150" cy="150" r="4" fill="var(--orange)" opacity="0.7"/>
+          <!-- floor -->
+          <rect x="0" y="158" width="320" height="42" fill="#b6935f"/>
+          <rect x="0" y="158" width="320" height="42" fill="url(#planks)"/>
+          <line x1="0" y1="158" x2="320" y2="158" stroke="#23201d" stroke-width="4"/>
+          <!-- paint tray -->
+          <ellipse cx="248" cy="176" rx="34" ry="10" fill="#e2d3b0" stroke="#23201d" stroke-width="3"/>
+          <path d="M222,172 C222,186 274,186 274,172 L270,178 C264,184 232,184 226,178 Z" fill="var(--orange)" stroke="#23201d" stroke-width="2.5"/>
+          <!-- roller, leaning in the tray -->
+          <g transform="translate(255,120) rotate(24)">
+            <rect x="-6" y="0" width="12" height="46" rx="4" fill="#8a6b3f" stroke="#23201d" stroke-width="2.5"/>
+            <rect x="-16" y="-34" width="32" height="20" rx="9" fill="#fff" stroke="#23201d" stroke-width="2.5"/>
+            <path d="M-13,-30 L13,-30 M-13,-24 L13,-24 M-13,-18 L13,-18" stroke="#23201d" stroke-width="1.4" opacity="0.5"/>
+            <rect x="-2.5" y="-16" width="5" height="10" fill="#6b4a2f" stroke="#23201d" stroke-width="1.5"/>
+          </g>
+          <!-- unimpressed cat, watching the paint not dry -->
+          <g transform="translate(46,168)">
+            <path d="M-2,26 C-2,4 34,4 34,26 Z" fill="#3a3530" stroke="#23201d" stroke-width="2.5" stroke-linejoin="round"/>
+            <path d="M-2,10 L-9,-6 L4,6 Z" fill="#3a3530" stroke="#23201d" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M34,10 L41,-6 L28,6 Z" fill="#3a3530" stroke="#23201d" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M34,22 C48,22 52,14 50,4" fill="none" stroke="#23201d" stroke-width="2.5" stroke-linecap="round"/>
+            <circle cx="10" cy="12" r="2" fill="#e9ddb8"/>
+            <circle cx="22" cy="12" r="2" fill="#e9ddb8"/>
+            <path d="M13,19 L19,19" stroke="#e9ddb8" stroke-width="1.6" stroke-linecap="round"/>
+          </g>
+          <defs>
+            <pattern id="planks" width="54" height="42" patternUnits="userSpaceOnUse">
+              <line x1="0" y1="0" x2="0" y2="42" stroke="#23201d" stroke-width="1.4" opacity="0.18"/>
+            </pattern>
+          </defs>
+        </svg>
         <div class="word">GIVE IT A<br>MINUTE</div>
       </div>
     </a>
