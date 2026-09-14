@@ -92,9 +92,6 @@
     padding: 20px 0 10px;
   }
 
-  .prompt { font-size: 1.05rem; line-height: 1.6; max-width: 300px; min-height: 3.2em; }
-  .prompt b { color: var(--orange); }
-
   .big-btn {
     font-family: 'Bebas Neue', sans-serif;
     font-size: 1.7rem;
@@ -121,8 +118,6 @@
   }
   .big-btn.counting:hover { transform: translateY(0) scale(1.05); }
 
-  .counting-label { font-size: 0.85rem; color: var(--ink-dim); min-height: 1.2em; }
-
   .result-wrap { display: none; flex-direction: column; align-items: center; gap: 10px; }
   .result-wrap.show { display: flex; }
 
@@ -138,31 +133,6 @@
   .result-diff.perfect { color: var(--gold); }
   .result-roast { font-size: 0.95rem; color: var(--ink-dim); max-width: 280px; line-height: 1.5; }
 
-  .again-btn {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1rem;
-    letter-spacing: 0.03em;
-    background: var(--card-bg);
-    color: var(--ink);
-    border: 3px solid var(--ink);
-    border-radius: 999px;
-    padding: 10px 26px;
-    cursor: pointer;
-    box-shadow: 3px 4px 0 rgba(35,32,29,0.18);
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
-  }
-  .again-btn:hover { transform: translateY(-2px); box-shadow: 4px 6px 0 rgba(35,32,29,0.22); }
-  .again-btn:active { transform: translateY(0); box-shadow: 2px 3px 0 rgba(35,32,29,0.18); }
-
-  .about {
-    max-width: 420px;
-    margin: 40px auto 0;
-    text-align: center;
-    font-size: 0.8rem;
-    color: var(--ink-dim);
-  }
-  .about a { text-decoration: underline; }
-  .about a:hover { color: var(--orange); }
 </style>
 </head>
 <body>
@@ -179,17 +149,12 @@
 
   <div class="stage">
 
-    <p class="prompt" id="promptText">When you think exactly one minute has passed, press it again.</p>
-
     <button class="big-btn" id="bigBtn">start</button>
-
-    <p class="counting-label" id="countingLabel">&nbsp;</p>
 
     <div class="result-wrap" id="resultWrap">
       <div class="result-time" id="resultTime">1:00.000</div>
       <div class="result-diff" id="resultDiff">on the dot.</div>
       <div class="result-roast" id="resultRoast"></div>
-      <button class="again-btn" id="againBtn">try again</button>
     </div>
 
   </div>
@@ -198,10 +163,7 @@
 
 <script>
   var bigBtn = document.getElementById('bigBtn');
-  var promptText = document.getElementById('promptText');
-  var countingLabel = document.getElementById('countingLabel');
   var resultWrap = document.getElementById('resultWrap');
-  var againBtn = document.getElementById('againBtn');
   var resultTime = document.getElementById('resultTime');
   var resultDiff = document.getElementById('resultDiff');
   var resultRoast = document.getElementById('resultRoast');
@@ -230,22 +192,11 @@
   var state = STATE_IDLE;
   var startTime = null;
 
-  function goIdle() {
-    state = STATE_IDLE;
-    bigBtn.textContent = 'start';
-    bigBtn.classList.remove('counting');
-    promptText.textContent = 'When you think exactly one minute has passed, press it again.';
-    countingLabel.textContent = ' ';
-    resultWrap.classList.remove('show');
-  }
-
   function goCounting() {
     state = STATE_COUNTING;
     startTime = performance.now();
     bigBtn.textContent = 'stop';
     bigBtn.classList.add('counting');
-    promptText.textContent = 'Counting in your head, not on this screen.';
-    countingLabel.textContent = ' ';
     resultWrap.classList.remove('show');
   }
 
@@ -310,23 +261,15 @@
     renderStats();
 
     bigBtn.textContent = 'start';
-    promptText.textContent = 'When you think exactly one minute has passed, press it again.';
-    countingLabel.textContent = ' ';
     resultWrap.classList.add('show');
   }
 
   bigBtn.addEventListener('click', function () {
-    if (state === STATE_IDLE) {
-      goCounting();
-    } else if (state === STATE_COUNTING) {
+    if (state === STATE_COUNTING) {
       stopAndShowResult();
     } else {
       goCounting();
     }
-  });
-
-  againBtn.addEventListener('click', function () {
-    goIdle();
   });
 </script>
 </body>
