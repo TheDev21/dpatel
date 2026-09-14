@@ -80,6 +80,11 @@ backend, no build step.
   `performance.now()` judging you. Shows how early/late you were down
   to the millisecond plus a tiered roast/compliment line, and tracks
   attempts and your closest miss in `localStorage`.
+- **nothing.** (`games/nothing/`) — a plain white page with no text,
+  color, or sound. Stay long enough and it breaks the silence in
+  typewriter font: "why you still here?" at 30 seconds, a jab at 2
+  minutes, and "okay, you win. you can close this game now." at 5.
+  Real wall-clock time, no speeding it up.
 - Daily Vibe Check, Stack the Nonsense — planned, not yet built.
 
 ## Style
