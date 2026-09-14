@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How Long Is a Minute? — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23fff0e8'/%3E%3Ccircle cx='16' cy='18' r='11' fill='%23fffaf7' stroke='%2323201d' stroke-width='2'/%3E%3Cpath d='M13 5 H19 M16 5 V8' stroke='%2323201d' stroke-width='2' stroke-linecap='round'/%3E%3Cpath d='M16 18 L16 11 M16 18 L21 20' stroke='%2323201d' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --pink-deep: #f6dcd3;
+    --ink: #23201d;
+    --ink-dim: #56504a;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --teal: #1f8a70;
+    --gold: #e0b400;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 90px 18px 40px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (max-width: 960px) {
+    .corner-badge { top: 30px; left: 14px; font-size: 22px; }
+    body { padding-top: 96px; }
+  }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+
+  .wrap { width: 100%; max-width: 420px; text-align: center; margin: 0 auto; }
+
+  h1 { font-size: clamp(2rem, 6vw, 2.8rem); margin: 0 0 4px; }
+  h1 span { color: var(--orange); }
+  .tagline { font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 18px; }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 18px;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+  }
+  .stats-row b { color: var(--ink); font-size: 1rem; }
+
+  .stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 22px;
+    padding: 20px 0 10px;
+  }
+
+  .prompt { font-size: 1.05rem; line-height: 1.6; max-width: 300px; min-height: 3.2em; }
+  .prompt b { color: var(--orange); }
+
+  .big-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.7rem;
+    letter-spacing: 0.03em;
+    color: #fff;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: var(--orange);
+    border: 4px solid var(--ink);
+    cursor: pointer;
+    box-shadow: 6px 8px 0 rgba(35,32,29,0.2);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+  }
+  .big-btn:hover { transform: translateY(-3px); box-shadow: 7px 10px 0 rgba(35,32,29,0.24); }
+  .big-btn:active { transform: translateY(0); box-shadow: 3px 4px 0 rgba(35,32,29,0.2); }
+  .big-btn.counting {
+    background: var(--red);
+    animation: bigPulse 1s ease-in-out infinite;
+  }
+  @keyframes bigPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .big-btn.counting:hover { transform: translateY(0) scale(1.05); }
+
+  .counting-label { font-size: 0.85rem; color: var(--ink-dim); min-height: 1.2em; }
+
+  .result-wrap { display: none; flex-direction: column; align-items: center; gap: 10px; }
+  .result-wrap.show { display: flex; }
+
+  .result-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 3rem;
+    line-height: 1;
+    letter-spacing: 0.01em;
+  }
+  .result-diff { font-size: 1rem; }
+  .result-diff.early { color: var(--teal); }
+  .result-diff.late { color: var(--red); }
+  .result-diff.perfect { color: var(--gold); }
+  .result-roast { font-size: 0.95rem; color: var(--ink-dim); max-width: 280px; line-height: 1.5; }
+
+  .again-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    letter-spacing: 0.03em;
+    background: var(--card-bg);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 26px;
+    cursor: pointer;
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.18);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .again-btn:hover { transform: translateY(-2px); box-shadow: 4px 6px 0 rgba(35,32,29,0.22); }
+  .again-btn:active { transform: translateY(0); box-shadow: 2px 3px 0 rgba(35,32,29,0.18); }
+
+  .about {
+    max-width: 420px;
+    margin: 40px auto 0;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+  }
+  .about a { text-decoration: underline; }
+  .about a:hover { color: var(--orange); }
+</style>
+</head>
+<body>
+<a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
+
+<div class="wrap">
+
+  <h1>How Long Is <span>a Minute?</span></h1>
+  <p class="tagline">no clock. no cheating. just you and your own sense of time.</p>
+
+  <div class="stats-row">
+    <span>attempts: <b id="attemptsStat">0</b></span>
+    <span>closest: <b id="closestStat">&mdash;</b></span>
+  </div>
+
+  <div class="stage">
+
+    <p class="prompt" id="promptText">When you think exactly one minute has passed, press it again.</p>
+
+    <button class="big-btn" id="bigBtn">start</button>
+
+    <p class="counting-label" id="countingLabel">&nbsp;</p>
+
+    <div class="result-wrap" id="resultWrap">
+      <div class="result-time" id="resultTime">1:00.000</div>
+      <div class="result-diff" id="resultDiff">on the dot.</div>
+      <div class="result-roast" id="resultRoast"></div>
+      <button class="again-btn" id="againBtn">try again</button>
+    </div>
+
+  </div>
+
+  <p class="about">Your device's clock is the judge. It is not negotiable.</p>
+
+</div>
+
+<script>
+  var bigBtn = document.getElementById('bigBtn');
+  var promptText = document.getElementById('promptText');
+  var countingLabel = document.getElementById('countingLabel');
+  var resultWrap = document.getElementById('resultWrap');
+  var againBtn = document.getElementById('againBtn');
+  var resultTime = document.getElementById('resultTime');
+  var resultDiff = document.getElementById('resultDiff');
+  var resultRoast = document.getElementById('resultRoast');
+  var attemptsStat = document.getElementById('attemptsStat');
+  var closestStat = document.getElementById('closestStat');
+
+  var ATTEMPTS_KEY = 'how-long-minute-attempts';
+  var CLOSEST_KEY = 'how-long-minute-closest';
+  var attempts = 0, closestMs = null;
+  try { attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY), 10) || 0; } catch (e) {}
+  try {
+    var storedClosest = localStorage.getItem(CLOSEST_KEY);
+    closestMs = storedClosest !== null ? parseFloat(storedClosest) : null;
+  } catch (e) {}
+
+  function fmtDiffShort(ms) {
+    return (ms / 1000).toFixed(ms < 1000 ? 3 : 1) + 's';
+  }
+  function renderStats() {
+    attemptsStat.textContent = attempts;
+    closestStat.textContent = closestMs === null ? '—' : fmtDiffShort(closestMs);
+  }
+  renderStats();
+
+  var STATE_IDLE = 'idle', STATE_COUNTING = 'counting', STATE_RESULT = 'result';
+  var state = STATE_IDLE;
+  var startTime = null;
+
+  function goIdle() {
+    state = STATE_IDLE;
+    bigBtn.textContent = 'start';
+    bigBtn.classList.remove('counting');
+    promptText.textContent = 'When you think exactly one minute has passed, press it again.';
+    countingLabel.textContent = ' ';
+    resultWrap.classList.remove('show');
+  }
+
+  function goCounting() {
+    state = STATE_COUNTING;
+    startTime = performance.now();
+    bigBtn.textContent = 'stop';
+    bigBtn.classList.add('counting');
+    promptText.textContent = 'Counting in your head, not on this screen.';
+    countingLabel.textContent = 'no peeking at a clock';
+    resultWrap.classList.remove('show');
+  }
+
+  // a batch of tiered roasts/compliments, keyed by how far off (in ms)
+  // the guess was -- a few variants per tier so replaying doesn't feel
+  // like reading the same line every time
+  var TIERS = [
+    { max: 60,    lines: ["Do you have an atomic clock installed in your skull?", "That's not human. Nobody is that precise.", "Okay, actually impressive. Suspiciously so."] },
+    { max: 300,   lines: ["Suspiciously precise. Were you counting Mississippis in your head?", "A little too good. We're keeping an eye on you.", "Unnervingly accurate for a person with no clock."] },
+    { max: 1000,  lines: ["Respectable. A solid, unremarkable sense of time.", "Fine work. No one will remember this, including you.", "That's a real, functioning internal clock right there."] },
+    { max: 3000,  lines: ["Acceptable. Mid, but acceptable.", "Not bad. Not good either. Solidly average.", "A perfectly forgettable attempt."] },
+    { max: 6000,  lines: ["Your internal clock might need new batteries.", "That's... a guess. A bold, confident guess.", "Close enough for jazz, not close enough for anything else."] },
+    { max: 12000, lines: ["You have no real concept of time, and that's okay.", "Were you even trying, or just vibing?", "This suggests a troubled relationship with clocks."] },
+    { max: Infinity, lines: ["Were you today years old when you learned what a minute is?", "That was not a minute. That was a different, invented unit of time.", "Genuinely unclear what you thought you were counting."] }
+  ];
+
+  function pickRoast(absDiffMs) {
+    for (var i = 0; i < TIERS.length; i++) {
+      if (absDiffMs <= TIERS[i].max) {
+        var lines = TIERS[i].lines;
+        return lines[Math.floor(Math.random() * lines.length)];
+      }
+    }
+    return TIERS[TIERS.length - 1].lines[0];
+  }
+
+  function fmtClock(ms) {
+    var totalMs = Math.max(0, Math.round(ms));
+    var m = Math.floor(totalMs / 60000);
+    var s = Math.floor((totalMs % 60000) / 1000);
+    var mmm = totalMs % 1000;
+    return m + ':' + String(s).padStart(2, '0') + '.' + String(mmm).padStart(3, '0');
+  }
+
+  function stopAndShowResult() {
+    state = STATE_RESULT;
+    bigBtn.classList.remove('counting');
+    var elapsed = performance.now() - startTime;
+    var diff = elapsed - 60000; // positive = late, negative = early
+    var absDiff = Math.abs(diff);
+
+    resultTime.textContent = fmtClock(elapsed);
+
+    if (absDiff < 15) {
+      resultDiff.textContent = 'Dead. On. The. Dot.';
+      resultDiff.className = 'result-diff perfect';
+    } else if (diff > 0) {
+      resultDiff.textContent = 'You were ' + fmtDiffShort(absDiff) + ' late.';
+      resultDiff.className = 'result-diff late';
+    } else {
+      resultDiff.textContent = 'You were ' + fmtDiffShort(absDiff) + ' early.';
+      resultDiff.className = 'result-diff early';
+    }
+    resultRoast.textContent = pickRoast(absDiff);
+
+    attempts++;
+    if (closestMs === null || absDiff < closestMs) closestMs = absDiff;
+    try {
+      localStorage.setItem(ATTEMPTS_KEY, String(attempts));
+      localStorage.setItem(CLOSEST_KEY, String(closestMs));
+    } catch (e) {}
+    renderStats();
+
+    bigBtn.textContent = 'start';
+    promptText.textContent = 'When you think exactly one minute has passed, press it again.';
+    countingLabel.textContent = ' ';
+    resultWrap.classList.add('show');
+  }
+
+  bigBtn.addEventListener('click', function () {
+    if (state === STATE_IDLE) {
+      goCounting();
+    } else if (state === STATE_COUNTING) {
+      stopAndShowResult();
+    } else {
+      goCounting();
+    }
+  });
+
+  againBtn.addEventListener('click', function () {
+    goIdle();
+  });
+</script>
+</body>
+</html>

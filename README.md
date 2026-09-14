@@ -74,6 +74,12 @@ backend, no build step.
   year-by-year from 2001 to 2026 with real gas price / federal minimum
   wage / stamp price data and up/down deltas against the prior year.
   Ends on a one-line "here's what $1 gets you now vs. in 1900" punchline.
+- **How Long Is a Minute?** (`games/how-long-is-a-minute/`) — press the
+  giant button to start, press it again when you think exactly a minute
+  has passed. No clock, no progress bar, nothing to cheat with — just
+  `performance.now()` judging you. Shows how early/late you were down
+  to the millisecond plus a tiered roast/compliment line, and tracks
+  attempts and your closest miss in `localStorage`.
 - Daily Vibe Check, Stack the Nonsense — planned, not yet built.
 
 ## Style
