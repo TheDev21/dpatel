@@ -661,10 +661,20 @@
     font-size: 12px;
     box-shadow: 3px 4px 0 rgba(35,32,29,0.14);
     z-index: 70;
-    display: none;
     min-width: 160px;
+    /* pops open from the badge that triggers it, same treatment used
+       across the site's other click-to-open panels */
+    transform-origin: bottom right;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.1);
+    transition: opacity 0.18s ease, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
   }
-  .critter-panel.show { display: block; }
+  .critter-panel.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
   .critter-panel div { padding: 3px 0; }
   .critter-panel .got { color: var(--teal); }
   .critter-panel .not-got { color: var(--ink-dim); }
