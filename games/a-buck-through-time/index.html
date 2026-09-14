@@ -329,6 +329,7 @@
 </head>
 <body>
 <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
+<audio id="bgMusic" src="audio/the-weight-of-stars.mp3" loop preload="auto"></audio>
 <div class="sound-control">
   <button class="mute-btn" id="muteBtn" title="Sound: On (tap to mute)">&#9834;</button>
   <div class="volume-pop">
@@ -626,503 +627,50 @@
 </button>
 
 <script>
-  // ---------- ambient build-up score (WebAudio, no files) ----------
-  // starts as a near-silent, sparse pad around "50,000 BC" and swells --
-  // louder, brighter, faster pulse -- as you scroll toward "today", as
-  // a musical mirror of the page's whole premise. Browsers block audio
-  // until a real user gesture, so it only starts on the first scroll/
+  // ---------- real background track ----------
+  // "The Weight of Stars" -- an actual composed track, not synthesized.
+  // Loops the whole time the page is open. Browsers block audio until a
+  // real user gesture, so playback only starts on the first scroll/
   // click/touch, not on page load.
-  var audioCtx = null;
+  var bgMusic = document.getElementById('bgMusic');
   var soundOn = true;
+  var userVolume = 0.85;
   var musicStarted = false;
-  var masterGain, masterFilter, padFilter, leadGain, outputGain;
-  var shimmerOscs = [], shimmerGain;
-  var pulseTimer = null, leadTimer = null;
-  var userVolume = 0.95;
-  var musicStartTime = 0;
-  var BUILD_SECONDS = 22; // how long the swell takes to reach full climax
-
-  function ensureAudio() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended' && !document.hidden) audioCtx.resume();
-  }
-
-  // stop the music the moment the tab/window isn't the one you're
-  // looking at -- switch apps, minimize, or flip to another tab and it
-  // goes silent; come back and it picks up right where it left off.
-  // suspending the AudioContext also freezes audioCtx.currentTime, so
-  // the whole build (chords, harp tempo, the swell) pauses exactly in
-  // place instead of drifting ahead while you were away.
-  document.addEventListener('visibilitychange', function () {
-    if (!musicStarted || !audioCtx) return;
-    if (document.hidden) {
-      audioCtx.suspend();
-    } else if (soundOn) {
-      audioCtx.resume();
-    }
-  });
-
-  // the build now runs on its own clock, not tied to how far you've
-  // scrolled -- it swells from quiet to full climax over BUILD_SECONDS
-  // and then holds there, looping, for as long as the page stays open
-  function musicProgress() {
-    // musicStartTime is a real audioCtx.currentTime value, which is 0.0
-    // right when the context is first created -- checking musicStarted
-    // instead of musicStartTime's truthiness avoids treating that literal
-    // 0 as "hasn't started yet" and getting stuck at 0% forever
-    if (!musicStarted) return 0;
-    var elapsed = audioCtx.currentTime - musicStartTime;
-    return Math.min(1, Math.max(0, elapsed / BUILD_SECONDS));
-  }
-
-  // a small "orchestra": strings (the pad), 2 horns, a tuba/bass note, a
-  // brass stab (trumpets/trombones) on the pulse, and a harp arpeggio --
-  // built from a real i-VI-III-VII chord loop in D minor (Dm-Bb-F-C) so
-  // it's an actual repeating piece of music, not a single static drone
-  var CHORDS = [
-    { bass: 36.71,  strings: [73.42, 87.31, 110.00, 146.83],  horn: [174.61, 220.00], harp: [293.66, 349.23, 440.00, 587.33] },
-    { bass: 29.14,  strings: [58.27, 73.42, 87.31, 116.54],   horn: [146.83, 174.61], harp: [233.08, 293.66, 349.23, 466.16] },
-    { bass: 43.65,  strings: [87.31, 110.00, 130.81, 174.61], horn: [220.00, 261.63], harp: [349.23, 440.00, 523.25, 698.46] },
-    { bass: 32.70,  strings: [65.41, 82.41, 98.00, 130.81],   horn: [164.81, 196.00], harp: [261.63, 329.63, 392.00, 523.25] }
-  ];
-  var chordIndex = 0;
-  var stringOscs = [], hornOscs = [], bassOsc, hornGain, bassGain;
-  var chordTimer = null, harpTimer = null, ostinatoTimer = null;
-  var harpStep = 0;
-  var CHORD_MS = 3200; // one full 4-chord loop = ~13s -- a faster, more driving pace
 
   function startMusic() {
     if (musicStarted) return;
     musicStarted = true;
-    ensureAudio();
-    musicStartTime = audioCtx.currentTime;
-
-    // outputGain is the one knob the volume slider and mute button
-    // actually touch -- masterGain underneath keeps doing its own
-    // time-based swell independently of whatever the user sets it to
-    outputGain = audioCtx.createGain();
-    outputGain.gain.value = soundOn ? userVolume : 0.0001;
-    outputGain.connect(audioCtx.destination);
-
-    // a short slapback echo gives the whole thing room/drama instead of
-    // sounding like it's playing in a dead-flat box
-    // echo tap sits off to the side of the dry signal, not looped back
-    // through masterGain itself -- a self-loop there would let volume
-    // climb without bound every repeat
-    var delayNode = audioCtx.createDelay();
-    delayNode.delayTime.value = 0.34;
-    var feedback = audioCtx.createGain();
-    feedback.gain.value = 0.32;
-    var wet = audioCtx.createGain();
-    wet.gain.value = 0.5;
-    delayNode.connect(feedback).connect(delayNode);
-    delayNode.connect(wet).connect(outputGain);
-
-    masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.0001;
-
-    // a gentle master-bus lowpass to glue everything together and take
-    // the digital edge off the raw sawtooths -- without this the mix
-    // reads as buzzy synth layers instead of one cohesive orchestra
-    masterFilter = audioCtx.createBiquadFilter();
-    masterFilter.type = 'lowpass';
-    masterFilter.frequency.value = 3400;
-    masterFilter.Q.value = 0.6;
-    masterGain.connect(masterFilter);
-    masterFilter.connect(outputGain);
-    masterFilter.connect(delayNode);
-
-    padFilter = audioCtx.createBiquadFilter();
-    padFilter.type = 'lowpass';
-    padFilter.frequency.value = 260;
-    padFilter.Q.value = 0.8;
-    padFilter.connect(masterGain);
-
-    // "strings" -- 4 detuned voices standing in for the whole string
-    // section, chorused via slow per-voice vibrato LFOs
-    CHORDS[0].strings.forEach(function (freq, i) {
-      var osc = audioCtx.createOscillator();
-      osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
-      osc.frequency.value = freq;
-      var voiceGain = audioCtx.createGain();
-      voiceGain.gain.value = 0.36;
-      var lfo = audioCtx.createOscillator();
-      lfo.frequency.value = 0.15 + i * 0.05;
-      var lfoGain = audioCtx.createGain();
-      lfoGain.gain.value = 5;
-      lfo.connect(lfoGain).connect(osc.detune);
-      lfo.start();
-      osc.connect(voiceGain).connect(padFilter);
-      osc.start();
-      stringOscs.push(osc);
-    });
-
-    // "horns" -- 2 mellow mid-range voices, quieter than the strings,
-    // that only really become audible once the build is underway
-    hornGain = audioCtx.createGain();
-    hornGain.gain.value = 0.0001;
-    hornGain.connect(padFilter);
-    CHORDS[0].horn.forEach(function (freq) {
-      var osc = audioCtx.createOscillator();
-      osc.type = 'triangle';
-      osc.frequency.value = freq;
-      osc.connect(hornGain);
-      osc.start();
-      hornOscs.push(osc);
-    });
-
-    // "tuba" -- one sustained sub note reinforcing the chord root
-    bassGain = audioCtx.createGain();
-    bassGain.gain.value = 0.16;
-    bassGain.connect(masterGain);
-    bassOsc = audioCtx.createOscillator();
-    bassOsc.type = 'sine';
-    bassOsc.frequency.value = CHORDS[0].bass;
-    bassOsc.connect(bassGain);
-    bassOsc.start();
-
-    // a soaring lead voice that stays silent early on and only fades in
-    // once you're well into the build -- the "opera singer walks in" bit
-    leadGain = audioCtx.createGain();
-    leadGain.gain.value = 0.0001;
-    leadGain.connect(masterGain);
-
-    // high shimmering strings, two octaves up with fast tremolo -- silent
-    // until deep in the climax, then trembles in for the "screaming
-    // strings" moment right before the finale hits
-    shimmerGain = audioCtx.createGain();
-    shimmerGain.gain.value = 0.0001;
-    shimmerGain.connect(masterGain);
-    var tremoloLfo = audioCtx.createOscillator();
-    tremoloLfo.frequency.value = 7.5;
-    var tremoloDepth = audioCtx.createGain();
-    tremoloDepth.gain.value = 0.08;
-    tremoloLfo.connect(tremoloDepth).connect(shimmerGain.gain);
-    tremoloLfo.start();
-    [CHORDS[0].strings[1], CHORDS[0].strings[3]].forEach(function (freq) {
-      var osc = audioCtx.createOscillator();
-      osc.type = 'sawtooth';
-      osc.frequency.value = freq * 4;
-      osc.connect(shimmerGain);
-      osc.start();
-      shimmerOscs.push(osc);
-    });
-
-    updateMusicSwell();
-    // hold on the opening chord for its full duration before the first
-    // change, rather than switching away from it immediately
-    chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
-    scheduleHarp();
-    scheduleOstinato();
-    scheduleLeadMotif();
+    bgMusic.volume = soundOn ? userVolume : 0;
+    bgMusic.play().catch(function () {});
   }
 
-  // moves strings/horns/tuba to the next chord in the progression on a
-  // fixed timer, independent of scrolling -- this is what makes it an
-  // actual looping piece of music instead of one static chord forever
-  // pushes every sustained voice (strings/horns/tuba/shimmer) toward the
-  // current chord times a slowly climbing "rise" factor -- that rise is
-  // the actual tension engine here (the classic Shepard/Dunkirk-clock
-  // trick: pitch that only ever climbs reads as unbearable anticipation
-  // in a way that volume alone doesn't). Called both on each chord
-  // change and every swell tick, so the climb is continuous, not stepped.
-  function applyChordFrequencies(glide) {
-    var chord = CHORDS[chordIndex];
-    var rise = 1 + musicProgress() * 0.55;
-    var t = audioCtx.currentTime;
-    stringOscs.forEach(function (osc, i) {
-      osc.frequency.cancelScheduledValues(t);
-      osc.frequency.linearRampToValueAtTime(chord.strings[i] * rise, t + glide);
-    });
-    hornOscs.forEach(function (osc, i) {
-      osc.frequency.cancelScheduledValues(t);
-      osc.frequency.linearRampToValueAtTime(chord.horn[i] * rise, t + glide);
-    });
-    bassOsc.frequency.cancelScheduledValues(t);
-    bassOsc.frequency.linearRampToValueAtTime(chord.bass * rise, t + glide);
-    var shimmerNotes = [chord.strings[1], chord.strings[3]];
-    shimmerOscs.forEach(function (osc, i) {
-      osc.frequency.cancelScheduledValues(t);
-      osc.frequency.linearRampToValueAtTime(shimmerNotes[i] * 4 * rise, t + glide);
-    });
-  }
-
-  function scheduleChordChange() {
+  // stop the music the moment the tab/window isn't the one you're
+  // looking at -- switch apps, minimize, or flip to another tab and it
+  // pauses immediately; come back and it resumes right where it left
+  // off (HTMLMediaElement keeps its own currentTime while paused).
+  document.addEventListener('visibilitychange', function () {
     if (!musicStarted) return;
-    chordIndex = (chordIndex + 1) % CHORDS.length;
-    applyChordFrequencies(0.7);
-    clearTimeout(chordTimer);
-    chordTimer = setTimeout(scheduleChordChange, CHORD_MS);
-  }
-
-  function updateMusicSwell() {
-    if (!musicStarted) return;
-    var progress = musicProgress();
-    var t = audioCtx.currentTime;
-
-    // a slow wobble riding on top of the overall climb -- without this
-    // the build reads as one flat, robotic ramp; with it, it breathes
-    var breathe = Math.sin(t * 0.35) * 0.035 * progress;
-    var targetGain = soundOn ? Math.max(0.0001, 0.06 + Math.pow(progress, 1.15) * 0.68 + breathe) : 0.0001;
-    var targetFreq = 220 + progress * 3600;
-    masterGain.gain.cancelScheduledValues(t);
-    masterGain.gain.linearRampToValueAtTime(targetGain, t + 0.8);
-    padFilter.frequency.cancelScheduledValues(t);
-    padFilter.frequency.linearRampToValueAtTime(targetFreq, t + 0.8);
-    hornGain.gain.cancelScheduledValues(t);
-    hornGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.15) * 0.4 : 0.0001, t + 0.8);
-    leadGain.gain.cancelScheduledValues(t);
-    leadGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.5) * 0.6 : 0.0001, t + 0.8);
-    // the shimmer only trembles in for the last stretch -- the
-    // "screaming strings" right before the finale lands
-    shimmerGain.gain.cancelScheduledValues(t);
-    shimmerGain.gain.linearRampToValueAtTime(soundOn ? Math.max(0, progress - 0.78) / 0.22 * 0.22 : 0.0001, t + 0.9);
-
-    // keep every sustained voice climbing continuously between chord
-    // changes, not just snapping to a new pitch every 3.2s
-    applyChordFrequencies(0.85);
-
-    // the pulse (a punchy low stab) speeds up as the build progresses
-    var delay = 900 - progress * 760;
-    clearTimeout(pulseTimer);
-    pulseTimer = setTimeout(pulseBeat, delay);
-  }
-
-  var pulseCount = 0;
-  function pulseBeat() {
-    if (!musicStarted) return;
-    if (soundOn) {
-      var progress = musicProgress();
-      var chord = CHORDS[chordIndex];
-      var t = audioCtx.currentTime;
-      pulseCount++;
-
-      // sub thump, tied to the current chord's root -- the tuba hit
-      var sub = audioCtx.createOscillator();
-      var subGain = audioCtx.createGain();
-      sub.type = 'sine';
-      sub.frequency.setValueAtTime(chord.bass * 3, t);
-      sub.frequency.exponentialRampToValueAtTime(chord.bass, t + 0.22);
-      subGain.gain.setValueAtTime(0.0001, t);
-      subGain.gain.linearRampToValueAtTime(0.3 + progress * 0.3, t + 0.02);
-      subGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.5);
-      sub.connect(subGain).connect(masterGain);
-      sub.start(t);
-      sub.stop(t + 0.55);
-
-      // brass stabs (trumpets/trombones) layer in once past a third of
-      // the way through, alternating a bright trumpet hit and a lower,
-      // slightly longer trombone hit so the pulse reads as two sections
-      // trading off, not just one louder blip
-      if (progress > 0.32) {
-        var isTrumpet = pulseCount % 2 === 0;
-        var stab = audioCtx.createOscillator();
-        var stabFilter = audioCtx.createBiquadFilter();
-        var stabGain = audioCtx.createGain();
-        stab.type = 'sawtooth';
-        stab.frequency.value = isTrumpet ? chord.horn[1] * 2 : chord.horn[0];
-        stabFilter.type = 'bandpass';
-        stabFilter.frequency.value = isTrumpet ? 1400 + progress * 1200 : 500 + progress * 700;
-        stabFilter.Q.value = 4;
-        var stabPeak = (progress - 0.32) * (isTrumpet ? 0.5 : 0.42);
-        var stabDur = isTrumpet ? 0.28 : 0.42;
-        stabGain.gain.setValueAtTime(0.0001, t);
-        stabGain.gain.linearRampToValueAtTime(stabPeak, t + 0.015);
-        stabGain.gain.exponentialRampToValueAtTime(0.0001, t + stabDur);
-        stab.connect(stabFilter).connect(stabGain).connect(masterGain);
-        stab.start(t);
-        stab.stop(t + stabDur + 0.05);
-      }
+    if (document.hidden) {
+      bgMusic.pause();
+    } else if (soundOn) {
+      bgMusic.play().catch(function () {});
     }
-    updateMusicSwell();
-  }
+  });
 
-  // harp -- a continuously looping plucked arpeggio through the current
-  // chord's notes. It runs the whole time (not gated behind a scroll
-  // threshold like the lead voice), just quieter and slower near the
-  // top, so the piece always feels like an actual loop, even if you
-  // stop scrolling
-  function harpPluck(freq, gainPeak) {
-    var t = audioCtx.currentTime;
-    var osc = audioCtx.createOscillator();
-    var overtone = audioCtx.createOscillator();
-    var g = audioCtx.createGain();
-    osc.type = 'triangle';
-    osc.frequency.value = freq;
-    overtone.type = 'sine';
-    overtone.frequency.value = freq * 2;
-    var overtoneGain = audioCtx.createGain();
-    overtoneGain.gain.value = 0.3;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(gainPeak, t + 0.008);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9);
-    osc.connect(g);
-    overtone.connect(overtoneGain).connect(g);
-    g.connect(masterGain);
-    osc.start(t);
-    overtone.start(t);
-    osc.stop(t + 0.95);
-    overtone.stop(t + 0.95);
-  }
-
-  function scheduleHarp() {
-    if (!musicStarted) return;
-    var progress = musicProgress();
-    if (soundOn) {
-      var chord = CHORDS[chordIndex];
-      var note = chord.harp[harpStep % chord.harp.length];
-      harpPluck(note, 0.06 + progress * 0.22);
-      harpStep++;
-    }
-    var interval = 620 - progress * 490;
-    clearTimeout(harpTimer);
-    harpTimer = setTimeout(scheduleHarp, interval);
-  }
-
-  // driving string ostinato -- the Oppenheimer-score move: instead of
-  // building tension purely with volume, a relentless repeating two-note
-  // figure that's present from the very start and keeps accelerating,
-  // like a countdown clock made of strings. Present early (unlike the
-  // horns/lead), just quiet and slow at first.
-  var ostinatoStep = 0;
-  // short-short-long over 3 notes (root, fifth, octave) instead of a
-  // plain back-and-forth two-note alternation -- reads as an actual
-  // minimalist motif (think Glass/Zimmer) rather than a metronome
-  var OSTINATO_PATTERN = [
-    { degree: 0, dur: 1 },
-    { degree: 2, dur: 1 },
-    { degree: 3, dur: 1.8 }
-  ];
-  function scheduleOstinato() {
-    if (!musicStarted) return;
-    var progress = musicProgress();
-    var step = OSTINATO_PATTERN[ostinatoStep % OSTINATO_PATTERN.length];
-    if (soundOn) {
-      var chord = CHORDS[chordIndex];
-      var note = chord.strings[step.degree] * 2;
-      var t = audioCtx.currentTime;
-      var osc = audioCtx.createOscillator();
-      var filt = audioCtx.createBiquadFilter();
-      var g = audioCtx.createGain();
-      osc.type = 'sawtooth';
-      osc.frequency.value = note;
-      filt.type = 'bandpass';
-      filt.frequency.value = 500 + progress * 900;
-      filt.Q.value = 3;
-      var peak = 0.12 + progress * 0.34;
-      g.gain.setValueAtTime(0.0001, t);
-      g.gain.linearRampToValueAtTime(peak, t + 0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
-      osc.connect(filt).connect(g).connect(masterGain);
-      osc.start(t);
-      osc.stop(t + 0.2);
-    }
-    ostinatoStep++;
-    // starts around a steady quarter-note-ish pace and accelerates into
-    // a frantic near-16th-note pulse at full climax
-    var baseInterval = 400 - progress * 290;
-    var interval = baseInterval * step.dur;
-    clearTimeout(ostinatoTimer);
-    ostinatoTimer = setTimeout(scheduleOstinato, interval);
-  }
-
-  // a short rising motif for the lead voice, only audible once leadGain
-  // has faded up (see updateMusicSwell) -- follows the current
-  // chord's harp notes so it always stays in key with the loop
-  function scheduleLeadMotif() {
-    if (!musicStarted) return;
-    var progress = musicProgress();
-    if (soundOn && progress > 0.5) {
-      var chord = CHORDS[chordIndex];
-      var t = audioCtx.currentTime;
-      chord.harp.forEach(function (freq, i) {
-        var osc = audioCtx.createOscillator();
-        var g = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        var start = t + i * 0.3;
-        g.gain.setValueAtTime(0.0001, start);
-        g.gain.linearRampToValueAtTime(0.22, start + 0.08);
-        g.gain.exponentialRampToValueAtTime(0.0001, start + 0.32);
-        osc.connect(g).connect(leadGain);
-        osc.start(start);
-        osc.stop(start + 0.34);
-      });
-    }
-    clearTimeout(leadTimer);
-    leadTimer = setTimeout(scheduleLeadMotif, 2600);
-  }
-
-  // one big finale swell -- a full-orchestra hit plus a cymbal-like
-  // noise crash -- the moment the ending section scrolls into view
-  var finalePlayed = false;
-  // the payoff: after a whole build in D minor, the finale resolves to
-  // the parallel D MAJOR (a "Picardy third") -- the classic way to make
-  // a long climb of tension land as relief/triumph instead of just
-  // stopping. Deliberately not whatever minor chord happens to be
-  // playing when you arrive.
-  var RESOLUTION_CHORD = [146.83, 185.00, 220.00, 293.66, 369.99, 440.00, 587.33];
-  function playFinale() {
-    if (finalePlayed || !musicStarted || !soundOn) return;
-    finalePlayed = true;
-    var t = audioCtx.currentTime;
-
-    RESOLUTION_CHORD.forEach(function (freq, i) {
-      var osc = audioCtx.createOscillator();
-      var g = audioCtx.createGain();
-      osc.type = i % 2 === 0 ? 'sawtooth' : 'triangle';
-      osc.frequency.value = freq;
-      var start = t + i * 0.03;
-      g.gain.setValueAtTime(0.0001, start);
-      g.gain.linearRampToValueAtTime(0.17, start + 0.08);
-      g.gain.exponentialRampToValueAtTime(0.0001, start + 3);
-      osc.connect(g).connect(masterGain);
-      osc.start(start);
-      osc.stop(start + 3.1);
-    });
-
-    // noise burst through a highpass filter, standing in for a cymbal
-    // crash under the final chord
-    var bufferSize = audioCtx.sampleRate * 1.2;
-    var buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
-    var data = buffer.getChannelData(0);
-    for (var i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
-    var noise = audioCtx.createBufferSource();
-    noise.buffer = buffer;
-    var noiseFilter = audioCtx.createBiquadFilter();
-    noiseFilter.type = 'highpass';
-    noiseFilter.frequency.value = 4000;
-    var noiseGain = audioCtx.createGain();
-    noiseGain.gain.value = 0.18;
-    noise.connect(noiseFilter).connect(noiseGain).connect(masterGain);
-    noise.start(t);
+  function applyVolume() {
+    bgMusic.volume = soundOn ? userVolume : 0;
   }
 
   ['scroll', 'click', 'touchstart'].forEach(function (evt) {
     window.addEventListener(evt, startMusic, { once: true, passive: true });
   });
-  // the swell now runs on its own clock (see musicProgress), so it needs
-  // its own steady heartbeat to animate rather than piggybacking on scroll
-  setInterval(function () {
-    if (musicStarted) updateMusicSwell();
-  }, 700);
-
-  function applyOutputGain() {
-    if (!musicStarted || !outputGain) return;
-    var t = audioCtx.currentTime;
-    outputGain.gain.cancelScheduledValues(t);
-    outputGain.gain.linearRampToValueAtTime(soundOn ? userVolume : 0.0001, t + 0.06);
-    // masterGain/leadGain also gate on soundOn, so unmuting needs this
-    // refreshed too or they'd stay parked at near-zero until the next scroll
-    updateMusicSwell();
-  }
 
   var muteBtn = document.getElementById('muteBtn');
   muteBtn.addEventListener('click', function () {
     soundOn = !soundOn;
     muteBtn.title = soundOn ? 'Sound: On (tap to mute)' : 'Sound: Off (tap to unmute)';
     muteBtn.style.opacity = soundOn ? '' : '0.5';
-    applyOutputGain();
+    applyVolume();
   });
 
   // keep the popover open for the whole drag, even if the pointer
@@ -1160,8 +708,9 @@
       muteBtn.title = 'Sound: Off (tap to unmute)';
       muteBtn.style.opacity = '0.5';
     }
-    applyOutputGain();
+    applyVolume();
   });
+
 
   // ---------- 2001-2026 data ----------
   // real U.S. annual averages (gas, EIA; federal minimum wage; USPS first-class
@@ -1220,13 +769,6 @@
       '</div>';
   });
   tickerBody.innerHTML = rowsHtml;
-
-  var finaleObserver = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (entry.isIntersecting) playFinale();
-    });
-  }, { threshold: 0.4 });
-  finaleObserver.observe(document.querySelector('.ending'));
 
   // ---------- ending punchline ----------
   var last = YEARS[YEARS.length - 1];
