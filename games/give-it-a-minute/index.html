@@ -81,6 +81,26 @@
   }
   .mute-btn:hover { background: #fff; }
 
+  .palette-btn {
+    position: fixed;
+    top: 60px;
+    right: 14px;
+    z-index: 90;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: var(--card-bg);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 0 rgba(35,32,29,0.14);
+  }
+  .palette-btn.visible { display: flex; }
+  .palette-btn:hover { background: #fff; }
+  .palette-btn svg { display: block; }
+
   /* ---- dialog screens: intro / done / yes / no ---- */
   .dialog-wrap {
     min-height: 100vh;
@@ -210,7 +230,7 @@
     position: absolute;
     bottom: calc(var(--floor-h) + 14px);
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) translateY(10px) scale(0.96);
     z-index: 20;
     background: rgba(255, 253, 249, 0.95);
     border: 2.5px solid var(--ink);
@@ -223,6 +243,16 @@
     flex-wrap: wrap;
     justify-content: center;
     max-width: min(94vw, 460px);
+    /* hidden by default -- only appears once the palette icon is
+       clicked, instead of sitting on screen the whole time */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.16s ease, transform 0.16s ease;
+  }
+  .toolbar-float.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
   }
   .brush-group { display: flex; gap: 8px; }
   .brush-btn {
@@ -283,6 +313,18 @@
 <body>
 <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
 <button class="mute-btn" id="muteBtn" title="Music: On">&#9834;</button>
+<button class="palette-btn" id="paletteBtn" title="brush &amp; colors">
+  <svg viewBox="0 0 24 24" width="18" height="18">
+    <path d="M12 2.5 C12 2.5 5.2 11 5.2 15.4 A6.8 6.8 0 0 0 18.8 15.4 C18.8 11 12 2.5 12 2.5 Z" fill="url(#dropGrad)" stroke="#23201d" stroke-width="1.6" stroke-linejoin="round"/>
+    <defs>
+      <linearGradient id="dropGrad" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#ff5a1f"/>
+        <stop offset="50%" stop-color="#6a4fb0"/>
+        <stop offset="100%" stop-color="#1f8a70"/>
+      </linearGradient>
+    </defs>
+  </svg>
+</button>
 
 <!-- dialog screens: intro / done / yes / no -->
 <div class="dialog-wrap" id="dialogWrap">
@@ -389,6 +431,24 @@
   var dryStatusEl = document.getElementById('dryStatus');
   var toolbarFloat = document.getElementById('toolbarFloat');
 
+  // ---------- brush/color popover ----------
+  var paletteBtn = document.getElementById('paletteBtn');
+  var toolbarOpenState = false;
+  function setToolbarOpen(open) {
+    toolbarOpenState = open;
+    toolbarFloat.classList.toggle('open', open);
+  }
+  paletteBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    setToolbarOpen(!toolbarOpenState);
+  });
+  // click anywhere outside the panel/icon closes it, like a normal popover
+  document.addEventListener('pointerdown', function (e) {
+    if (!toolbarOpenState) return;
+    if (toolbarFloat.contains(e.target) || paletteBtn.contains(e.target)) return;
+    setToolbarOpen(false);
+  });
+
   function setScene(name) {
     var isDialog = (name === 'intro' || name === 'done' || name === 'yes' || name === 'no');
     dialogWrap.classList.toggle('hidden', !isDialog);
@@ -402,7 +462,11 @@
     coverageRow.style.display = name === 'paint' ? 'block' : 'none';
     revealLinesEl.style.display = name === 'reveal' ? 'block' : 'none';
     dryStatusEl.style.display = name === 'dry' ? 'block' : 'none';
-    toolbarFloat.style.display = name === 'paint' ? 'flex' : 'none';
+    // the brush/color panel is a popover now (see paletteBtn above) --
+    // only the icon that opens it should show during the paint scene,
+    // and leaving that scene closes the panel if it was open
+    paletteBtn.classList.toggle('visible', name === 'paint');
+    if (name !== 'paint') setToolbarOpen(false);
   }
   setScene('intro');
 
