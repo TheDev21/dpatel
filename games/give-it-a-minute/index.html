@@ -238,10 +238,9 @@
     padding: 12px 16px;
     box-shadow: 3px 4px 0 rgba(35,32,29,0.16);
     display: flex;
-    gap: 18px;
+    flex-direction: column;
+    gap: 10px;
     align-items: center;
-    flex-wrap: wrap;
-    justify-content: center;
     max-width: min(94vw, 460px);
     /* hidden by default -- only appears once the palette icon is
        clicked, instead of sitting on screen the whole time */
@@ -271,11 +270,48 @@
   .brush-btn.active { background: var(--orange); border-color: var(--ink); }
   .brush-btn.active .dot { background: #fff; }
 
-  .color-picker { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  /* eyedrop button (below the brush row) + the color popover it opens */
+  .eyedrop-wrap { position: relative; display: flex; justify-content: center; }
+  .eyedrop-btn {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 2.5px solid var(--ink);
+    background: var(--card-bg);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 2px 2px 0 rgba(35,32,29,0.14);
+  }
+  .eyedrop-swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--ink); display: block; }
+
+  .color-popover {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-bottom: 10px;
+    transform: translateX(-50%) translateY(6px) scale(0.94);
+    background: rgba(255, 253, 249, 0.98);
+    border: 2.5px solid var(--ink);
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 3px 4px 0 rgba(35,32,29,0.16);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    z-index: 5;
+  }
+  .color-popover.show {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
   #colorWheel { border-radius: 50%; border: 2.5px solid var(--ink); cursor: crosshair; box-shadow: 2px 2px 0 rgba(35,32,29,0.14); touch-action: none; }
   .lightness-row { display: flex; align-items: center; gap: 8px; width: 120px; }
   .lightness-row input[type="range"] { flex: 1; min-width: 0; }
-  .swatch { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--ink); flex: none; }
+  .swatch-mini { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--ink); flex: none; }
 
   .preset-row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 120px; }
   .preset-btn {
@@ -416,21 +452,26 @@
       <button class="brush-btn active" data-size="medium" title="medium brush"><span class="dot"></span></button>
       <button class="brush-btn" data-size="large" title="large brush"><span class="dot"></span></button>
     </div>
-    <div class="color-picker">
-      <canvas id="colorWheel" width="90" height="90"></canvas>
-      <div class="lightness-row">
-        <span class="swatch" id="swatch"></span>
-        <input type="range" id="lightnessSlider" min="10" max="90" value="52">
-      </div>
-      <div class="preset-row" id="presetRow">
-        <button class="preset-btn" data-h="16" data-s="100" data-l="52" style="background:hsl(16,100%,52%)" title="orange"></button>
-        <button class="preset-btn" data-h="350" data-s="70" data-l="50" style="background:hsl(350,70%,50%)" title="red"></button>
-        <button class="preset-btn" data-h="48" data-s="90" data-l="55" style="background:hsl(48,90%,55%)" title="yellow"></button>
-        <button class="preset-btn" data-h="140" data-s="55" data-l="40" style="background:hsl(140,55%,40%)" title="green"></button>
-        <button class="preset-btn" data-h="200" data-s="70" data-l="50" style="background:hsl(200,70%,50%)" title="blue"></button>
-        <button class="preset-btn" data-h="258" data-s="40" data-l="48" style="background:hsl(258,40%,48%)" title="violet"></button>
-        <button class="preset-btn" data-h="0" data-s="0" data-l="12" style="background:hsl(0,0%,12%)" title="black"></button>
-        <button class="preset-btn" data-h="0" data-s="0" data-l="96" style="background:hsl(0,0%,96%)" title="white"></button>
+    <div class="eyedrop-wrap" id="eyedropWrap">
+      <button class="eyedrop-btn" id="eyedropBtn" title="pick a color">
+        <span class="eyedrop-swatch" id="swatch"></span>
+      </button>
+      <div class="color-popover" id="colorPopover">
+        <canvas id="colorWheel" width="90" height="90"></canvas>
+        <div class="lightness-row">
+          <span class="swatch-mini" id="swatchMini"></span>
+          <input type="range" id="lightnessSlider" min="10" max="90" value="52" title="lighter / darker">
+        </div>
+        <div class="preset-row" id="presetRow">
+          <button class="preset-btn" data-h="16" data-s="100" data-l="52" style="background:hsl(16,100%,52%)" title="orange"></button>
+          <button class="preset-btn" data-h="350" data-s="70" data-l="50" style="background:hsl(350,70%,50%)" title="red"></button>
+          <button class="preset-btn" data-h="48" data-s="90" data-l="55" style="background:hsl(48,90%,55%)" title="yellow"></button>
+          <button class="preset-btn" data-h="140" data-s="55" data-l="40" style="background:hsl(140,55%,40%)" title="green"></button>
+          <button class="preset-btn" data-h="200" data-s="70" data-l="50" style="background:hsl(200,70%,50%)" title="blue"></button>
+          <button class="preset-btn" data-h="258" data-s="40" data-l="48" style="background:hsl(258,40%,48%)" title="violet"></button>
+          <button class="preset-btn" data-h="0" data-s="0" data-l="12" style="background:hsl(0,0%,12%)" title="black"></button>
+          <button class="preset-btn" data-h="0" data-s="0" data-l="96" style="background:hsl(0,0%,96%)" title="white"></button>
+        </div>
       </div>
     </div>
   </div>
@@ -455,6 +496,7 @@
   function setToolbarOpen(open) {
     toolbarOpenState = open;
     toolbarFloat.classList.toggle('open', open);
+    if (!open) colorPopover.classList.remove('show');
   }
   paletteBtn.addEventListener('click', function (e) {
     e.stopPropagation();
@@ -465,6 +507,25 @@
     if (!toolbarOpenState) return;
     if (toolbarFloat.contains(e.target) || paletteBtn.contains(e.target)) return;
     setToolbarOpen(false);
+  });
+
+  // ---------- eyedrop: click opens the color wheel, mouse-out closes it ----------
+  var eyedropBtn = document.getElementById('eyedropBtn');
+  var eyedropWrap = document.getElementById('eyedropWrap');
+  var colorPopover = document.getElementById('colorPopover');
+  eyedropBtn.addEventListener('click', function (e) {
+    e.stopPropagation();
+    colorPopover.classList.add('show');
+  });
+  eyedropWrap.addEventListener('mouseleave', function () {
+    colorPopover.classList.remove('show');
+  });
+  // touch devices have no hover/mouseleave -- tapping outside the wheel
+  // area is the fallback way to close it there
+  document.addEventListener('pointerdown', function (e) {
+    if (!colorPopover.classList.contains('show')) return;
+    if (eyedropWrap.contains(e.target)) return;
+    colorPopover.classList.remove('show');
   });
 
   function setScene(name) {
@@ -675,8 +736,12 @@
   var currentHue = 16, currentSat = 100, currentLight = 52;
   var lightnessSlider = document.getElementById('lightnessSlider');
   var swatch = document.getElementById('swatch');
+  var swatchMini = document.getElementById('swatchMini');
   function currentColor() { return 'hsl(' + currentHue + ',' + currentSat + '%,' + currentLight + '%)'; }
-  function updateSwatch() { swatch.style.background = currentColor(); }
+  function updateSwatch() {
+    swatch.style.background = currentColor();
+    swatchMini.style.background = currentColor();
+  }
   function pickFromWheel(clientX, clientY) {
     var rect = colorWheel.getBoundingClientRect();
     var scaleX = colorWheel.width / rect.width;
