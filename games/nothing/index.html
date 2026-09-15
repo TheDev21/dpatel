@@ -80,15 +80,31 @@
     animation: blink 0.9s step-end infinite;
   }
   @keyframes blink { 50% { opacity: 0; } }
+
+  .countdown {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Special Elite', 'DM Mono', monospace;
+    font-size: clamp(6rem, 30vw, 14rem);
+    color: var(--ink);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .countdown.show { opacity: 1; }
 </style>
 </head>
 <body>
 <a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
 
 <div class="lines" id="lines"></div>
+<div class="countdown" id="countdown"></div>
 
 <script>
   var linesEl = document.getElementById('lines');
+  var FADE_DELAY = 4000;
+  var FADE_DURATION = 3000;
 
   function typeLine(text, speed, cb) {
     setTimeout(function () {
@@ -102,8 +118,10 @@
         if (i >= text.length) {
           clearInterval(iv);
           line.classList.remove('typing');
-          setTimeout(function () { line.classList.add('faded'); }, 4000);
-          if (cb) cb();
+          setTimeout(function () {
+            line.classList.add('faded');
+            if (cb) setTimeout(cb, FADE_DURATION);
+          }, FADE_DELAY);
         }
       }, speed);
     }, 1000);
@@ -118,17 +136,14 @@
   }, 120000);
 
   setTimeout(function () {
-    typeLine('okay, you win. you can close this game now.', 500, function () {
-      setTimeout(startCountdown, 1500);
-    });
+    typeLine('okay, you win. you can close this game now.', 500, startCountdown);
   }, 300000);
 
   function startCountdown() {
-    var countEl = document.createElement('div');
-    countEl.className = 'line';
-    linesEl.appendChild(countEl);
+    var countEl = document.getElementById('countdown');
     var n = 5;
-    countEl.textContent = n;
+    countEl.textContent = n + '.';
+    countEl.classList.add('show');
     var iv = setInterval(function () {
       n--;
       if (n <= 0) {
@@ -136,7 +151,7 @@
         window.location.href = '../../index.html';
         return;
       }
-      countEl.textContent = n;
+      countEl.textContent = n + '.';
     }, 1500);
   }
 </script>
