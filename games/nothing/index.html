@@ -118,7 +118,11 @@
   }, 120000);
 
   setTimeout(function () {
-    typeLine('okay, you win. you can close this game now.', 500);
+    typeLine('okay, you win. you can close this game now.', 500, function () {
+      setTimeout(function () {
+        window.location.href = '../../index.html';
+      }, 3000);
+    });
   }, 300000);
 </script>
 </body>
