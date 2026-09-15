@@ -119,11 +119,26 @@
 
   setTimeout(function () {
     typeLine('okay, you win. you can close this game now.', 500, function () {
-      setTimeout(function () {
-        window.location.href = '../../index.html';
-      }, 3000);
+      setTimeout(startCountdown, 1500);
     });
   }, 300000);
+
+  function startCountdown() {
+    var countEl = document.createElement('div');
+    countEl.className = 'line';
+    linesEl.appendChild(countEl);
+    var n = 5;
+    countEl.textContent = n;
+    var iv = setInterval(function () {
+      n--;
+      if (n <= 0) {
+        clearInterval(iv);
+        window.location.href = '../../index.html';
+        return;
+      }
+      countEl.textContent = n;
+    }, 1500);
+  }
 </script>
 </body>
 </html>
