@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>404 — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16.5' r='13.5' fill='%23fffaf7' stroke='%2323201d' stroke-width='2.6'/%3E%3Cellipse cx='10' cy='13.2' rx='4' ry='5' fill='%2323201d' transform='rotate(-5 10 13.2)'/%3E%3Cellipse cx='22' cy='12.8' rx='4.3' ry='5.4' fill='%2323201d' transform='rotate(5 22 12.8)'/%3E%3Cpath d='M6 8 L10 6.6' stroke='%23ff5a1f' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M26 7.5 L21.8 6.4' stroke='%23ff5a1f' stroke-width='1.8' stroke-linecap='round'/%3E%3Cellipse cx='16' cy='23.5' rx='6.2' ry='5.4' fill='%2323201d' transform='rotate(-2 16 23.5)'/%3E%3Cellipse cx='16' cy='25' rx='2.8' ry='1.6' fill='%23ff5a1f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --ink: #23201d;
+    --ink-dim: #766f68;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 90px 18px 40px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (max-width: 960px) {
+    .corner-badge { top: 30px; left: 14px; font-size: 22px; }
+    body { padding-top: 96px; }
+  }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+
+  .wrap { width: 100%; max-width: 460px; text-align: center; margin: 0 auto; }
+
+  .big-404 {
+    font-size: clamp(5rem, 22vw, 9rem);
+    line-height: 1;
+    color: var(--orange);
+    text-shadow: 5px 6px 0 rgba(35,32,29,0.14);
+  }
+  h1 { font-size: clamp(1.5rem, 5vw, 2rem); margin: 4px 0 10px; }
+  .sub { font-size: 0.95rem; color: var(--ink-dim); line-height: 1.6; max-width: 380px; margin: 0 auto 28px; }
+  .sub b { color: var(--ink); }
+
+  .home-btn {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.2rem;
+    letter-spacing: 0.03em;
+    background: var(--orange);
+    color: #fff;
+    text-decoration: none;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 12px 34px;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.2);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .home-btn:hover { transform: translateY(-2px); box-shadow: 5px 7px 0 rgba(35,32,29,0.24); }
+  .home-btn:active { transform: translateY(0); box-shadow: 2px 3px 0 rgba(35,32,29,0.2); }
+</style>
+</head>
+<body>
+<a class="corner-badge" href="/">Weird<br>Little<br>Games.</a>
+
+<div class="wrap">
+  <div class="big-404">404</div>
+  <h1>this page doesn't exist.</h1>
+  <p class="sub">You found the one broken link on a site full of <b>working</b> weird little games. Impressive, honestly.</p>
+  <a class="home-btn" href="/">back to the games</a>
+</div>
+
+</body>
+</html>
