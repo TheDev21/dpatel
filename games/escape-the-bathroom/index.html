@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Escape the Bathroom — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23fff0e8'/%3E%3Crect x='7' y='6' width='18' height='20' rx='2' fill='%23fffaf7' stroke='%2323201d' stroke-width='2'/%3E%3Ccircle cx='20' cy='16' r='1.6' fill='%2323201d'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --ink: #23201d;
+    --ink-dim: #56504a;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --teal: #1f8a70;
+    --gold: #e0b400;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    justify-content: center;
+    padding: 90px 18px 60px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (max-width: 960px) {
+    .corner-badge { top: 30px; left: 14px; font-size: 22px; }
+    body { padding-top: 96px; }
+  }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+
+  .wrap { width: 100%; max-width: 460px; text-align: center; margin: 0 auto; }
+
+  h1 { font-size: clamp(1.8rem, 6vw, 2.6rem); margin: 0 0 2px; }
+  h1 span { color: var(--orange); }
+  .tagline { font-size: 0.82rem; color: var(--ink-dim); margin: 0 0 14px; }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-bottom: 16px;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+  }
+  .stats-row b { color: var(--ink); font-size: 1rem; }
+
+  .scene {
+    position: relative;
+    border: 3px solid var(--ink);
+    border-radius: 18px;
+    background: #e7dfd4;
+    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+  }
+  .scene svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+  .hotspot {
+    position: absolute;
+    border: none;
+    background: rgba(255,255,255,0.001);
+    cursor: pointer;
+    padding: 0;
+  }
+  .hotspot:hover { outline: 2px dashed var(--orange); outline-offset: 2px; }
+
+  .clue-pop {
+    position: fixed;
+    z-index: 90;
+    max-width: 260px;
+    background: var(--card-bg);
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 5px 6px 0 rgba(35,32,29,0.2);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    text-align: left;
+    opacity: 0;
+    pointer-events: none;
+    transform: scale(0.1);
+    transition: opacity 0.18s ease, transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .clue-pop.show { opacity: 1; pointer-events: auto; transform: scale(1); }
+  .clue-pop .close-x {
+    position: absolute;
+    top: 6px; right: 10px;
+    cursor: pointer;
+    color: var(--ink-dim);
+    font-size: 0.9rem;
+  }
+  .clue-pop .close-x:hover { color: var(--orange); }
+
+  .keypad-row {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .keypad-label { font-size: 0.85rem; color: var(--ink-dim); }
+  .keypad-input-row { display: flex; gap: 8px; }
+  #codeInput {
+    font-family: 'DM Mono', monospace;
+    font-size: 1.1rem;
+    letter-spacing: 0.3em;
+    text-align: center;
+    width: 130px;
+    padding: 10px 8px;
+    border: 3px solid var(--ink);
+    border-radius: 10px;
+    background: var(--card-bg);
+    color: var(--ink);
+  }
+  #codeInput:focus { outline: none; border-color: var(--orange); }
+  .go-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+    background: var(--orange);
+    color: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 24px;
+    cursor: pointer;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.2);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .go-btn:hover { transform: translateY(-2px); box-shadow: 5px 7px 0 rgba(35,32,29,0.24); }
+  .go-btn:active { transform: translateY(0); box-shadow: 2px 3px 0 rgba(35,32,29,0.2); }
+
+  .shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+
+  .feedback { min-height: 1.4em; font-size: 0.85rem; margin-top: 8px; }
+  .feedback.bad { color: var(--red); }
+  .feedback.good { color: var(--teal); }
+
+  .win-wrap { display: none; flex-direction: column; align-items: center; gap: 10px; }
+  .win-wrap.show { display: flex; }
+  .win-time {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.6rem;
+    color: var(--gold);
+  }
+  .win-line { font-size: 0.95rem; color: var(--ink-dim); max-width: 320px; }
+</style>
+</head>
+<body>
+<a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
+
+<div class="wrap">
+
+  <h1>Escape the <span>Bathroom</span></h1>
+  <p class="tagline">find the code. get out. never speak of this again.</p>
+
+  <div class="stats-row">
+    <span>attempts: <b id="attemptsStat">0</b></span>
+    <span>best time: <b id="bestStat">&mdash;</b></span>
+  </div>
+
+  <div id="playArea">
+    <div class="scene" id="scene">
+      <svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="#d9cfc0"/>
+        <rect x="0" y="220" width="400" height="80" fill="#b9ada0"/>
+        <rect x="0" y="216" width="400" height="6" fill="#23201d" opacity="0.3"/>
+
+        <!-- mirror + sink -->
+        <rect x="20" y="30" width="90" height="70" rx="4" fill="#cfe7ea" stroke="#23201d" stroke-width="3"/>
+        <rect x="30" y="40" width="70" height="50" fill="#e8f4f5" opacity="0.6"/>
+        <ellipse cx="65" cy="210" rx="45" ry="14" fill="#e7e0d4" stroke="#23201d" stroke-width="3"/>
+        <rect x="45" y="196" width="40" height="16" rx="3" fill="#dcd4c6" stroke="#23201d" stroke-width="2.5"/>
+
+        <!-- sticky note on mirror -->
+        <g id="stickyNote" class="hotspot-visual">
+          <rect x="76" y="46" width="26" height="24" fill="#fff28a" stroke="#23201d" stroke-width="1.6" transform="rotate(6 89 58)"/>
+        </g>
+
+        <!-- stall door -->
+        <rect x="150" y="20" width="100" height="190" rx="2" fill="#c9c2b3" stroke="#23201d" stroke-width="3.5"/>
+        <circle cx="235" cy="120" r="5" fill="#23201d"/>
+        <!-- graffiti -->
+        <g id="graffiti" class="hotspot-visual">
+          <path d="M165,70 Q180,60 195,72 Q205,80 165,90" fill="none" stroke="#ff5a1f" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M168,105 L215,115 M168,115 L215,105" stroke="#1f8a70" stroke-width="2" stroke-linecap="round"/>
+        </g>
+
+        <!-- employee of the month photo -->
+        <g id="photo" class="hotspot-visual">
+          <rect x="280" y="35" width="55" height="65" rx="2" fill="#fffaf7" stroke="#23201d" stroke-width="3"/>
+          <circle cx="307" cy="60" r="12" fill="#e0b400" stroke="#23201d" stroke-width="2"/>
+          <path d="M292,88 Q307,78 322,88" fill="none" stroke="#23201d" stroke-width="2"/>
+        </g>
+
+        <!-- trash can -->
+        <g id="trashcan" class="hotspot-visual">
+          <path d="M295,150 L305,210 L345,210 L355,150 Z" fill="#8b8378" stroke="#23201d" stroke-width="3"/>
+          <rect x="290" y="142" width="70" height="10" rx="2" fill="#6b6459" stroke="#23201d" stroke-width="2.5"/>
+          <path d="M310,158 L307,172" stroke="#fffaf7" stroke-width="4" stroke-linecap="round"/>
+        </g>
+
+        <!-- exit door -->
+        <rect x="0" y="10" width="4" height="0" fill="none"/>
+      </svg>
+
+      <button class="hotspot" id="btnSticky" style="left:19%; top:15%; width:9%; height:9%;" aria-label="sticky note"></button>
+      <button class="hotspot" id="btnGraffiti" style="left:41%; top:22%; width:15%; height:14%;" aria-label="graffiti"></button>
+      <button class="hotspot" id="btnPhoto" style="left:70%; top:11%; width:14%; height:22%;" aria-label="employee photo"></button>
+      <button class="hotspot" id="btnTrash" style="left:73%; top:47%; width:16%; height:22%;" aria-label="trash can"></button>
+    </div>
+
+    <div class="keypad-row">
+      <div class="keypad-label">exit door keypad</div>
+      <div class="keypad-input-row">
+        <input id="codeInput" maxlength="4" inputmode="numeric" placeholder="----">
+        <button class="go-btn" id="submitBtn">try</button>
+      </div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+
+  <div class="win-wrap" id="winWrap">
+    <div class="win-time" id="winTime">0:00</div>
+    <p class="win-line">You have successfully escaped a Wendy's bathroom. This is your victory.</p>
+    <button class="go-btn" id="againBtn">escape again</button>
+  </div>
+
+</div>
+
+<div class="clue-pop" id="cluePop">
+  <span class="close-x" id="clueClose">&times;</span>
+  <div id="clueText"></div>
+</div>
+
+<script>
+  var scene = document.getElementById('scene');
+  var playArea = document.getElementById('playArea');
+  var winWrap = document.getElementById('winWrap');
+  var winTime = document.getElementById('winTime');
+  var attemptsStat = document.getElementById('attemptsStat');
+  var bestStat = document.getElementById('bestStat');
+  var codeInput = document.getElementById('codeInput');
+  var submitBtn = document.getElementById('submitBtn');
+  var feedback = document.getElementById('feedback');
+  var cluePop = document.getElementById('cluePop');
+  var clueText = document.getElementById('clueText');
+  var clueClose = document.getElementById('clueClose');
+  var againBtn = document.getElementById('againBtn');
+
+  var ATTEMPTS_KEY = 'escape-bathroom-attempts';
+  var BEST_KEY = 'escape-bathroom-best';
+  var attempts = 0, bestMs = null;
+  try { attempts = parseInt(localStorage.getItem(ATTEMPTS_KEY), 10) || 0; } catch (e) {}
+  try {
+    var storedBest = localStorage.getItem(BEST_KEY);
+    bestMs = storedBest !== null ? parseFloat(storedBest) : null;
+  } catch (e) {}
+
+  function fmtTime(ms) {
+    var totalSec = Math.floor(ms / 1000);
+    var m = Math.floor(totalSec / 60);
+    var s = totalSec % 60;
+    return m + ':' + String(s).padStart(2, '0');
+  }
+  function renderStats() {
+    attemptsStat.textContent = attempts;
+    bestStat.textContent = bestMs === null ? '—' : fmtTime(bestMs);
+  }
+  renderStats();
+
+  var ORDER_NUM = '4271';
+  var CODE = ORDER_NUM.split('').reverse().join(''); // 1724
+  var startTime = performance.now();
+
+  var CLUES = {
+    btnSticky: 'A sticky note on the mirror: "if you can read this, wash your hands."',
+    btnGraffiti: 'Graffiti on the stall door: "the code is the order # ... backwards."',
+    btnPhoto: 'Employee of the Month: someone named Gary. He looks tired.',
+    btnTrash: 'A receipt in the trash: "ORDER #4271 — thank you for your business."'
+  };
+
+  function showClue(btnId, text) {
+    var btn = document.getElementById(btnId);
+    var rect = btn.getBoundingClientRect();
+    clueText.textContent = text;
+    cluePop.style.left = Math.min(rect.left, window.innerWidth - 280) + 'px';
+    cluePop.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+    cluePop.classList.add('show');
+  }
+  function hideClue() {
+    cluePop.classList.remove('show');
+  }
+
+  Object.keys(CLUES).forEach(function (id) {
+    document.getElementById(id).addEventListener('click', function (e) {
+      e.stopPropagation();
+      showClue(id, CLUES[id]);
+    });
+  });
+  clueClose.addEventListener('click', hideClue);
+  document.addEventListener('click', function (e) {
+    if (!cluePop.contains(e.target) && !e.target.classList.contains('hotspot')) hideClue();
+  });
+
+  function tryCode() {
+    var val = codeInput.value.trim();
+    if (val === CODE) {
+      var elapsed = performance.now() - startTime;
+      attempts++;
+      if (bestMs === null || elapsed < bestMs) bestMs = elapsed;
+      try {
+        localStorage.setItem(ATTEMPTS_KEY, String(attempts));
+        localStorage.setItem(BEST_KEY, String(bestMs));
+      } catch (e) {}
+      renderStats();
+      winTime.textContent = fmtTime(elapsed);
+      playArea.style.display = 'none';
+      winWrap.classList.add('show');
+      hideClue();
+    } else {
+      feedback.textContent = 'nope, door stays shut.';
+      feedback.className = 'feedback bad';
+      codeInput.classList.add('shake');
+      setTimeout(function () { codeInput.classList.remove('shake'); }, 400);
+    }
+  }
+
+  submitBtn.addEventListener('click', tryCode);
+  codeInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') tryCode();
+  });
+
+  againBtn.addEventListener('click', function () {
+    startTime = performance.now();
+    codeInput.value = '';
+    feedback.textContent = '';
+    winWrap.classList.remove('show');
+    playArea.style.display = '';
+  });
+</script>
+</body>
+</html>
