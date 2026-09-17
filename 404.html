@@ -99,10 +99,25 @@
 
 <div class="wrap">
   <div class="big-404">404</div>
-  <h1>this page doesn't exist.</h1>
-  <p class="sub">You found the one broken link on a site full of <b>working</b> weird little games. Impressive, honestly.</p>
+  <h1 id="roastLine">this page doesn't exist.</h1>
+  <p class="sub" id="roastSub">You weren't supposed to find this. Nobody was.</p>
   <a class="home-btn" href="/">back to the games</a>
 </div>
 
+<script>
+  var ROASTS = [
+    ["this page doesn't exist.", "You weren't supposed to find this. Nobody was."],
+    ["yeah, that's not a thing.", "You typed a URL wrong and somehow feel proud of it right now."],
+    ["nope.", "Bold of you to assume every link on this site works."],
+    ["404, my dude.", "You clicked something that was never meant to be clicked. Legend."],
+    ["this page moved to a better site.", "It didn't. It just never existed. But sure, let's say that."],
+    ["congrats, you broke it.", "Or it was already broken. Either way, you're the one standing here."],
+    ["there's nothing here.", "Unlike our other game about that. This one wasn't on purpose."],
+    ["big empty.", "Somehow emptier than 'nothing.', and that one was intentional."]
+  ];
+  var pick = ROASTS[Math.floor(Math.random() * ROASTS.length)];
+  document.getElementById('roastLine').textContent = pick[0];
+  document.getElementById('roastSub').textContent = pick[1];
+</script>
 </body>
 </html>
