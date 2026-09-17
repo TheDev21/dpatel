@@ -84,12 +84,16 @@
 
   .scene {
     position: relative;
-    border: 3px solid var(--ink);
-    border-radius: 18px;
+    width: 100vw;
+    margin-left: 50%;
+    transform: translateX(-50%);
     background: #e7dfd4;
-    box-shadow: 5px 6px 0 rgba(35,32,29,0.14);
     aspect-ratio: 4 / 3;
+    max-height: 60vh;
     overflow: hidden;
+  }
+  @media (min-width: 620px) {
+    .scene { width: 100%; margin-left: 0; transform: none; }
   }
   .scene svg { position: absolute; inset: 0; width: 100%; height: 100%; }
 
