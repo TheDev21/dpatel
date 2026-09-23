@@ -79,7 +79,9 @@
     font-size: 0.8rem;
     color: var(--ink-dim);
     margin: 0 0 10px;
+    visibility: hidden;
   }
+  .remaining.show { visibility: visible; }
   .remaining b { color: var(--orange); font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; }
   .remaining.danger b { color: var(--red); }
 
@@ -323,6 +325,7 @@
 
   function setRemaining(n) {
     remainingCountEl.textContent = n;
+    remainingRowEl.classList.add('show');
     remainingRowEl.classList.toggle('danger', n <= 3);
   }
 
@@ -335,7 +338,8 @@
     feedbackEl.textContent = ' ';
     feedbackEl.className = 'feedback';
     endWrap.classList.remove('show');
-    setRemaining(pool.length);
+    remainingRowEl.classList.remove('show');
+    remainingCountEl.textContent = pool.length;
     buildGrid();
     buildKeyboard();
   }
