@@ -75,9 +75,12 @@
   .grid {
     display: grid;
     grid-template-rows: repeat(6, 1fr);
-    gap: 7px;
-    margin: 0 auto 14px;
-    width: min(92vw, 380px, calc((100vh - 260px) / 1.22));
+    gap: 5px;
+    margin: 0 auto 10px;
+    width: 240px;
+  }
+  @media (min-width: 700px) {
+    .grid { gap: 7px; margin: 0 auto 14px; width: min(92vw, 380px, calc((100vh - 260px) / 1.22)); }
   }
   .grid-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .grid-row.shake { animation: shake 0.4s ease; }
@@ -96,7 +99,7 @@
     align-items: center;
     justify-content: center;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(1.5rem, 6vw, 2.3rem);
+    font-size: 1.5rem;
     color: var(--ink);
     background: var(--card-bg);
     text-transform: uppercase;
@@ -107,25 +110,34 @@
   .tile.yellow { background: var(--gold); border-color: var(--gold); color: #fff; }
   .tile.gray { background: var(--gray); border-color: var(--gray); color: #fff; }
   .tile.pop { transform: scale(1.08); }
+  @media (min-width: 700px) {
+    .tile { font-size: clamp(1.5rem, 6vw, 2.3rem); }
+  }
 
-  .keyboard { display: flex; flex-direction: column; gap: 8px; align-items: center; }
-  .kb-row { display: flex; gap: 6px; }
+  .keyboard { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .kb-row { display: flex; gap: 4px; }
   .key {
     font-family: 'DM Mono', monospace;
     font-weight: 500;
-    font-size: clamp(0.8rem, 2.6vw, 1rem);
+    font-size: 0.72rem;
     border: none;
-    border-radius: 6px;
+    border-radius: 5px;
     background: #e5ddd0;
     color: var(--ink);
-    padding: clamp(12px, 3vw, 16px) 0;
-    width: clamp(30px, 8vw, 42px);
+    padding: 10px 0;
+    width: 26px;
     text-align: center;
     cursor: pointer;
     text-transform: uppercase;
     transition: background 0.15s ease, color 0.15s ease;
   }
-  .key.wide { width: clamp(50px, 13vw, 66px); font-size: clamp(0.68rem, 2.2vw, 0.8rem); }
+  .key.wide { width: 44px; font-size: 0.62rem; }
+  @media (min-width: 700px) {
+    .keyboard { gap: 8px; }
+    .kb-row { gap: 6px; }
+    .key { font-size: clamp(0.8rem, 2.6vw, 1rem); border-radius: 6px; padding: clamp(12px, 3vw, 16px) 0; width: clamp(30px, 8vw, 42px); }
+    .key.wide { width: clamp(50px, 13vw, 66px); font-size: clamp(0.68rem, 2.2vw, 0.8rem); }
+  }
   .key:active { transform: translateY(1px); }
   .key.green { background: var(--teal); color: #fff; }
   .key.yellow { background: var(--gold); color: #fff; }
