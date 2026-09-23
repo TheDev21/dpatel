@@ -72,8 +72,16 @@
 
   .wrap { width: 100%; max-width: 420px; text-align: center; margin: 0 auto; }
 
-  h1 { font-size: clamp(1.4rem, 5vw, 2rem); margin: 0 0 8px; }
+  h1 { font-size: clamp(1.4rem, 5vw, 2rem); margin: 0 0 6px; }
   h1 span { color: var(--orange); }
+
+  .remaining {
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+    margin: 0 0 10px;
+  }
+  .remaining b { color: var(--orange); font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; }
+  .remaining.danger b { color: var(--red); }
 
   .grid {
     display: grid;
@@ -83,7 +91,7 @@
     width: 240px;
   }
   @media (min-width: 700px) {
-    .grid { gap: 7px; margin: 0 auto 14px; width: min(92vw, 380px, calc((100dvh - 340px) / 1.22)); }
+    .grid { gap: 7px; margin: 0 auto 14px; width: min(92vw, 380px, calc((100dvh - 372px) / 1.22)); }
   }
   .grid-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .grid-row.shake { animation: shake 0.4s ease; }
@@ -186,6 +194,8 @@
 
   <h1>Avoi<span>dle</span></h1>
 
+  <div class="remaining" id="remainingRow">possible answers left: <b id="remainingCount">2315</b></div>
+
   <div class="grid" id="grid"></div>
 
   <div class="feedback" id="feedback">&nbsp;</div>
@@ -208,6 +218,8 @@
 
   var gridEl = document.getElementById('grid');
   var feedbackEl = document.getElementById('feedback');
+  var remainingCountEl = document.getElementById('remainingCount');
+  var remainingRowEl = document.getElementById('remainingRow');
   var keyboardEl = document.getElementById('keyboard');
   var endWrap = document.getElementById('endWrap');
   var endTitle = document.getElementById('endTitle');
@@ -309,6 +321,11 @@
     }
   }
 
+  function setRemaining(n) {
+    remainingCountEl.textContent = n;
+    remainingRowEl.classList.toggle('danger', n <= 3);
+  }
+
   function newGame() {
     secret = answersList[Math.floor(Math.random() * answersList.length)];
     pool = answersList.slice();
@@ -318,6 +335,7 @@
     feedbackEl.textContent = ' ';
     feedbackEl.className = 'feedback';
     endWrap.classList.remove('show');
+    setRemaining(pool.length);
     buildGrid();
     buildKeyboard();
   }
@@ -378,6 +396,7 @@
     pool = pool.filter(function (candidate) {
       return patternsEqual(scoreGuess(guess, candidate), pattern);
     });
+    setRemaining(pool.length);
 
     if (pool.length === 1) {
       flashFeedback("there's only one word left it could be...", 'tense');
