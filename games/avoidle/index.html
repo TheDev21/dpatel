@@ -430,7 +430,7 @@
 
   var MAX_ROWS = 6;
   var secret, pool, curRow, curCol, rowsEls, gameOver, keyState;
-  var knownGreen, knownMinCounts;
+  var knownGreen, knownMinCounts, knownExcluded;
   var STATE_KEY = 'avoidle-state';
 
   function scoreGuess(guess, target) {
@@ -562,6 +562,10 @@
     Object.keys(seenCounts).forEach(function (letter) {
       knownMinCounts[letter] = Math.max(knownMinCounts[letter] || 0, seenCounts[letter]);
     });
+    guess.split('').forEach(function (ch, i) {
+      if (pattern[i] === 'gray') knownExcluded.add(ch);
+    });
+    Object.keys(knownMinCounts).forEach(function (letter) { knownExcluded.delete(letter); });
     var isWin = patternsEqual(pattern, ['green', 'green', 'green', 'green', 'green']);
     if (!isWin) {
       pool = pool.filter(function (candidate) { return patternsEqual(scoreGuess(guess, candidate), pattern); });
@@ -579,6 +583,7 @@
     gameOver = false;
     knownGreen = [null, null, null, null, null];
     knownMinCounts = {};
+    knownExcluded = new Set();
     feedbackEl.textContent = ' ';
     feedbackEl.className = 'feedback';
     endWrap.classList.remove('show');
@@ -643,14 +648,19 @@
   function hardModeViolation(guess) {
     for (var i = 0; i < 5; i++) {
       if (knownGreen[i] && guess[i] !== knownGreen[i]) {
-        return 'position ' + (i + 1) + ' must be ' + knownGreen[i].toUpperCase() + '.';
+        return "that doesn't fit what you know.";
       }
     }
     var counts = {};
     guess.split('').forEach(function (ch) { counts[ch] = (counts[ch] || 0) + 1; });
     for (var letter in knownMinCounts) {
       if ((counts[letter] || 0) < knownMinCounts[letter]) {
-        return 'guess must include ' + letter.toUpperCase() + '.';
+        return "that doesn't fit what you know.";
+      }
+    }
+    for (var j = 0; j < 5; j++) {
+      if (knownExcluded.has(guess[j])) {
+        return "that doesn't fit what you know.";
       }
     }
     return null;
