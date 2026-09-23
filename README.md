@@ -85,6 +85,13 @@ backend, no build step.
   typewriter font: "why you still here?" at 30 seconds, a jab at 2
   minutes, and "okay, you win. you can close this game now." at 5.
   Real wall-clock time, no speeding it up.
+- **Avoidle** (`games/avoidle/`) — Wordle, but guessing the word
+  correctly means you lose. Six rows, real Wordle rules (official
+  2,315-word answer list, ~14,855-word valid-guess list, correct
+  duplicate-letter coloring), and a live "possible answers remaining"
+  counter that narrows with every guess. Survive all 6 rows without
+  ever landing on the secret to win. Games played / survived tracked
+  in `localStorage`.
 - Daily Vibe Check, Stack the Nonsense — planned, not yet built.
 
 ## Style

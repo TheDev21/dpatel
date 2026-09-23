@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avoidle — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23fff0e8'/%3E%3Crect x='5' y='13' width='6' height='6' rx='1' fill='%231f8a70'/%3E%3Crect x='13' y='13' width='6' height='6' rx='1' fill='%23e0b400'/%3E%3Crect x='21' y='13' width='6' height='6' rx='1' fill='%2356504a'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --ink: #23201d;
+    --ink-dim: #56504a;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --teal: #1f8a70;
+    --gold: #e0b400;
+    --gray: #8a8279;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
+    background-size: 26px 26px;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    display: flex;
+    justify-content: center;
+    padding: 90px 18px 50px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @media (max-width: 960px) {
+    .corner-badge { top: 30px; left: 14px; font-size: 22px; }
+    body { padding-top: 96px; }
+  }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+
+  .wrap { width: 100%; max-width: 420px; text-align: center; margin: 0 auto; }
+
+  h1 { font-size: clamp(1.8rem, 6vw, 2.6rem); margin: 0 0 2px; }
+  h1 span { color: var(--orange); }
+  .tagline { font-size: 0.8rem; color: var(--ink-dim); margin: 0 0 14px; line-height: 1.5; }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    margin-bottom: 16px;
+    font-size: 0.78rem;
+    color: var(--ink-dim);
+    flex-wrap: wrap;
+  }
+  .stats-row b { color: var(--ink); font-size: 0.95rem; }
+
+  .remaining {
+    font-size: 0.85rem;
+    color: var(--ink-dim);
+    margin-bottom: 14px;
+  }
+  .remaining b { color: var(--orange); font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; }
+  .remaining.danger b { color: var(--red); }
+
+  .grid {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    gap: 6px;
+    margin: 0 auto 18px;
+    max-width: 300px;
+  }
+  .grid-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+  .grid-row.shake { animation: shake 0.4s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+  .tile {
+    aspect-ratio: 1;
+    border: 2.5px solid #cfc4b8;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    color: var(--ink);
+    background: var(--card-bg);
+    text-transform: uppercase;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
+  }
+  .tile.filled { border-color: var(--ink-dim); }
+  .tile.green { background: var(--teal); border-color: var(--teal); color: #fff; }
+  .tile.yellow { background: var(--gold); border-color: var(--gold); color: #fff; }
+  .tile.gray { background: var(--gray); border-color: var(--gray); color: #fff; }
+  .tile.pop { transform: scale(1.08); }
+
+  .keyboard { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+  .kb-row { display: flex; gap: 4px; }
+  .key {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 0.72rem;
+    border: none;
+    border-radius: 5px;
+    background: #e5ddd0;
+    color: var(--ink);
+    padding: 10px 0;
+    width: 26px;
+    text-align: center;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  .key.wide { width: 44px; font-size: 0.62rem; }
+  .key:active { transform: translateY(1px); }
+  .key.green { background: var(--teal); color: #fff; }
+  .key.yellow { background: var(--gold); color: #fff; }
+  .key.gray { background: var(--gray); color: #fff; }
+
+  .feedback {
+    min-height: 1.4em;
+    font-size: 0.82rem;
+    margin: 12px 0 4px;
+    color: var(--ink-dim);
+  }
+  .feedback.warn { color: var(--red); }
+  .feedback.tense { color: var(--orange); font-weight: 500; }
+
+  .end-wrap { display: none; flex-direction: column; align-items: center; gap: 10px; margin-top: 10px; }
+  .end-wrap.show { display: flex; }
+  .end-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.1rem; }
+  .end-title.lose { color: var(--red); }
+  .end-title.win { color: var(--teal); }
+  .end-line { font-size: 0.9rem; color: var(--ink-dim); max-width: 320px; }
+  .end-line b { color: var(--ink); }
+  .again-btn {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.1rem;
+    letter-spacing: 0.03em;
+    background: var(--orange);
+    color: #fff;
+    border: 3px solid var(--ink);
+    border-radius: 999px;
+    padding: 10px 28px;
+    cursor: pointer;
+    box-shadow: 4px 5px 0 rgba(35,32,29,0.2);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .again-btn:hover { transform: translateY(-2px); box-shadow: 5px 7px 0 rgba(35,32,29,0.24); }
+  .again-btn:active { transform: translateY(0); box-shadow: 2px 3px 0 rgba(35,32,29,0.2); }
+</style>
+</head>
+<body>
+<a class="corner-badge" href="../../index.html">Weird<br>Little<br>Games.</a>
+
+<div class="wrap">
+
+  <h1>Avoi<span>dle</span></h1>
+  <p class="tagline">it's Wordle, but guessing the word correctly means you lose. survive all 6 rows.</p>
+
+  <div class="stats-row">
+    <span>played: <b id="playedStat">0</b></span>
+    <span>survived: <b id="survivedStat">0</b></span>
+  </div>
+
+  <div class="remaining" id="remainingRow">possible answers: <b id="remainingCount">2315</b></div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="feedback" id="feedback">&nbsp;</div>
+
+  <div class="keyboard" id="keyboard"></div>
+
+  <div class="end-wrap" id="endWrap">
+    <div class="end-title" id="endTitle">you survived.</div>
+    <p class="end-line" id="endLine">The word was <b id="endWord">-----</b>.</p>
+    <button class="again-btn" id="againBtn">play again</button>
+  </div>
+
+</div>
+
+<script src="answers.js"></script>
+<script src="guesses.js"></script>
+<script>
+  var answersList = window.AVOIDLE_ANSWERS;
+  var guessSet = new Set(window.AVOIDLE_GUESSES);
+
+  var gridEl = document.getElementById('grid');
+  var feedbackEl = document.getElementById('feedback');
+  var remainingCountEl = document.getElementById('remainingCount');
+  var remainingRowEl = document.getElementById('remainingRow');
+  var keyboardEl = document.getElementById('keyboard');
+  var endWrap = document.getElementById('endWrap');
+  var endTitle = document.getElementById('endTitle');
+  var endLine = document.getElementById('endLine');
+  var endWord = document.getElementById('endWord');
+  var againBtn = document.getElementById('againBtn');
+  var playedStat = document.getElementById('playedStat');
+  var survivedStat = document.getElementById('survivedStat');
+
+  var PLAYED_KEY = 'avoidle-played';
+  var SURVIVED_KEY = 'avoidle-survived';
+  var played = 0, survived = 0;
+  try { played = parseInt(localStorage.getItem(PLAYED_KEY), 10) || 0; } catch (e) {}
+  try { survived = parseInt(localStorage.getItem(SURVIVED_KEY), 10) || 0; } catch (e) {}
+  function renderProgressStats() {
+    playedStat.textContent = played;
+    survivedStat.textContent = survived;
+  }
+  renderProgressStats();
+
+  var MAX_ROWS = 6;
+  var secret, pool, curRow, curCol, rowsEls, gameOver, keyState;
+
+  function scoreGuess(guess, target) {
+    var result = ['gray', 'gray', 'gray', 'gray', 'gray'];
+    var t = target.split('');
+    var g = guess.split('');
+    for (var i = 0; i < 5; i++) {
+      if (g[i] === t[i]) { result[i] = 'green'; t[i] = null; g[i] = null; }
+    }
+    for (var i = 0; i < 5; i++) {
+      if (g[i] !== null) {
+        var idx = t.indexOf(g[i]);
+        if (idx !== -1) { result[i] = 'yellow'; t[idx] = null; }
+      }
+    }
+    return result;
+  }
+
+  function patternsEqual(a, b) {
+    for (var i = 0; i < 5; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  function buildGrid() {
+    gridEl.innerHTML = '';
+    rowsEls = [];
+    for (var r = 0; r < MAX_ROWS; r++) {
+      var rowEl = document.createElement('div');
+      rowEl.className = 'grid-row';
+      var tiles = [];
+      for (var c = 0; c < 5; c++) {
+        var tile = document.createElement('div');
+        tile.className = 'tile';
+        rowEl.appendChild(tile);
+        tiles.push(tile);
+      }
+      gridEl.appendChild(rowEl);
+      rowsEls.push({ el: rowEl, tiles: tiles });
+    }
+  }
+
+  var KB_ROWS = ['qwertyuiop', 'asdfghjkl', 'zxcvbnm'];
+  var keyEls = {};
+  function buildKeyboard() {
+    keyboardEl.innerHTML = '';
+    keyEls = {};
+    KB_ROWS.forEach(function (rowStr, i) {
+      var rowEl = document.createElement('div');
+      rowEl.className = 'kb-row';
+      if (i === 2) {
+        var enterKey = document.createElement('button');
+        enterKey.className = 'key wide';
+        enterKey.textContent = 'enter';
+        enterKey.addEventListener('click', function () { handleKey('ENTER'); });
+        rowEl.appendChild(enterKey);
+      }
+      rowStr.split('').forEach(function (ch) {
+        var key = document.createElement('button');
+        key.className = 'key';
+        key.textContent = ch;
+        key.addEventListener('click', function () { handleKey(ch.toUpperCase()); });
+        rowEl.appendChild(key);
+        keyEls[ch] = key;
+      });
+      if (i === 2) {
+        var backKey = document.createElement('button');
+        backKey.className = 'key wide';
+        backKey.textContent = 'del';
+        backKey.addEventListener('click', function () { handleKey('BACKSPACE'); });
+        rowEl.appendChild(backKey);
+      }
+      keyboardEl.appendChild(rowEl);
+    });
+  }
+
+  var COLOR_RANK = { gray: 0, yellow: 1, green: 2 };
+  function updateKeyColor(letter, color) {
+    var key = keyEls[letter.toLowerCase()];
+    if (!key) return;
+    var current = key.dataset.color;
+    if (!current || COLOR_RANK[color] > COLOR_RANK[current]) {
+      key.dataset.color = color;
+      key.classList.remove('green', 'yellow', 'gray');
+      key.classList.add(color);
+    }
+  }
+
+  function setRemaining(n) {
+    remainingCountEl.textContent = n;
+    remainingRowEl.classList.toggle('danger', n <= 3);
+  }
+
+  function newGame() {
+    secret = answersList[Math.floor(Math.random() * answersList.length)];
+    pool = answersList.slice();
+    curRow = 0;
+    curCol = 0;
+    gameOver = false;
+    feedbackEl.textContent = ' ';
+    feedbackEl.className = 'feedback';
+    endWrap.classList.remove('show');
+    setRemaining(pool.length);
+    buildGrid();
+    buildKeyboard();
+  }
+
+  function currentGuess() {
+    return rowsEls[curRow].tiles.map(function (t) { return t.textContent.toLowerCase(); }).join('');
+  }
+
+  function handleKey(key) {
+    if (gameOver) return;
+    if (key === 'ENTER') {
+      submitGuess();
+    } else if (key === 'BACKSPACE') {
+      if (curCol > 0) {
+        curCol--;
+        var tile = rowsEls[curRow].tiles[curCol];
+        tile.textContent = '';
+        tile.classList.remove('filled');
+      }
+    } else if (/^[A-Z]$/.test(key)) {
+      if (curCol < 5) {
+        var tile = rowsEls[curRow].tiles[curCol];
+        tile.textContent = key;
+        tile.classList.add('filled');
+        curCol++;
+      }
+    }
+  }
+
+  function flashFeedback(text, cls) {
+    feedbackEl.textContent = text;
+    feedbackEl.className = 'feedback' + (cls ? ' ' + cls : '');
+  }
+
+  function submitGuess() {
+    var guess = currentGuess();
+    if (guess.length < 5) {
+      flashFeedback('not enough letters.', 'warn');
+      shakeRow();
+      return;
+    }
+    if (!guessSet.has(guess)) {
+      flashFeedback('not a valid word.', 'warn');
+      shakeRow();
+      return;
+    }
+
+    var pattern = scoreGuess(guess, secret);
+    revealRow(pattern);
+
+    guess.split('').forEach(function (ch, i) { updateKeyColor(ch, pattern[i]); });
+
+    if (patternsEqual(pattern, ['green', 'green', 'green', 'green', 'green'])) {
+      setTimeout(function () { endGame(false); }, 700);
+      return;
+    }
+
+    pool = pool.filter(function (candidate) {
+      return patternsEqual(scoreGuess(guess, candidate), pattern);
+    });
+    setRemaining(pool.length);
+
+    if (pool.length === 1) {
+      flashFeedback("there's only one word left it could be...", 'tense');
+    } else if (pool.length <= 3) {
+      flashFeedback('getting dangerously narrow.', 'tense');
+    } else {
+      flashFeedback(' ');
+    }
+
+    curRow++;
+    curCol = 0;
+
+    if (curRow >= MAX_ROWS) {
+      setTimeout(function () { endGame(true); }, 700);
+    }
+  }
+
+  function revealRow(pattern) {
+    var tiles = rowsEls[curRow].tiles;
+    pattern.forEach(function (color, i) {
+      setTimeout(function () {
+        tiles[i].classList.add(color, 'pop');
+        setTimeout(function () { tiles[i].classList.remove('pop'); }, 150);
+      }, i * 120);
+    });
+  }
+
+  function shakeRow() {
+    var rowEl = rowsEls[curRow].el;
+    rowEl.classList.add('shake');
+    setTimeout(function () { rowEl.classList.remove('shake'); }, 400);
+  }
+
+  function endGame(didSurvive) {
+    gameOver = true;
+    played++;
+    if (didSurvive) survived++;
+    try {
+      localStorage.setItem(PLAYED_KEY, String(played));
+      localStorage.setItem(SURVIVED_KEY, String(survived));
+    } catch (e) {}
+    renderProgressStats();
+
+    if (didSurvive) {
+      endTitle.textContent = 'you survived.';
+      endTitle.className = 'end-title win';
+      endLine.innerHTML = 'Six rows, never once said it. The word was <b>' + secret.toUpperCase() + '</b>.';
+    } else {
+      endTitle.textContent = 'you said it.';
+      endTitle.className = 'end-title lose';
+      endLine.innerHTML = 'The one word you had one job to avoid: <b>' + secret.toUpperCase() + '</b>.';
+    }
+    endWrap.classList.add('show');
+  }
+
+  document.addEventListener('keydown', function (e) {
+    if (gameOver) return;
+    if (e.key === 'Enter') handleKey('ENTER');
+    else if (e.key === 'Backspace') handleKey('BACKSPACE');
+    else if (/^[a-zA-Z]$/.test(e.key)) handleKey(e.key.toUpperCase());
+  });
+
+  againBtn.addEventListener('click', newGame);
+
+  newGame();
+</script>
+</body>
+</html>
