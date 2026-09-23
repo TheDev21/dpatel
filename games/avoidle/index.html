@@ -647,21 +647,15 @@
 
   function hardModeViolation(guess) {
     for (var i = 0; i < 5; i++) {
-      if (knownGreen[i] && guess[i] !== knownGreen[i]) {
-        return "that doesn't fit what you know.";
-      }
+      if (knownGreen[i] && guess[i] !== knownGreen[i]) return true;
     }
     var counts = {};
     guess.split('').forEach(function (ch) { counts[ch] = (counts[ch] || 0) + 1; });
     for (var letter in knownMinCounts) {
-      if ((counts[letter] || 0) < knownMinCounts[letter]) {
-        return "that doesn't fit what you know.";
-      }
+      if ((counts[letter] || 0) < knownMinCounts[letter]) return true;
     }
     for (var j = 0; j < 5; j++) {
-      if (knownExcluded.has(guess[j])) {
-        return "that doesn't fit what you know.";
-      }
+      if (knownExcluded.has(guess[j])) return true;
     }
     return null;
   }
@@ -680,7 +674,6 @@
     }
     var violation = hardModeViolation(guess);
     if (violation) {
-      flashFeedback(violation, 'warn');
       shakeRow();
       return;
     }
