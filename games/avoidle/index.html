@@ -21,8 +21,8 @@
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
+  html, body { height: 100%; overflow: hidden; }
   body {
-    min-height: 100vh;
     background: var(--pink);
     background-image: radial-gradient(circle, rgba(35,32,29,0.06) 1px, transparent 1px);
     background-size: 26px 26px;
@@ -30,7 +30,8 @@
     font-family: 'DM Mono', monospace;
     display: flex;
     justify-content: center;
-    padding: 90px 18px 50px;
+    align-items: center;
+    padding: 8px 18px;
   }
   h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
   a { color: inherit; text-decoration: none; }
@@ -55,7 +56,6 @@
   .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
   @media (max-width: 960px) {
     .corner-badge { top: 30px; left: 14px; font-size: 22px; }
-    body { padding-top: 96px; }
   }
   @keyframes badgeWobble {
     0%, 100% { transform: rotate(-25deg); }
@@ -69,35 +69,15 @@
 
   .wrap { width: 100%; max-width: 420px; text-align: center; margin: 0 auto; }
 
-  h1 { font-size: clamp(1.8rem, 6vw, 2.6rem); margin: 0 0 2px; }
+  h1 { font-size: clamp(1.4rem, 5vw, 2rem); margin: 0 0 8px; }
   h1 span { color: var(--orange); }
-  .tagline { font-size: 0.8rem; color: var(--ink-dim); margin: 0 0 14px; line-height: 1.5; }
-
-  .stats-row {
-    display: flex;
-    justify-content: center;
-    gap: 18px;
-    margin-bottom: 16px;
-    font-size: 0.78rem;
-    color: var(--ink-dim);
-    flex-wrap: wrap;
-  }
-  .stats-row b { color: var(--ink); font-size: 0.95rem; }
-
-  .remaining {
-    font-size: 0.85rem;
-    color: var(--ink-dim);
-    margin-bottom: 14px;
-  }
-  .remaining b { color: var(--orange); font-family: 'Bebas Neue', sans-serif; font-size: 1.2rem; }
-  .remaining.danger b { color: var(--red); }
 
   .grid {
     display: grid;
     grid-template-rows: repeat(6, 1fr);
-    gap: 6px;
-    margin: 0 auto 18px;
-    max-width: 300px;
+    gap: 5px;
+    margin: 0 auto 10px;
+    max-width: 240px;
   }
   .grid-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .grid-row.shake { animation: shake 0.4s ease; }
@@ -190,14 +170,6 @@
 <div class="wrap">
 
   <h1>Avoi<span>dle</span></h1>
-  <p class="tagline">it's Wordle, but guessing the word correctly means you lose. survive all 6 rows.</p>
-
-  <div class="stats-row">
-    <span>played: <b id="playedStat">0</b></span>
-    <span>survived: <b id="survivedStat">0</b></span>
-  </div>
-
-  <div class="remaining" id="remainingRow">possible answers: <b id="remainingCount">2315</b></div>
 
   <div class="grid" id="grid"></div>
 
@@ -221,27 +193,18 @@
 
   var gridEl = document.getElementById('grid');
   var feedbackEl = document.getElementById('feedback');
-  var remainingCountEl = document.getElementById('remainingCount');
-  var remainingRowEl = document.getElementById('remainingRow');
   var keyboardEl = document.getElementById('keyboard');
   var endWrap = document.getElementById('endWrap');
   var endTitle = document.getElementById('endTitle');
   var endLine = document.getElementById('endLine');
   var endWord = document.getElementById('endWord');
   var againBtn = document.getElementById('againBtn');
-  var playedStat = document.getElementById('playedStat');
-  var survivedStat = document.getElementById('survivedStat');
 
   var PLAYED_KEY = 'avoidle-played';
   var SURVIVED_KEY = 'avoidle-survived';
   var played = 0, survived = 0;
   try { played = parseInt(localStorage.getItem(PLAYED_KEY), 10) || 0; } catch (e) {}
   try { survived = parseInt(localStorage.getItem(SURVIVED_KEY), 10) || 0; } catch (e) {}
-  function renderProgressStats() {
-    playedStat.textContent = played;
-    survivedStat.textContent = survived;
-  }
-  renderProgressStats();
 
   var MAX_ROWS = 6;
   var secret, pool, curRow, curCol, rowsEls, gameOver, keyState;
@@ -331,11 +294,6 @@
     }
   }
 
-  function setRemaining(n) {
-    remainingCountEl.textContent = n;
-    remainingRowEl.classList.toggle('danger', n <= 3);
-  }
-
   function newGame() {
     secret = answersList[Math.floor(Math.random() * answersList.length)];
     pool = answersList.slice();
@@ -345,7 +303,6 @@
     feedbackEl.textContent = ' ';
     feedbackEl.className = 'feedback';
     endWrap.classList.remove('show');
-    setRemaining(pool.length);
     buildGrid();
     buildKeyboard();
   }
@@ -406,7 +363,6 @@
     pool = pool.filter(function (candidate) {
       return patternsEqual(scoreGuess(guess, candidate), pattern);
     });
-    setRemaining(pool.length);
 
     if (pool.length === 1) {
       flashFeedback("there's only one word left it could be...", 'tense');
@@ -448,7 +404,6 @@
       localStorage.setItem(PLAYED_KEY, String(played));
       localStorage.setItem(SURVIVED_KEY, String(survived));
     } catch (e) {}
-    renderProgressStats();
 
     if (didSurvive) {
       endTitle.textContent = 'you survived.';
