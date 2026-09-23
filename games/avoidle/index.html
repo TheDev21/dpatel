@@ -237,6 +237,7 @@
 
   var MAX_ROWS = 6;
   var secret, pool, curRow, curCol, rowsEls, gameOver, keyState;
+  var knownGreen, knownMinCounts;
 
   function scoreGuess(guess, target) {
     var result = ['gray', 'gray', 'gray', 'gray', 'gray'];
@@ -335,6 +336,8 @@
     curRow = 0;
     curCol = 0;
     gameOver = false;
+    knownGreen = [null, null, null, null, null];
+    knownMinCounts = {};
     feedbackEl.textContent = ' ';
     feedbackEl.className = 'feedback';
     endWrap.classList.remove('show');
@@ -374,6 +377,22 @@
     feedbackEl.className = 'feedback' + (cls ? ' ' + cls : '');
   }
 
+  function hardModeViolation(guess) {
+    for (var i = 0; i < 5; i++) {
+      if (knownGreen[i] && guess[i] !== knownGreen[i]) {
+        return 'position ' + (i + 1) + ' must be ' + knownGreen[i].toUpperCase() + '.';
+      }
+    }
+    var counts = {};
+    guess.split('').forEach(function (ch) { counts[ch] = (counts[ch] || 0) + 1; });
+    for (var letter in knownMinCounts) {
+      if ((counts[letter] || 0) < knownMinCounts[letter]) {
+        return 'guess must include ' + letter.toUpperCase() + '.';
+      }
+    }
+    return null;
+  }
+
   function submitGuess() {
     var guess = currentGuess();
     if (guess.length < 5) {
@@ -386,11 +405,30 @@
       shakeRow();
       return;
     }
+    var violation = hardModeViolation(guess);
+    if (violation) {
+      flashFeedback(violation, 'warn');
+      shakeRow();
+      return;
+    }
 
     var pattern = scoreGuess(guess, secret);
     revealRow(pattern);
 
     guess.split('').forEach(function (ch, i) { updateKeyColor(ch, pattern[i]); });
+
+    pattern.forEach(function (color, i) {
+      if (color === 'green') knownGreen[i] = guess[i];
+    });
+    var seenCounts = {};
+    guess.split('').forEach(function (ch, i) {
+      if (pattern[i] === 'green' || pattern[i] === 'yellow') {
+        seenCounts[ch] = (seenCounts[ch] || 0) + 1;
+      }
+    });
+    Object.keys(seenCounts).forEach(function (letter) {
+      knownMinCounts[letter] = Math.max(knownMinCounts[letter] || 0, seenCounts[letter]);
+    });
 
     if (patternsEqual(pattern, ['green', 'green', 'green', 'green', 'green'])) {
       setTimeout(function () { endGame(false); }, 700);
