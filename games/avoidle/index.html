@@ -414,8 +414,13 @@
 
 <script src="guesses.js"></script>
 <script>
-  var wordPool = window.AVOIDLE_GUESSES;
   var guessSet = new Set(window.AVOIDLE_GUESSES);
+  // exclude simple plurals from ever being the secret, just like real
+  // Wordle -- words ending in a single "s" (not "ss", which is rarely
+  // a plural ending). You can still type plurals as guesses.
+  var wordPool = window.AVOIDLE_GUESSES.filter(function (w) {
+    return !(w.endsWith('s') && !w.endsWith('ss'));
+  });
 
   var gridEl = document.getElementById('grid');
   var feedbackEl = document.getElementById('feedback');
