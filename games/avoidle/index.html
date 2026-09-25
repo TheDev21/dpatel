@@ -34,6 +34,10 @@
     --tile-border: #4a443c;
     --backdrop: rgba(0,0,0,0.65);
   }
+  :root[data-contrast="high"] {
+    --teal: #1a6fd1;
+    --gold: #ff7a1f;
+  }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   html, body { height: 100vh; height: 100dvh; overflow: hidden; }
@@ -95,11 +99,25 @@
     font-size: 0.8rem;
     color: var(--ink-dim);
     margin: 0 0 10px;
-    visibility: hidden;
   }
-  .remaining.show { visibility: visible; }
   .remaining b { color: var(--orange); font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; }
   .remaining.danger b { color: var(--red); }
+
+  .undo-row { margin: 0 0 10px; }
+  .undo-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem;
+    font-weight: 500;
+    background: var(--key-bg);
+    color: var(--ink);
+    border: none;
+    border-radius: 999px;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.12s ease;
+  }
+  .undo-btn:hover:not(:disabled) { transform: translateY(-1px); }
+  .undo-btn:disabled { opacity: 0.4; cursor: default; }
 
   .grid {
     display: grid;
@@ -109,7 +127,7 @@
     width: 240px;
   }
   @media (min-width: 700px) {
-    .grid { gap: 7px; margin: 0 auto 14px; width: min(92vw, 380px, calc((100dvh - 372px) / 1.22)); }
+    .grid { gap: 7px; margin: 0 auto 14px; width: min(92vw, 380px, calc((100dvh - 412px) / 1.22)); }
   }
   .grid-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
   .grid-row.shake { animation: shake 0.4s ease; }
@@ -273,6 +291,44 @@
   .streak-line b { color: var(--orange); }
   .next-game { text-align: center; font-size: 0.8rem; color: var(--ink-dim); border-top: 2px solid var(--tile-border); padding-top: 14px; }
   .next-game b { display: block; font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; color: var(--ink); letter-spacing: 0.05em; }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 2px solid var(--tile-border);
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-text { display: flex; flex-direction: column; gap: 2px; }
+  .toggle-text b { font-size: 0.9rem; color: var(--ink); }
+  .toggle-text span { font-size: 0.75rem; color: var(--ink-dim); line-height: 1.4; }
+  .toggle-switch {
+    flex-shrink: 0;
+    width: 44px;
+    height: 26px;
+    border-radius: 999px;
+    border: none;
+    background: var(--key-bg);
+    position: relative;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    box-shadow: 0 1px 3px rgba(35,32,29,0.3);
+    transition: transform 0.15s ease;
+  }
+  .toggle-switch[aria-checked="true"] { background: var(--orange); }
+  .toggle-switch[aria-checked="true"]::after { transform: translateX(18px); }
 </style>
 </head>
 <body>
@@ -281,7 +337,7 @@
 <div class="icon-row">
   <button class="icon-btn" id="helpBtn" aria-label="how to play" title="how to play">?</button>
   <button class="icon-btn" id="statsBtn" aria-label="stats" title="stats">&#128202;</button>
-  <button class="icon-btn" id="themeBtn" aria-label="toggle dark mode" title="toggle dark mode">&#9789;</button>
+  <button class="icon-btn" id="settingsBtn" aria-label="settings" title="settings">&#9881;</button>
 </div>
 
 <div class="wrap">
@@ -289,6 +345,10 @@
   <h1>Avoi<span>dle</span></h1>
 
   <div class="remaining" id="remainingRow">possible answers left: <b id="remainingCount">2315</b></div>
+
+  <div class="undo-row">
+    <button class="undo-btn" id="undoBtn">undo <span id="undoCount">(3 left)</span></button>
+  </div>
 
   <div class="grid" id="grid"></div>
 
@@ -331,6 +391,27 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="settingsModal">
+  <div class="modal-card">
+    <span class="modal-close" id="settingsClose">&times;</span>
+    <div class="modal-title">SETTINGS</div>
+    <div class="toggle-row">
+      <div class="toggle-text">
+        <b>Dark Mode</b>
+        <span>Easier on the eyes while you're avoiding words at 2am.</span>
+      </div>
+      <button class="toggle-switch" id="darkToggle" role="switch" aria-checked="false"></button>
+    </div>
+    <div class="toggle-row">
+      <div class="toggle-text">
+        <b>Easier Colors</b>
+        <span>Swaps the green/yellow for a blue/orange pair that's easier to tell apart.</span>
+      </div>
+      <button class="toggle-switch" id="contrastToggle" role="switch" aria-checked="false"></button>
+    </div>
+  </div>
+</div>
+
 <script src="answers.js"></script>
 <script src="guesses.js"></script>
 <script>
@@ -352,7 +433,13 @@
   var statsBtn = document.getElementById('statsBtn');
   var statsClose = document.getElementById('statsClose');
   var statsModal = document.getElementById('statsModal');
-  var themeBtn = document.getElementById('themeBtn');
+  var settingsBtn = document.getElementById('settingsBtn');
+  var settingsClose = document.getElementById('settingsClose');
+  var settingsModal = document.getElementById('settingsModal');
+  var darkToggle = document.getElementById('darkToggle');
+  var contrastToggle = document.getElementById('contrastToggle');
+  var undoBtn = document.getElementById('undoBtn');
+  var undoCountEl = document.getElementById('undoCount');
   var statPlayed = document.getElementById('statPlayed');
   var statSurvivePct = document.getElementById('statSurvivePct');
   var statStreak = document.getElementById('statStreak');
@@ -360,18 +447,33 @@
   var nextGameTimer = document.getElementById('nextGameTimer');
 
   var THEME_KEY = 'avoidle-theme';
+  var CONTRAST_KEY = 'avoidle-contrast';
   function applyTheme(theme) {
     if (theme === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
     else document.documentElement.removeAttribute('data-theme');
+    darkToggle.setAttribute('aria-checked', theme === 'dark' ? 'true' : 'false');
   }
-  var savedTheme = null;
+  function applyContrast(mode) {
+    if (mode === 'high') document.documentElement.setAttribute('data-contrast', 'high');
+    else document.documentElement.removeAttribute('data-contrast');
+    contrastToggle.setAttribute('aria-checked', mode === 'high' ? 'true' : 'false');
+  }
+  var savedTheme = null, savedContrast = null;
   try { savedTheme = localStorage.getItem(THEME_KEY); } catch (e) {}
+  try { savedContrast = localStorage.getItem(CONTRAST_KEY); } catch (e) {}
   applyTheme(savedTheme);
-  themeBtn.addEventListener('click', function () {
+  applyContrast(savedContrast);
+  darkToggle.addEventListener('click', function () {
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     var next = isDark ? 'light' : 'dark';
     applyTheme(next);
     try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
+  });
+  contrastToggle.addEventListener('click', function () {
+    var isHigh = document.documentElement.getAttribute('data-contrast') === 'high';
+    var next = isHigh ? 'normal' : 'high';
+    applyContrast(next);
+    try { localStorage.setItem(CONTRAST_KEY, next); } catch (e) {}
   });
 
   function openModal(el) { el.classList.add('show'); }
@@ -382,6 +484,9 @@
   statsBtn.addEventListener('click', function () { renderStats(); openModal(statsModal); });
   statsClose.addEventListener('click', function () { closeModal(statsModal); });
   statsModal.addEventListener('click', function (e) { if (e.target === statsModal) closeModal(statsModal); });
+  settingsBtn.addEventListener('click', function () { openModal(settingsModal); });
+  settingsClose.addEventListener('click', function () { closeModal(settingsModal); });
+  settingsModal.addEventListener('click', function (e) { if (e.target === settingsModal) closeModal(settingsModal); });
 
   var PLAYED_KEY = 'avoidle-played';
   var SURVIVED_KEY = 'avoidle-survived';
@@ -429,7 +534,8 @@
   }
 
   var MAX_ROWS = 6;
-  var secret, pool, curRow, curCol, rowsEls, gameOver, keyState;
+  var UNDO_LIMIT = 3;
+  var secret, pool, curRow, curCol, rowsEls, gameOver, keyState, undosLeft;
   var knownGreen, knownMinCounts, knownExcluded;
   var STATE_KEY = 'avoidle-state';
 
@@ -530,9 +636,52 @@
       for (var r = 0; r < curRow; r++) {
         guesses.push(rowsEls[r].tiles.map(function (t) { return t.textContent.toLowerCase(); }).join(''));
       }
-      localStorage.setItem(STATE_KEY, JSON.stringify({ day: todayKey(), guesses: guesses }));
+      localStorage.setItem(STATE_KEY, JSON.stringify({ day: todayKey(), guesses: guesses, undosLeft: undosLeft }));
     } catch (e) {}
   }
+
+  function updateUndoButton() {
+    undoCountEl.textContent = '(' + undosLeft + ' left)';
+    undoBtn.disabled = gameOver || curRow === 0 || undosLeft <= 0;
+  }
+
+  function resetKnownState() {
+    pool = answersList.slice();
+    knownGreen = [null, null, null, null, null];
+    knownMinCounts = {};
+    knownExcluded = new Set();
+  }
+
+  function rebuildBoard(guesses) {
+    buildGrid();
+    buildKeyboard();
+    resetKnownState();
+    curRow = 0;
+    curCol = 0;
+    var outcome = null;
+    for (var i = 0; i < guesses.length; i++) {
+      var isWin = processGuess(guesses[i], false);
+      if (isWin) { outcome = 'lost'; break; }
+      if (curRow >= MAX_ROWS) { outcome = 'survived'; break; }
+    }
+    setRemaining(pool.length);
+    return outcome;
+  }
+
+  function doUndo() {
+    if (gameOver || curRow === 0 || undosLeft <= 0) return;
+    undosLeft--;
+    var guesses = [];
+    for (var r = 0; r < curRow - 1; r++) {
+      guesses.push(rowsEls[r].tiles.map(function (t) { return t.textContent.toLowerCase(); }).join(''));
+    }
+    rebuildBoard(guesses);
+    feedbackEl.textContent = ' ';
+    feedbackEl.className = 'feedback';
+    saveState();
+    updateUndoButton();
+  }
+  undoBtn.addEventListener('click', doUndo);
 
   function loadState() {
     try {
@@ -577,22 +726,19 @@
 
   function initGame() {
     secret = dailySecret();
-    pool = answersList.slice();
+    resetKnownState();
     curRow = 0;
     curCol = 0;
     gameOver = false;
-    knownGreen = [null, null, null, null, null];
-    knownMinCounts = {};
-    knownExcluded = new Set();
     feedbackEl.textContent = ' ';
     feedbackEl.className = 'feedback';
     endWrap.classList.remove('show');
-    remainingRowEl.classList.remove('show');
-    remainingCountEl.textContent = pool.length;
     buildGrid();
     buildKeyboard();
+    setRemaining(pool.length);
 
     var saved = loadState();
+    undosLeft = (saved && typeof saved.undosLeft === 'number') ? saved.undosLeft : UNDO_LIMIT;
     if (saved && saved.guesses && saved.guesses.length) {
       var outcome = null;
       for (var i = 0; i < saved.guesses.length; i++) {
@@ -600,12 +746,10 @@
         if (isWin) { outcome = 'lost'; break; }
         if (curRow >= MAX_ROWS) { outcome = 'survived'; break; }
       }
-      if (outcome) {
-        endGame(outcome === 'survived');
-      } else if (pool.length < answersList.length) {
-        setRemaining(pool.length);
-      }
+      setRemaining(pool.length);
+      if (outcome) endGame(outcome === 'survived');
     }
+    updateUndoButton();
 
     var seenRules = null;
     try { seenRules = localStorage.getItem('avoidle-seen-rules'); } catch (e) {}
@@ -680,6 +824,7 @@
 
     var isWin = processGuess(guess, true);
     saveState();
+    updateUndoButton();
 
     if (isWin) {
       setTimeout(function () { endGame(false); }, 700);
@@ -719,6 +864,7 @@
 
   function endGame(didSurvive) {
     gameOver = true;
+    updateUndoButton();
     var today = todayKey();
     var alreadyRecorded = null;
     try { alreadyRecorded = localStorage.getItem(LAST_RESULT_DAY_KEY); } catch (e) {}
