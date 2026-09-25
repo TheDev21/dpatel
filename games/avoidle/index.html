@@ -412,10 +412,9 @@
   </div>
 </div>
 
-<script src="answers.js"></script>
 <script src="guesses.js"></script>
 <script>
-  var answersList = window.AVOIDLE_ANSWERS;
+  var wordPool = window.AVOIDLE_GUESSES;
   var guessSet = new Set(window.AVOIDLE_GUESSES);
 
   var gridEl = document.getElementById('grid');
@@ -529,8 +528,8 @@
     var now = new Date();
     var localMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     var daysSince = Math.round((localMidnight - epoch) / 86400000);
-    var index = ((daysSince % answersList.length) + answersList.length) % answersList.length;
-    return answersList[index];
+    var index = ((daysSince % wordPool.length) + wordPool.length) % wordPool.length;
+    return wordPool[index];
   }
 
   var MAX_ROWS = 6;
@@ -646,7 +645,7 @@
   }
 
   function resetKnownState() {
-    pool = answersList.slice();
+    pool = wordPool.slice();
     knownGreen = [null, null, null, null, null];
     knownMinCounts = {};
     knownExcluded = new Set();
