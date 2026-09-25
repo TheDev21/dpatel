@@ -103,7 +103,7 @@
   .remaining b { color: var(--orange); font-family: 'Bebas Neue', sans-serif; font-size: 1.05rem; }
   .remaining.danger b { color: var(--red); }
 
-  .undo-row { margin: 0 0 10px; }
+  .undo-row { margin: 0 0 10px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
   .undo-btn {
     font-family: 'DM Mono', monospace;
     font-size: 0.72rem;
@@ -329,6 +329,25 @@
   }
   .toggle-switch[aria-checked="true"] { background: var(--orange); }
   .toggle-switch[aria-checked="true"]::after { transform: translateX(18px); }
+
+  .hint-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 6px;
+    max-height: 45vh;
+    overflow-y: auto;
+    font-size: 0.78rem;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.03em;
+  }
+  .hint-list span {
+    background: var(--pink);
+    border-radius: 5px;
+    padding: 5px 4px;
+    text-align: center;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
 </style>
 </head>
 <body>
@@ -348,6 +367,7 @@
 
   <div class="undo-row">
     <button class="undo-btn" id="undoBtn">undo <span id="undoCount">(3 left)</span></button>
+    <button class="undo-btn" id="hintBtn" style="display:none;">show me the list</button>
   </div>
 
   <div class="grid" id="grid"></div>
@@ -412,6 +432,15 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="hintModal">
+  <div class="modal-card">
+    <span class="modal-close" id="hintClose">&times;</span>
+    <div class="modal-title">STILL ON THE TABLE</div>
+    <p>Every word this could still be. Pick literally anything else.</p>
+    <div class="hint-list" id="hintList"></div>
+  </div>
+</div>
+
 <script src="guesses.js"></script>
 <script>
   var guessSet = new Set(window.AVOIDLE_GUESSES);
@@ -444,6 +473,11 @@
   var contrastToggle = document.getElementById('contrastToggle');
   var undoBtn = document.getElementById('undoBtn');
   var undoCountEl = document.getElementById('undoCount');
+  var hintBtn = document.getElementById('hintBtn');
+  var hintClose = document.getElementById('hintClose');
+  var hintModal = document.getElementById('hintModal');
+  var hintList = document.getElementById('hintList');
+  var HINT_THRESHOLD = 250;
   var statPlayed = document.getElementById('statPlayed');
   var statSurvivePct = document.getElementById('statSurvivePct');
   var statStreak = document.getElementById('statStreak');
@@ -491,6 +525,17 @@
   settingsBtn.addEventListener('click', function () { openModal(settingsModal); });
   settingsClose.addEventListener('click', function () { closeModal(settingsModal); });
   settingsModal.addEventListener('click', function (e) { if (e.target === settingsModal) closeModal(settingsModal); });
+  hintBtn.addEventListener('click', function () {
+    hintList.innerHTML = '';
+    pool.slice().sort().forEach(function (w) {
+      var span = document.createElement('span');
+      span.textContent = w;
+      hintList.appendChild(span);
+    });
+    openModal(hintModal);
+  });
+  hintClose.addEventListener('click', function () { closeModal(hintModal); });
+  hintModal.addEventListener('click', function (e) { if (e.target === hintModal) closeModal(hintModal); });
 
   var PLAYED_KEY = 'avoidle-played';
   var SURVIVED_KEY = 'avoidle-survived';
@@ -632,6 +677,7 @@
     remainingCountEl.textContent = n;
     remainingRowEl.classList.add('show');
     remainingRowEl.classList.toggle('danger', n <= 3);
+    hintBtn.style.display = (n <= HINT_THRESHOLD && !gameOver) ? '' : 'none';
   }
 
   function saveState() {
@@ -869,6 +915,7 @@
   function endGame(didSurvive) {
     gameOver = true;
     updateUndoButton();
+    hintBtn.style.display = 'none';
     var today = todayKey();
     var alreadyRecorded = null;
     try { alreadyRecorded = localStorage.getItem(LAST_RESULT_DAY_KEY); } catch (e) {}
