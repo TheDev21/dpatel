@@ -339,6 +339,19 @@
     padding: 6px 10px; font-size: 11px; transform: rotate(3deg);
   }
 
+  /* Want Bad Advice thumb */
+  .thumb.advice { background: linear-gradient(160deg, #2b2438, #3d3151); }
+  .thumb.advice .word { color: #f2c14e; font-size: clamp(26px, 6vw, 36px); text-shadow: 2px 2px 0 rgba(0,0,0,0.3); }
+  .thumb.advice .quote-mark {
+    position: absolute; top: 10%; left: 10%;
+    font-family: 'Bebas Neue', sans-serif; font-size: 54px; color: rgba(244,236,216,0.25);
+    line-height: 1;
+  }
+  .thumb.advice .rays {
+    position: absolute; inset: 0;
+    background: repeating-conic-gradient(from 0deg, rgba(242,193,78,0.08) 0deg 6deg, transparent 6deg 12deg);
+  }
+
   /* Daily Vibe Check thumb */
   .thumb.vibe { background: radial-gradient(circle at 30% 30%, #2a2450, #14102b 70%); }
   .thumb.vibe .word { color: #e9def8; text-shadow: 0 0 12px rgba(106,79,176,0.8); }
@@ -722,6 +735,14 @@
         <span class="arrow a3">&#8593;</span>
         <div class="phone-shape"></div>
         <div class="word">DOOM<br>SCROLL</div>
+      </div>
+    </a>
+
+    <a class="card" href="games/bad-advice/">
+      <div class="thumb advice">
+        <div class="rays"></div>
+        <div class="quote-mark">&#8220;</div>
+        <div class="word">WANT BAD<br>ADVICE?</div>
       </div>
     </a>
 
