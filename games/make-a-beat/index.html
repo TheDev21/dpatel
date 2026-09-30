@@ -159,7 +159,33 @@
     box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
   }
   .bpm-num span { color: var(--ink-dim); font-family: 'DM Mono', monospace; font-size: 10px; display: block; letter-spacing: 0.15em; text-shadow: none; }
-  input[type="range"] { accent-color: var(--orange); width: 130px; }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 130px; height: 4px;
+    background: #0c0b0a;
+    border-radius: 2px;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.7);
+    outline: none;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 13px; height: 22px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #58503f 0%, #58503f 42%, var(--orange) 42%, var(--orange) 58%, #201c16 58%, #201c16 100%);
+    border: 1px solid #000;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.18);
+    margin-top: -9px;
+  }
+  input[type="range"]::-moz-range-track { height: 4px; background: #0c0b0a; border-radius: 2px; }
+  input[type="range"]::-moz-range-thumb {
+    width: 13px; height: 22px;
+    border-radius: 3px;
+    background: linear-gradient(180deg, #58503f 0%, #58503f 42%, var(--orange) 42%, var(--orange) 58%, #201c16 58%, #201c16 100%);
+    border: 1px solid #000;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.18);
+  }
   .bpm-presets { display: flex; gap: 4px; }
   .bpm-presets button {
     background: var(--panel2); border: 1px solid var(--border); color: var(--ink-dim);
@@ -220,21 +246,29 @@
     flex-direction: column;
     gap: 3px;
   }
-  .track-name { font-size: 12.5px; font-weight: 500; }
+  .track-name { font-size: 12.5px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+  .track-swatch {
+    width: 8px; height: 8px; border-radius: 50%; flex: none;
+    box-shadow: 0 0 4px 1px currentColor;
+  }
   .track-mix { display: flex; align-items: center; gap: 4px; }
   .mix-btn {
-    width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--border);
-    background: #101015; color: var(--ink-dim); font-size: 9px; cursor: pointer;
+    width: 17px; height: 17px; border-radius: 3px; border: 1px solid var(--border);
+    background: #101015; color: var(--ink-dim); font-size: 9px; font-weight: 700; cursor: pointer;
     display: flex; align-items: center; justify-content: center; padding: 0; line-height: 1;
     box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
     transition: box-shadow 0.12s ease;
   }
-  .mix-btn.active.mute { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 0 8px rgba(255,59,92,0.6); }
-  .mix-btn.active.solo { background: var(--gold); color: #1a1a1a; border-color: var(--gold); box-shadow: 0 0 8px rgba(224,180,0,0.6); }
-  .mix-vol { width: 46px; height: 4px; accent-color: var(--ink-dim); }
+  .mix-btn.active.mute { background: var(--red); color: #fff; border-color: var(--red); box-shadow: 0 0 8px rgba(191,59,46,0.7); }
+  .mix-btn.active.solo { background: var(--gold); color: #241c06; border-color: var(--gold); box-shadow: 0 0 8px rgba(201,148,24,0.7); }
+  .mix-vol { width: 46px; height: 3px; }
+  .mix-vol::-webkit-slider-thumb { width: 7px; height: 14px; margin-top: -6px; background: linear-gradient(180deg, #58503f, #201c16); }
+  .mix-vol::-moz-range-thumb { width: 7px; height: 14px; background: linear-gradient(180deg, #58503f, #201c16); }
 
   .steps-scroll { flex: 1; overflow-x: auto; }
-  .steps { display: flex; gap: 3px; min-width: 340px; }
+  .steps { display: flex; gap: 7px; min-width: 340px; }
+  .step-group { display: flex; gap: 3px; padding: 3px; border-radius: 6px; }
+  .step-group.b { background: rgba(0,0,0,0.18); box-shadow: inset 0 1px 2px rgba(0,0,0,0.3); }
   .step {
     width: 19px; height: 19px;
     border-radius: 50%;
@@ -245,8 +279,6 @@
     box-shadow: inset 0 2px 3px rgba(0,0,0,0.6);
     transition: background 0.08s ease, transform 0.08s ease, box-shadow 0.08s ease;
   }
-  .step:nth-child(4n+1) { margin-left: 6px; }
-  .step:nth-child(4n+2), .step:nth-child(4n+3), .step:nth-child(4n) { }
   .step:hover { transform: scale(1.15); }
   .step.on {
     border-color: transparent;
@@ -260,6 +292,16 @@
     .track-name { font-size: 11px; }
     .step { width: 17px; height: 17px; }
   }
+
+  .step-ruler { display: flex; align-items: center; gap: 10px; padding: 0 0 6px; }
+  .step-ruler .track-label { visibility: hidden; }
+  .ruler-numbers { display: flex; gap: 7px; min-width: 340px; }
+  .ruler-group { display: flex; gap: 3px; padding: 0 3px; }
+  .ruler-num {
+    width: 19px; text-align: center; font-size: 9px; color: var(--ink-dim);
+    flex: none; font-family: 'DM Mono', monospace;
+  }
+  .ruler-num.beat { color: var(--orange); font-weight: 700; }
 
   .weird-toggle {
     background: none; border: none; color: var(--weird); font-size: 12px; cursor: pointer;
@@ -279,7 +321,9 @@
   .roll-label {
     flex: none; width: 40px; font-size: 11px; color: var(--ink-dim); text-align: right;
   }
-  .roll-cells { display: flex; gap: 3px; min-width: 340px; }
+  .roll-cells { display: flex; gap: 7px; min-width: 340px; }
+  .roll-group { display: flex; gap: 3px; padding: 2px 3px; border-radius: 4px; }
+  .roll-group.b { background: rgba(0,0,0,0.18); }
   .roll-cell {
     width: 20px; height: 16px;
     border-radius: 3px;
@@ -291,7 +335,6 @@
     transition: transform 0.08s ease;
   }
   .roll-cell:hover { transform: scale(1.1); }
-  .roll-cell:nth-child(4n+1) { margin-left: 6px; }
   .roll-cell.on {
     border-color: transparent;
     box-shadow: 0 0 7px 1px currentColor, inset 0 1px 1px rgba(255,255,255,0.35);
@@ -355,6 +398,10 @@
 
   <div class="panel">
     <div class="panel-title">Drums</div>
+    <div class="step-ruler">
+      <div class="track-label">spacer</div>
+      <div class="steps-scroll"><div class="ruler-numbers" id="ruler"></div></div>
+    </div>
     <div id="drumRows"></div>
     <button class="weird-toggle" id="weirdToggle">show weird sounds &#8595;</button>
     <div class="weird-section" id="weirdSection">
@@ -865,13 +912,19 @@
     row.className = 'seq-row';
     var label = document.createElement('div');
     label.className = 'track-label';
-    label.innerHTML = '<div class="track-name">' + track.name + '</div><div class="track-mix"></div>';
+    label.innerHTML = '<div class="track-name"><span class="track-swatch" style="background:' + ACCENT_COLORS[track.accent] + ';color:' + ACCENT_COLORS[track.accent] + ';"></span>' + track.name + '</div><div class="track-mix"></div>';
     row.appendChild(label);
     var scroll = document.createElement('div');
     scroll.className = 'steps-scroll';
     var steps = document.createElement('div');
     steps.className = 'steps';
+    var group;
     for (var i = 0; i < 16; i++) {
+      if (i % 4 === 0) {
+        group = document.createElement('div');
+        group.className = 'step-group' + ((i / 4) % 2 === 1 ? ' b' : '');
+        steps.appendChild(group);
+      }
       var cell = document.createElement('div');
       cell.className = 'step';
       cell.setAttribute('data-step', i);
@@ -888,7 +941,7 @@
         });
         refresh();
       })(i);
-      steps.appendChild(cell);
+      group.appendChild(cell);
     }
     scroll.appendChild(steps);
     row.appendChild(scroll);
@@ -911,7 +964,13 @@
       scroll.className = 'steps-scroll';
       var cells = document.createElement('div');
       cells.className = 'roll-cells';
+      var group;
       for (var col = 0; col < 16; col++) {
+        if (col % 4 === 0) {
+          group = document.createElement('div');
+          group.className = 'roll-group' + ((col / 4) % 2 === 1 ? ' b' : '');
+          cells.appendChild(group);
+        }
         var cell = document.createElement('div');
         cell.className = 'roll-cell';
         cell.setAttribute('data-step', col);
@@ -929,7 +988,7 @@
           });
           refresh();
         })(row, col, cell);
-        cells.appendChild(cell);
+        group.appendChild(cell);
       }
       scroll.appendChild(cells);
       rowEl.appendChild(scroll);
@@ -938,7 +997,25 @@
     renderMixButtons(track, mixContainer);
   }
 
+  function buildRuler() {
+    var ruler = document.getElementById('ruler');
+    if (!ruler || ruler.childElementCount) return;
+    var group;
+    for (var i = 0; i < 16; i++) {
+      if (i % 4 === 0) {
+        group = document.createElement('div');
+        group.className = 'ruler-group';
+        ruler.appendChild(group);
+      }
+      var num = document.createElement('div');
+      num.className = 'ruler-num' + (i % 4 === 0 ? ' beat' : '');
+      num.textContent = i + 1;
+      group.appendChild(num);
+    }
+  }
+
   function renderAll() {
+    buildRuler();
     var drumRows = document.getElementById('drumRows');
     drumRows.innerHTML = '';
     state.drums.forEach(function (t) { renderDrumRow(t, drumRows); });
