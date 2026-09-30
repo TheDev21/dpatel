@@ -945,7 +945,18 @@
     }, HEAL_DELAY);
   }
 
-  heartBtn.addEventListener('click', breakHeart);
+  function healHeart() {
+    clearTimeout(healTimer);
+    heartState = 'healed';
+    renderHeart();
+    healSound();
+    showHeartStatus(HEAL_LINES);
+  }
+
+  heartBtn.addEventListener('click', function () {
+    if (heartState === 'cracked') healHeart();
+    else breakHeart();
+  });
 
   var logoEl = document.querySelector('.logo-row h1');
   logoEl.addEventListener('click', function () {
