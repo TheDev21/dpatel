@@ -137,14 +137,6 @@
     box-shadow: 2px 2px 0 rgba(35,32,29,0.25);
   }
 
-  .status-line {
-    text-align: center;
-    font-size: 12px;
-    color: var(--ink-dim);
-    margin-top: 12px;
-    min-height: 16px;
-  }
-
   /* ---- preset row ---- */
   .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
   .chip {
@@ -221,7 +213,6 @@
   .weird-rows { display: none; margin-top: 4px; }
   .weird-rows.show { display: block; }
 
-  .footer-note { text-align: center; font-size: 11px; color: var(--ink-dim); margin-top: 18px; line-height: 1.6; }
 </style>
 </head>
 <body>
@@ -242,7 +233,6 @@
         </div>
       </div>
     </div>
-    <div class="status-line" id="statusLine">probably music</div>
   </div>
 
   <div class="chip-row" id="presetRow"></div>
@@ -253,8 +243,6 @@
     <button class="weird-toggle" id="weirdToggle">+ weird sounds</button>
     <div class="weird-rows" id="weirdRows"></div>
   </div>
-
-  <p class="footer-note">everything is synthesized live in your browser.<br>your last beat is remembered next time you visit.</p>
 
 </div>
 
@@ -468,30 +456,6 @@
     requestAnimationFrame(drawPlayhead);
   }
 
-  // ================= status line =================
-  var STATUS_TIERS = [
-    { max: 0,  lines: ['...anyone home?', 'a beat of pure silence. bold.'] },
-    { max: 6,  lines: ['just vibes so far.', 'warming up.'] },
-    { max: 16, lines: ['not bad, not bad.'] },
-    { max: 28, lines: ['this beat has no business being this good.', 'okay who taught you this'] },
-    { max: 999, lines: ['professional musicians hate this one weird little grid.', 'certified banger (probably)'] }
-  ];
-  function countActive() {
-    var n = 0;
-    allTracks().forEach(function (t) { t.steps.forEach(function (s) { if (s) n++; }); });
-    return n;
-  }
-  function updateStatus() {
-    var n = countActive();
-    for (var i = 0; i < STATUS_TIERS.length; i++) {
-      if (n <= STATUS_TIERS[i].max) {
-        var lines = STATUS_TIERS[i].lines;
-        document.getElementById('statusLine').textContent = lines[Math.floor(Math.random() * lines.length)];
-        return;
-      }
-    }
-  }
-
   // ================= rendering =================
   function renderRow(track, container) {
     var row = document.createElement('div');
@@ -519,7 +483,6 @@
           refresh();
           padEl.classList.add('pressed');
           setTimeout(function () { padEl.classList.remove('pressed'); }, 120);
-          updateStatus();
           saveState();
         }
         padEl.addEventListener('click', press);
@@ -563,7 +526,6 @@
 
     document.getElementById('bpmNum').textContent = state.bpm;
     updateSliderUI();
-    updateStatus();
   }
 
   // ================= custom BPM slider =================
