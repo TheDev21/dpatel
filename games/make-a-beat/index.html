@@ -9,83 +9,105 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #121218;
-    --panel: #1b1b24;
-    --panel2: #21212c;
-    --ink: #f2f0eb;
-    --ink-dim: #928fa0;
-    --border: #313040;
-    --orange: #ff5a1f;
-    --teal: #2bc9c9;
-    --gold: #e0b400;
-    --red: #ff3b5c;
-    --purple: #9d7bf0;
-    --green: #3ac37e;
-    --blue: #4f8fd1;
-    --weird: #e06bd8;
+    --bg: #1c1a17;
+    --panel: #24211d;
+    --panel2: #2c2822;
+    --ink: #f0e6d2;
+    --ink-dim: #a89a80;
+    --border: #443f36;
+    --chassis: #e7dcc0;
+    --chassis-deep: #d8caa4;
+    --chassis-ink: #2e2418;
+    --chassis-dim: #6e6047;
+    --orange: #e0791e;
+    --teal: #3c9484;
+    --gold: #c99418;
+    --red: #bf3b2e;
+    --purple: #8163a8;
+    --green: #4f8f57;
+    --blue: #3e6ea0;
+    --weird: #ad5289;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
     min-height: 100vh;
     background:
-      radial-gradient(ellipse 900px 500px at 50% -10%, rgba(255,90,31,0.12), transparent 60%),
-      radial-gradient(ellipse 700px 400px at 100% 20%, rgba(43,201,201,0.07), transparent 60%),
-      linear-gradient(180deg, #0d0d12, var(--bg) 300px);
-    color: var(--ink);
+      radial-gradient(ellipse 1000px 500px at 50% -20%, rgba(0,0,0,0.15), transparent 60%),
+      repeating-linear-gradient(115deg, rgba(0,0,0,0.025) 0px, rgba(0,0,0,0.025) 2px, transparent 2px, transparent 5px),
+      #b6ab93;
+    color: var(--chassis-ink);
     font-family: 'DM Mono', monospace;
-    padding: 30px 16px 90px;
+    padding: 40px 16px 90px;
+    display: flex;
+    justify-content: center;
   }
   h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
   a { color: inherit; }
   button { font-family: 'DM Mono', monospace; }
 
-  .wrap { max-width: 920px; margin: 0 auto; }
+  .wrap {
+    max-width: 920px;
+    width: 100%;
+    margin: 0 auto;
+    background: linear-gradient(165deg, var(--chassis), var(--chassis-deep) 90%);
+    border-radius: 26px;
+    border: 1px solid #c3b48a;
+    padding: 26px 26px 30px;
+    box-shadow: 0 24px 50px rgba(30,22,10,0.35), 0 2px 0 rgba(255,255,255,0.5) inset, 0 -3px 0 rgba(0,0,0,0.08) inset;
+    position: relative;
+  }
+  .wrap::before {
+    content: '';
+    position: absolute; left: 26px; right: 26px; top: 14px;
+    height: 1px;
+    background: rgba(0,0,0,0.08);
+  }
 
   .corner-badge {
-    position: fixed;
-    top: 55px;
-    left: 26px;
+    position: absolute;
+    top: 14px;
+    left: 22px;
     z-index: 50;
-    transform: rotate(-25deg);
+    transform: rotate(-8deg);
     transform-origin: top left;
     text-align: center;
-    color: var(--ink);
+    color: var(--chassis-ink);
     text-decoration: underline;
     font-family: 'Pacifico', cursive;
     font-weight: 400;
-    font-size: 40px;
+    font-size: 22px;
     line-height: 1.05;
-    opacity: 0.5;
+    opacity: 0.55;
     transition: color 0.15s ease, opacity 0.15s ease;
   }
-  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); opacity: 1; }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--red); opacity: 1; }
   @media (max-width: 960px) {
-    .corner-badge { top: 30px; left: 14px; font-size: 22px; }
-    body { padding-top: 96px; }
+    .corner-badge { font-size: 16px; }
   }
   @keyframes badgeWobble {
-    0%, 100% { transform: rotate(-25deg); }
-    15% { transform: rotate(-12deg); }
-    30% { transform: rotate(-36deg); }
-    45% { transform: rotate(-16deg); }
-    60% { transform: rotate(-32deg); }
-    75% { transform: rotate(-21deg); }
-    90% { transform: rotate(-27deg); }
+    0%, 100% { transform: rotate(-8deg); }
+    15% { transform: rotate(2deg); }
+    30% { transform: rotate(-14deg); }
+    45% { transform: rotate(0deg); }
+    60% { transform: rotate(-10deg); }
+    75% { transform: rotate(-4deg); }
+    90% { transform: rotate(-9deg); }
   }
 
-  h1 { font-size: clamp(2rem, 6vw, 2.8rem); margin: 6px 0 2px; text-align: center; text-shadow: 0 0 26px rgba(255,90,31,0.35); }
-  h1 span { color: var(--orange); }
-  .tagline { text-align: center; font-size: 0.85rem; color: var(--ink-dim); margin: 0 0 26px; }
+  h1 { font-size: clamp(2rem, 6vw, 2.8rem); margin: 34px 0 2px; text-align: center; color: var(--chassis-ink); }
+  h1 span { color: var(--red); }
+  .tagline { text-align: center; font-size: 0.85rem; color: var(--chassis-dim); margin: 0 0 26px; }
 
   .panel {
-    background: linear-gradient(165deg, #202029, #17171e 65%);
+    background: linear-gradient(165deg, var(--panel2), var(--panel) 70%);
     border: 1px solid var(--border);
-    border-top-color: rgba(255,255,255,0.07);
-    border-radius: 14px;
+    border-top-color: rgba(255,255,255,0.06);
+    border-radius: 12px;
     padding: 16px 18px;
     margin-bottom: 16px;
-    box-shadow: 0 12px 28px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.03);
+    box-shadow: 0 3px 10px rgba(30,22,10,0.25), inset 0 1px 0 rgba(255,255,255,0.03);
+    color: var(--ink);
   }
   .panel-title {
     font-family: 'Bebas Neue', sans-serif;
@@ -214,13 +236,13 @@
   .steps-scroll { flex: 1; overflow-x: auto; }
   .steps { display: flex; gap: 3px; min-width: 340px; }
   .step {
-    width: 20px; height: 20px;
-    border-radius: 4px;
-    background: #101015;
+    width: 19px; height: 19px;
+    border-radius: 50%;
+    background: #0c0b0a;
     border: 1px solid var(--border);
     cursor: pointer;
     flex: none;
-    box-shadow: inset 0 2px 3px rgba(0,0,0,0.5);
+    box-shadow: inset 0 2px 3px rgba(0,0,0,0.6);
     transition: background 0.08s ease, transform 0.08s ease, box-shadow 0.08s ease;
   }
   .step:nth-child(4n+1) { margin-left: 6px; }
@@ -283,7 +305,7 @@
 
   .roll-mix { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
 
-  .footer-note { text-align: center; font-size: 11px; color: var(--ink-dim); margin-top: 20px; line-height: 1.6; }
+  .footer-note { text-align: center; font-size: 11px; color: var(--chassis-dim); margin-top: 20px; line-height: 1.6; }
 </style>
 </head>
 <body>
