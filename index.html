@@ -463,6 +463,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
   }
   .about .heart-btn .heart-beat {
     animation: heartBeat 1.4s ease-in-out infinite;
@@ -481,6 +482,36 @@
     30% { transform: scale(1.3) rotate(-8deg); }
     60% { transform: scale(0.9) rotate(6deg); }
     100% { transform: scale(1) rotate(0deg); }
+  }
+  .about .heart-btn .bandage {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 34px; height: 12px;
+    background: #e3bd90;
+    border: 1.5px solid var(--ink);
+    border-radius: 5px;
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) translate(26px, 26px) rotate(-42deg);
+  }
+  .about .heart-btn .bandage::before {
+    content: '';
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 15px; height: 7px;
+    background: #fdf6ec;
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    transform: translate(-50%, -50%);
+  }
+  .about .heart-btn.healed .bandage {
+    opacity: 1;
+    transform: translate(-50%, -50%) translate(0, 0) rotate(-42deg);
+    animation: bandageSlide 0.35s ease;
+  }
+  @keyframes bandageSlide {
+    0% { opacity: 0; transform: translate(-50%, -50%) translate(26px, 26px) rotate(-42deg); }
+    100% { opacity: 1; transform: translate(-50%, -50%) translate(0, 0) rotate(-42deg); }
   }
   .about .links {
     display: flex;
@@ -781,9 +812,10 @@
     <div class="with-love">
       with
       <button class="heart-btn" id="heartBtn" aria-label="heart (click at your own risk)" title="click at your own risk">
-        <svg class="heart-beat" viewBox="0 0 40 36" width="18" height="16">
+        <svg class="heart-beat" viewBox="0 0 40 36" width="36" height="32">
           <path d="M20 33 C4 22 2 12 8 7 C13 3 19 6 20 12 C21 6 27 3 32 7 C38 12 36 22 20 33 Z" fill="var(--red)" stroke="var(--ink)" stroke-width="2.4" stroke-linejoin="round"/>
         </svg>
+        <span class="bandage"></span>
       </button>
       love
     </div>
@@ -874,6 +906,7 @@
   heartBtn.addEventListener('click', function () {
     var breaking = !heartBtn.classList.contains('broken');
     heartBtn.classList.toggle('broken');
+    heartBtn.classList.toggle('healed', !breaking);
     if (breaking) crackSound(); else healSound();
   });
 
