@@ -860,6 +860,23 @@
     logoSounds[i]();
   }
 
+  function crackSound() {
+    sweep(900, 90, 0.1, 'sawtooth', 0.28);
+    tone(70, 0.12, 'square', 0.22, 0.03);
+  }
+  function healSound() {
+    tone(523.25, 0.15, 'sine', 0.18);
+    tone(659.25, 0.16, 'sine', 0.16, 0.1);
+    tone(783.99, 0.22, 'sine', 0.14, 0.2);
+  }
+
+  var heartBtn = document.getElementById('heartBtn');
+  heartBtn.addEventListener('click', function () {
+    var breaking = !heartBtn.classList.contains('broken');
+    heartBtn.classList.toggle('broken');
+    if (breaking) crackSound(); else healSound();
+  });
+
   var logoEl = document.querySelector('.logo-row h1');
   logoEl.addEventListener('click', function () {
     playRandomLogoSound();
