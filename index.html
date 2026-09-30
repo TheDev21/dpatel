@@ -907,6 +907,7 @@
   }
 
   var HEAL_DELAY = 5 * 60 * 1000;
+  var HEART_KEY = 'wlg-heart-state';
   var heartBtn = document.getElementById('heartBtn');
   var heartStatus = document.getElementById('heartStatus');
   var heartVisuals = heartBtn.querySelectorAll('.heart-visual');
@@ -915,6 +916,16 @@
 
   var CRACK_LINES = ['ouch.', 'well, now it\'s broken.', 'that\'s gonna need a bandage.'];
   var HEAL_LINES = ['all better. (for now)', 'good as new. mostly.', 'healed. try not to break it again.'];
+
+  function saveHeartState(crackedAt) {
+    try {
+      if (heartState === 'cracked') {
+        localStorage.setItem(HEART_KEY, JSON.stringify({ state: 'cracked', crackedAt: crackedAt }));
+      } else {
+        localStorage.setItem(HEART_KEY, JSON.stringify({ state: heartState }));
+      }
+    } catch (e) {}
+  }
 
   function showHeartStatus(lines) {
     heartStatus.textContent = lines[Math.floor(Math.random() * lines.length)];
@@ -932,31 +943,51 @@
   function breakHeart() {
     heartState = 'cracked';
     renderHeart();
+    saveHeartState(Date.now());
     crackSound();
     showHeartStatus(CRACK_LINES);
     heartBtn.classList.add('shatter');
     setTimeout(function () { heartBtn.classList.remove('shatter'); }, 400);
     clearTimeout(healTimer);
-    healTimer = setTimeout(function () {
-      heartState = 'healed';
-      renderHeart();
-      healSound();
-      showHeartStatus(HEAL_LINES);
-    }, HEAL_DELAY);
+    healTimer = setTimeout(function () { healHeart(true); }, HEAL_DELAY);
   }
 
-  function healHeart() {
+  function healHeart(auto) {
     clearTimeout(healTimer);
     heartState = 'healed';
     renderHeart();
+    saveHeartState();
     healSound();
-    showHeartStatus(HEAL_LINES);
+    showHeartStatus(auto ? ['all better. took a while, but it healed.'] : HEAL_LINES);
   }
 
   heartBtn.addEventListener('click', function () {
-    if (heartState === 'cracked') healHeart();
+    if (heartState === 'cracked') healHeart(false);
     else breakHeart();
   });
+
+  (function restoreHeartState() {
+    var raw;
+    try { raw = localStorage.getItem(HEART_KEY); } catch (e) { return; }
+    if (!raw) return;
+    var saved;
+    try { saved = JSON.parse(raw); } catch (e) { return; }
+    if (saved.state === 'cracked') {
+      var elapsed = Date.now() - saved.crackedAt;
+      if (elapsed >= HEAL_DELAY) {
+        heartState = 'healed';
+        renderHeart();
+        saveHeartState();
+      } else {
+        heartState = 'cracked';
+        renderHeart();
+        healTimer = setTimeout(function () { healHeart(true); }, HEAL_DELAY - elapsed);
+      }
+    } else if (saved.state === 'healed') {
+      heartState = 'healed';
+      renderHeart();
+    }
+  })();
 
   var logoEl = document.querySelector('.logo-row h1');
   logoEl.addEventListener('click', function () {
