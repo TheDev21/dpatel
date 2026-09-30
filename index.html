@@ -339,6 +339,16 @@
     padding: 6px 10px; font-size: 11px; transform: rotate(3deg);
   }
 
+  /* Make a Beat thumb */
+  .thumb.beat { background: linear-gradient(160deg, #121218, #1b1b24); }
+  .thumb.beat .word { color: #fff; font-size: clamp(24px, 5.6vw, 34px); }
+  .thumb.beat .bar { position: absolute; bottom: 14%; width: 9px; border-radius: 3px; }
+  .thumb.beat .b1 { left: 22%; height: 22%; background: #ff5a1f; }
+  .thumb.beat .b2 { left: 34%; height: 42%; background: #2bc9c9; }
+  .thumb.beat .b3 { left: 46%; height: 62%; background: #e0b400; }
+  .thumb.beat .b4 { left: 58%; height: 38%; background: #ff3b5c; }
+  .thumb.beat .b5 { left: 70%; height: 52%; background: #9d7bf0; }
+
   /* Want Bad Advice thumb */
   .thumb.advice { background: linear-gradient(160deg, #2b2438, #3d3151); }
   .thumb.advice .word { color: #f2c14e; font-size: clamp(26px, 6vw, 36px); text-shadow: 2px 2px 0 rgba(0,0,0,0.3); }
@@ -557,6 +567,17 @@
   <p class="tagline">powered by spite and free time</p>
 
   <div class="grid" id="grid">
+
+    <a class="card" href="games/make-a-beat/">
+      <div class="thumb beat">
+        <div class="bar b1"></div>
+        <div class="bar b2"></div>
+        <div class="bar b3"></div>
+        <div class="bar b4"></div>
+        <div class="bar b5"></div>
+        <div class="word">MAKE A<br>BEAT</div>
+      </div>
+    </a>
 
     <a class="card" href="games/bad-advice/">
       <div class="thumb advice">
