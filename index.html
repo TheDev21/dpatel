@@ -498,8 +498,10 @@
     border-radius: 999px;
     background: var(--card-bg);
     font-size: 15px;
+    font-family: 'DM Mono', monospace;
     letter-spacing: 0.02em;
     color: var(--ink);
+    cursor: pointer;
     transition: background 0.15s ease, color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
   }
   .about .beer-emoji {
@@ -788,6 +790,7 @@
     <div class="links">
       <a class="beer-link" href="support.html"><span class="beer-emoji">🍺</span> buy me a beer</a>
       <a class="beer-link" href="https://www.instagram.com/pdev21" target="_blank" rel="noopener">Instagram</a>
+      <button class="beer-link" id="shareBtn"><span class="beer-emoji">🔗</span> <span id="shareLabel">send this to someone</span></button>
     </div>
   </div>
 
@@ -863,6 +866,30 @@
     logoEl.classList.remove('bonk');
     void logoEl.offsetWidth;
     logoEl.classList.add('bonk');
+  });
+
+  var shareBtn = document.getElementById('shareBtn');
+  var shareLabel = document.getElementById('shareLabel');
+  shareBtn.addEventListener('click', function () {
+    var shareUrl = 'https://weirdlittlegames.lol';
+    if (navigator.share) {
+      navigator.share({ title: 'Weird Little Games', url: shareUrl }).catch(function () {});
+      return;
+    }
+    var resetLabel = shareLabel.textContent;
+    function flash(text) {
+      shareLabel.textContent = text;
+      setTimeout(function () { shareLabel.textContent = resetLabel; }, 1800);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(shareUrl).then(function () {
+        flash('link copied!');
+      }).catch(function () {
+        flash('copy failed, sorry');
+      });
+    } else {
+      flash('copy failed, sorry');
+    }
   });
 
 </script>
