@@ -97,16 +97,6 @@
       return svg;
     }
 
-    function webSVG(size, opacity) {
-      var svg = svgEl('svg', { width: size, height: size, viewBox: '0 0 70 70' });
-      svg.style.opacity = opacity;
-      svg.appendChild(svgEl('path', {
-        d: 'M70 0 L0 70 M70 14 L14 70 M70 28 L28 70 M70 0 L70 70 M70 0 L0 0',
-        stroke: '#F2E9D8', 'stroke-width': '0.6', fill: 'none'
-      }));
-      return svg;
-    }
-
     function addDeco(el, cls, styleObj) {
       el.classList.add('wlg-h-deco');
       if (cls) el.className += ' ' + cls;
@@ -115,13 +105,27 @@
       return el;
     }
 
-    // moon
+    // moon -- a solid crescent with a soft glow behind it. Built as one
+    // circle minus an offset circle via fill-rule evenodd, which is
+    // the reliable way to get a true crescent (a single arc path here
+    // self-intersected and silently failed to fill at all).
+    function fullCirclePath(cx, cy, r) {
+      return 'M' + (cx - r) + ',' + cy +
+        ' a' + r + ',' + r + ' 0 1,0 ' + (r * 2) + ',0' +
+        ' a' + r + ',' + r + ' 0 1,0 ' + (-r * 2) + ',0 Z';
+    }
     var moonWrap = document.createElement('div');
     var moonSvg = svgEl('svg', { width: 90, height: 90, viewBox: '0 0 90 90' });
-    moonSvg.appendChild(svgEl('circle', { cx: '45', cy: '45', r: '38', fill: '#F2E9D8', opacity: '0.06' }));
+    var glow = svgEl('circle', { cx: '45', cy: '45', r: '32', fill: '#F2E9D8', opacity: '0.08' });
+    glow.style.filter = 'blur(10px)';
+    moonSvg.appendChild(glow);
     moonSvg.appendChild(svgEl('path', {
-      d: 'M45 16 A29 29 0 1 0 45 74 A23 23 0 1 1 45 16 Z',
-      fill: '#F2E9D8', stroke: 'rgba(242,233,216,0.25)', 'stroke-width': '0.6', opacity: '0.38'
+      // the subtracted circle must stay fully inside the outer one
+      // (distance between centers + its radius <= outer radius) or
+      // evenodd produces a venn-diagram XOR instead of a clean bite.
+      d: fullCirclePath(45, 45, 30) + ' ' + fullCirclePath(50, 39, 22),
+      'fill-rule': 'evenodd',
+      fill: '#F2E9D8', opacity: '0.6'
     }));
     moonWrap.appendChild(moonSvg);
     addDeco(moonWrap, 'wlg-h-moon', { top: '6%', right: '8%', zIndex: '1' });
@@ -168,32 +172,27 @@
       addDeco(wrap, spec.cls, { top: spec.top, left: spec.left, zIndex: '3' });
     });
 
-    // spiders + webs (desktop only)
+    // spiders hanging from a thread (desktop only) -- no corner web
+    // lines, they didn't read well at any size.
     if (!isMobile) {
-      [{ top: '0', right: '6%', webSize: 70, webOp: 0.2, spiderCls: '' },
-       { top: '0', left: '8%', webSize: 50, webOp: 0.16, spiderCls: 'wlg-h-spider-b' }].forEach(function (spec) {
+      [{ top: '0', right: '6%', threadLen: 40, spiderCls: '' },
+       { top: '0', left: '8%', threadLen: 28, spiderCls: 'wlg-h-spider-b' }].forEach(function (spec) {
         var corner = document.createElement('div');
         corner.style.position = 'absolute';
         corner.style.top = spec.top;
         if (spec.right) corner.style.right = spec.right; else corner.style.left = spec.left;
         corner.style.zIndex = '5';
 
-        var web = webSVG(spec.webSize, spec.webOp);
-        web.style.position = 'absolute';
-        web.style.top = '0';
-        if (spec.right) web.style.right = '0'; else web.style.left = '0';
-        corner.appendChild(web);
-
         var thread = document.createElement('div');
         thread.style.width = '1px';
-        thread.style.height = (spec.webSize * 0.6) + 'px';
+        thread.style.height = spec.threadLen + 'px';
         thread.style.background = 'rgba(242,233,216,0.3)';
-        thread.style.margin = spec.right ? '0 auto' : '0 0 0 16px';
+        thread.style.margin = spec.right ? '0 auto' : '0 0 0 9px';
         corner.appendChild(thread);
 
         var spiderWrap = document.createElement('div');
         spiderWrap.className = 'wlg-h-spider' + (spec.spiderCls ? ' ' + spec.spiderCls : '');
-        spiderWrap.style.margin = spec.right ? '-1px auto 0' : '-1px 0 0 7px';
+        spiderWrap.style.margin = spec.right ? '-1px auto 0' : '-1px 0 0 0';
         spiderWrap.appendChild(spiderSVG(18, 14));
         corner.appendChild(spiderWrap);
 
