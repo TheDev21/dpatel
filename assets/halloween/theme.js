@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=9';
+  var cssHref = '/assets/halloween/theme.css?v=10';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -172,22 +172,24 @@
       addDeco(flockWrap, 'wlg-h-bat-b', { top: '20%', left: '0', zIndex: '4', opacity: '0.85' });
     }
 
-    // ghosts -- a few drifting forever, bigger and roaming a wider patch
-    // of the screen than a small in-place wobble
+    // ghosts -- bigger, and now cross the full screen edge-to-edge
+    // (see wlgGhostA/B/C in theme.css) instead of wobbling in place
     var ghostSpecs = isMobile
-      ? [{ cls: 'wlg-h-ghost-a', top: '28%', left: '6%', w: 62, op: 0.75 }]
+      ? [{ cls: 'wlg-h-ghost-a', top: '28%', left: '0', w: 100, op: 0.75 }]
       : [
-          { cls: 'wlg-h-ghost-a', top: '18%', left: '4%', w: 90, op: 0.8 },
-          { cls: 'wlg-h-ghost-b', top: '48%', left: '84%', w: 76, op: 0.7 },
-          { cls: 'wlg-h-ghost-c', top: '70%', left: '10%', w: 64, op: 0.65 },
-          { cls: 'wlg-h-ghost-a', top: '34%', left: '44%', w: 54, op: 0.55 }
+          { cls: 'wlg-h-ghost-a', top: '16%', left: '0', w: 150, op: 0.8 },
+          { cls: 'wlg-h-ghost-b', top: '46%', left: '0', w: 130, op: 0.7 },
+          { cls: 'wlg-h-ghost-c', top: '68%', left: '0', w: 110, op: 0.65 },
+          { cls: 'wlg-h-ghost-a', top: '32%', left: '0', w: 95, op: 0.55, delay: '16s' }
         ];
     ghostSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
       var img = photoEl('ghost-single.png', spec.w);
       img.style.opacity = spec.op;
       wrap.appendChild(img);
-      addDeco(wrap, spec.cls, { top: spec.top, left: spec.left, zIndex: '3' });
+      var style = { top: spec.top, left: spec.left, zIndex: '3' };
+      if (spec.delay) style.animationDelay = spec.delay;
+      addDeco(wrap, spec.cls, style);
     });
 
     // ghosts rising and vanishing -- homepage only, spread across the
