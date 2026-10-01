@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pumpkin Curve — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232a1e3d'/%3E%3Ccircle cx='16' cy='18' r='10' fill='%23ff5a1f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --pink: #fbeae4;
+    --ink: #23201d;
+    --ink-dim: #766f68;
+    --orange: #ff5a1f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; touch-action: none; }
+  body {
+    min-height: 100vh;
+    background: var(--pink);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    padding: 90px 24px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--orange); }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+  @media (max-width: 960px) {
+    .corner-badge { position: absolute; top: 30px; left: 14px; font-size: 22px; }
+  }
+
+  h1 {
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: clamp(26px, 5vw, 38px);
+    margin: 0 0 4px;
+  }
+  .sub {
+    color: var(--ink-dim);
+    font-size: 13px;
+    margin: 0 0 22px;
+    text-align: center;
+    max-width: 440px;
+  }
+
+  .stage-wrap {
+    position: relative;
+    width: min(92vw, 380px);
+    aspect-ratio: 380 / 440;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 10px 0 rgba(35,32,29,0.1);
+  }
+  .glow-layer {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 46%, #ffdd8a 0%, #ffb23a 35%, #3a2412 72%, #1a1008 100%);
+    transition: opacity 0.4s ease, filter 0.4s ease;
+  }
+  .glow-layer.lights-off { background: #15121a; filter: none; }
+  .glow-layer.lights-on { animation: flicker 2.4s ease-in-out infinite; }
+  @keyframes flicker {
+    0%, 100% { filter: brightness(1); }
+    45% { filter: brightness(1.06); }
+    60% { filter: brightness(0.96); }
+  }
+  #pumpkinCanvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    cursor: none;
+    touch-action: none;
+  }
+  .knife-cursor {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    pointer-events: none;
+    transform: translate(-6px, -22px) rotate(-18deg);
+    z-index: 200;
+    display: none;
+  }
+
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+  .btn {
+    border: 2px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(35,32,29,0.16);
+    transition: transform 0.12s ease, background 0.12s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(0); }
+  .btn.active { background: var(--orange); color: #fff; border-color: var(--orange); }
+
+  .toast {
+    position: fixed;
+    bottom: 26px;
+    left: 50%;
+    transform: translate(-50%, 16px);
+    background: var(--ink);
+    color: #fff;
+    font-size: 13px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+  .offseason {
+    max-width: 440px;
+    text-align: center;
+    padding-top: 60px;
+  }
+  .offseason h1 { margin-bottom: 14px; }
+</style>
+<script src="/assets/halloween/theme.js?v=7" defer></script>
+</head>
+<body>
+
+<a class="corner-badge" href="https://weirdlittlegames.lol">Weird<br>Little<br>Games.</a>
+
+<div id="app"></div>
+
+<img class="knife-cursor" id="knifeCursor" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath d='M4 34 L26 12 L30 16 L8 38 Z' fill='%23d8d8dc' stroke='%2323201d' stroke-width='1.5'/%3E%3Cpath d='M26 12 L32 6 L36 10 L30 16 Z' fill='%238a8279' stroke='%2323201d' stroke-width='1.5'/%3E%3C/svg%3E" alt="">
+
+<script>
+(function () {
+  function isPumpkinCurveSeason() {
+    try {
+      var override = new URLSearchParams(location.search).get('season');
+      if (override === 'halloween') return true;
+      if (override === 'off') return false;
+    } catch (e) {}
+    return new Date().getMonth() === 9; // October
+  }
+
+  var app = document.getElementById('app');
+  var knifeCursor = document.getElementById('knifeCursor');
+
+  if (!isPumpkinCurveSeason()) {
+    knifeCursor.remove();
+    app.innerHTML =
+      '<div class="offseason">' +
+        '<h1>Pumpkin Curve</h1>' +
+        '<p class="sub">This one only comes out for October. Come back when the pumpkins are out again.</p>' +
+        '<a class="btn" href="/">back home</a>' +
+      '</div>';
+    return;
+  }
+
+  app.innerHTML =
+    '<h1>Pumpkin Curve</h1>' +
+    '<p class="sub">Drag across the pumpkin to carve it. The knife only comes out when you\'re over the pumpkin.</p>' +
+    '<div class="stage-wrap">' +
+      '<div class="glow-layer lights-on" id="glowLayer"></div>' +
+      '<canvas id="pumpkinCanvas"></canvas>' +
+    '</div>' +
+    '<div class="controls">' +
+      '<button class="btn" id="undoBtn">undo</button>' +
+      '<button class="btn" id="resetBtn">start over</button>' +
+      '<button class="btn" id="saveBtn">save</button>' +
+      '<button class="btn active" id="lightsBtn">lights: on</button>' +
+    '</div>' +
+    '<div class="toast" id="toast"></div>';
+
+  var SAVE_KEY = 'wlgPumpkinCurveSaveV1';
+  var canvas = document.getElementById('pumpkinCanvas');
+  var ctx = canvas.getContext('2d');
+  var glowLayer = document.getElementById('glowLayer');
+  var stageWrap = document.querySelector('.stage-wrap');
+  var toastEl = document.getElementById('toast');
+  var W = 380, H = 440;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  var strokes = [];
+  var currentStroke = null;
+  var lightsOn = true;
+  var overPumpkin = false;
+
+  function sizeCanvas() {
+    var rect = stageWrap.getBoundingClientRect();
+    canvas.width = Math.round(rect.width * dpr);
+    canvas.height = Math.round(rect.height * dpr);
+    ctx.setTransform(dpr * (rect.width / W), 0, 0, dpr * (rect.height / H), 0, 0);
+  }
+  window.addEventListener('resize', sizeCanvas);
+
+  function pumpkinPath(ctx2) {
+    ctx2.beginPath();
+    ctx2.ellipse(190, 250, 150, 140, 0, 0, Math.PI * 2);
+  }
+
+  function drawBase() {
+    ctx.clearRect(0, 0, W, H);
+    ctx.save();
+    pumpkinPath(ctx);
+    ctx.clip();
+
+    var grad = ctx.createRadialGradient(150, 170, 10, 190, 250, 220);
+    grad.addColorStop(0, '#FFA94D');
+    grad.addColorStop(0.55, '#EA7317');
+    grad.addColorStop(1, '#A84A08');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+
+    [[70, 250], [130, 240], [190, 235], [250, 240], [310, 250]].forEach(function (c, i) {
+      ctx.beginPath();
+      ctx.moveTo(c[0], 120);
+      ctx.quadraticCurveTo(c[0] + (i % 2 ? 10 : -10), 250, c[0], 380);
+      ctx.strokeStyle = 'rgba(122,51,7,0.45)';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+    });
+
+    ctx.beginPath();
+    ctx.ellipse(150, 170, 55, 40, -0.3, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255,217,160,0.3)';
+    ctx.fill();
+    ctx.restore();
+
+    ctx.beginPath();
+    ctx.moveTo(180, 115);
+    ctx.quadraticCurveTo(178, 80, 195, 55);
+    ctx.lineWidth = 16;
+    ctx.strokeStyle = '#5A7A2A';
+    ctx.lineCap = 'round';
+    ctx.stroke();
+    ctx.lineWidth = 7;
+    ctx.strokeStyle = '#3F5A1C';
+    ctx.stroke();
+  }
+
+  function render() {
+    drawBase();
+    ctx.save();
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 20;
+    strokes.forEach(function (pts) {
+      if (pts.length < 2) return;
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (var i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  function toCanvasPoint(clientX, clientY) {
+    var rect = canvas.getBoundingClientRect();
+    return {
+      x: (clientX - rect.left) / rect.width * W,
+      y: (clientY - rect.top) / rect.height * H
+    };
+  }
+
+  function isOverPumpkin(clientX, clientY) {
+    var p = toCanvasPoint(clientX, clientY);
+    var dx = (p.x - 190) / 150, dy = (p.y - 250) / 140;
+    return (dx * dx + dy * dy) <= 1;
+  }
+
+  function updateCursor(clientX, clientY) {
+    var over = isOverPumpkin(clientX, clientY);
+    if (over !== overPumpkin) {
+      overPumpkin = over;
+      knifeCursor.style.display = over ? 'block' : 'none';
+      canvas.style.cursor = over ? 'none' : 'auto';
+    }
+    if (over) {
+      knifeCursor.style.left = clientX + 'px';
+      knifeCursor.style.top = clientY + 'px';
+    }
+  }
+
+  var drawing = false;
+  function onDown(e) {
+    var pt = e.touches ? e.touches[0] : e;
+    updateCursor(pt.clientX, pt.clientY);
+    if (!overPumpkin) return;
+    drawing = true;
+    currentStroke = [toCanvasPoint(pt.clientX, pt.clientY)];
+    strokes.push(currentStroke);
+    e.preventDefault();
+  }
+  function onMove(e) {
+    var pt = e.touches ? e.touches[0] : e;
+    updateCursor(pt.clientX, pt.clientY);
+    if (!drawing) return;
+    currentStroke.push(toCanvasPoint(pt.clientX, pt.clientY));
+    render();
+    e.preventDefault();
+  }
+  function onUp() {
+    if (drawing) { drawing = false; currentStroke = null; }
+  }
+
+  canvas.addEventListener('mousedown', onDown);
+  canvas.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup', onUp);
+  canvas.addEventListener('touchstart', onDown, { passive: false });
+  canvas.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('touchend', onUp);
+  canvas.addEventListener('mouseleave', function () {
+    knifeCursor.style.display = 'none';
+    overPumpkin = false;
+  });
+
+  document.getElementById('undoBtn').addEventListener('click', function () {
+    strokes.pop();
+    render();
+  });
+  document.getElementById('resetBtn').addEventListener('click', function () {
+    strokes = [];
+    render();
+  });
+  document.getElementById('lightsBtn').addEventListener('click', function (e) {
+    lightsOn = !lightsOn;
+    glowLayer.classList.toggle('lights-on', lightsOn);
+    glowLayer.classList.toggle('lights-off', !lightsOn);
+    e.target.textContent = 'lights: ' + (lightsOn ? 'on' : 'off');
+    e.target.classList.toggle('active', lightsOn);
+  });
+  document.getElementById('saveBtn').addEventListener('click', function () {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({ strokes: strokes, lightsOn: lightsOn }));
+      showToast('saved!');
+    } catch (e) {
+      showToast('could not save');
+    }
+  });
+
+  var toastTimer = null;
+  function showToast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 1600);
+  }
+
+  function loadSave() {
+    try {
+      var raw = localStorage.getItem(SAVE_KEY);
+      if (!raw) return;
+      var data = JSON.parse(raw);
+      if (Array.isArray(data.strokes)) strokes = data.strokes;
+      if (typeof data.lightsOn === 'boolean') {
+        lightsOn = data.lightsOn;
+        glowLayer.classList.toggle('lights-on', lightsOn);
+        glowLayer.classList.toggle('lights-off', !lightsOn);
+        var lightsBtn = document.getElementById('lightsBtn');
+        lightsBtn.textContent = 'lights: ' + (lightsOn ? 'on' : 'off');
+        lightsBtn.classList.toggle('active', lightsOn);
+      }
+    } catch (e) {}
+  }
+
+  sizeCanvas();
+  loadSave();
+  render();
+})();
+</script>
+</body>
+</html>

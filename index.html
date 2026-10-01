@@ -130,6 +130,22 @@
   }
   .thumb .deco { position: absolute; z-index: 1; }
 
+  .limited-badge {
+    position: absolute;
+    top: 12px;
+    left: -6px;
+    z-index: 3;
+    background: var(--orange);
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    padding: 4px 12px 4px 16px;
+    transform: rotate(-4deg);
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    border-radius: 0 3px 3px 0;
+  }
+
   /* Give It a Minute thumb -- one illustrated scene instead of stacked
      abstract shapes: a half-painted wall, a roller+tray, and an
      unimpressed cat watching the paint not-dry */
@@ -792,7 +808,31 @@
       </div>
     </a>
 
+    <a class="card" id="pumpkinCurveCard" href="games/pumpkin-curve/" style="display:none;">
+      <div class="thumb" style="background: linear-gradient(160deg, #2a1e14, #1a1008 75%);">
+        <div class="limited-badge">LIMITED TIME</div>
+        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="width:46%; height:auto;">
+          <ellipse cx="60" cy="68" rx="46" ry="42" fill="#EA7317" stroke="#7A3307" stroke-width="3"/>
+          <path d="M60,26 Q58,12 68,4" stroke="#5A7A2A" stroke-width="7" fill="none" stroke-linecap="round"/>
+          <path d="M40,60 L48,70 L40,80" stroke="#2a1e14" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M80,60 L72,70 L80,80" stroke="#2a1e14" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M46,92 Q60,100 74,92" stroke="#2a1e14" stroke-width="7" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="word" style="color:#FFC869;">PUMPKIN<br>CURVE</div>
+      </div>
+    </a>
+
   </div>
+
+  <script>
+    (function () {
+      try {
+        var override = new URLSearchParams(location.search).get('season');
+        var active = override === 'halloween' ? true : override === 'off' ? false : new Date().getMonth() === 9;
+        if (active) document.getElementById('pumpkinCurveCard').style.display = '';
+      } catch (e) {}
+    })();
+  </script>
 
   <div class="about">
     <p>Hi, I'm Dev. I build things for a living and apparently also for free, at 2am, for fun.<br>This is that. No therapist has been consulted.</p>
