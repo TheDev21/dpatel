@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=3';
+  var cssHref = '/assets/halloween/theme.css?v=4';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -91,15 +91,53 @@
       return svg;
     }
 
-    function pumpkinSVG(size) {
-      var svg = svgEl('svg', { width: size, height: size * 0.77, viewBox: '0 0 44 34' });
-      svg.appendChild(svgEl('ellipse', { cx: '22', cy: '20', rx: '20', ry: '13', fill: '#7A3F1A', stroke: '#2E2838', 'stroke-width': '1.2' }));
+    function pumpkinSVG(size, jackOLantern) {
+      // Real pumpkin-orange with a radial gradient for roundness (not
+      // a flat silhouette), five ribbed lobes with visible ridge
+      // shadows, a glossy highlight, a proper curved stem, and
+      // optionally a carved glowing jack-o'-lantern face.
+      var id = nextGradId();
+      var svg = svgEl('svg', { width: size, height: size * 0.85, viewBox: '0 0 60 50' });
+      var defs = svgEl('defs', {});
+      var grad = svgEl('radialGradient', { id: id, cx: '38%', cy: '32%', r: '75%' });
+      grad.appendChild(svgEl('stop', { offset: '0%', 'stop-color': '#FFA94D' }));
+      grad.appendChild(svgEl('stop', { offset: '55%', 'stop-color': '#EA7317' }));
+      grad.appendChild(svgEl('stop', { offset: '100%', 'stop-color': '#A84A08' }));
+      defs.appendChild(grad);
+      svg.appendChild(defs);
+
+      var shell = 'url(#' + id + ')', line = '#8A3A0A';
+      [[13, 30, 10, 15], [22, 28.5, 11, 17], [30, 27, 12, 18], [38, 28.5, 11, 17], [47, 30, 10, 15]].forEach(function (lobe) {
+        svg.appendChild(svgEl('ellipse', { cx: lobe[0], cy: lobe[1], rx: lobe[2], ry: lobe[3], fill: shell, stroke: '#7A3307', 'stroke-width': '0.8' }));
+      });
+      [13, 22, 30, 38, 47].forEach(function (x) {
+        svg.appendChild(svgEl('path', {
+          d: 'M' + x + ' 13 Q' + (x + (x < 30 ? -2.5 : x > 30 ? 2.5 : 0)) + ' 29 ' + x + ' 45',
+          stroke: line, 'stroke-width': '1', fill: 'none', opacity: '0.4'
+        }));
+      });
+      svg.appendChild(svgEl('ellipse', { cx: '22', cy: '20', rx: '7', ry: '5', fill: '#FFD9A0', opacity: '0.35' }));
+
       svg.appendChild(svgEl('path', {
-        d: 'M8 20 Q15 12 22 20 Q29 12 36 20', stroke: '#2E2838', 'stroke-width': '1', fill: 'none', opacity: '0.5'
+        d: 'M30 11 C28 7 30 3 34 2', stroke: '#5A7A2A', 'stroke-width': '3.4', fill: 'none', 'stroke-linecap': 'round'
       }));
       svg.appendChild(svgEl('path', {
-        d: 'M22 4 L22 9', stroke: '#2E2838', 'stroke-width': '2.4', 'stroke-linecap': 'round'
+        d: 'M30 11 C28 7 30 3 34 2', stroke: '#3F5A1C', 'stroke-width': '1.2', fill: 'none', 'stroke-linecap': 'round', opacity: '0.6'
       }));
+      svg.appendChild(svgEl('path', {
+        d: 'M33 4 Q39 1 42 6 Q37 8 33 4 Z', fill: '#4A7A2F'
+      }));
+
+      if (jackOLantern) {
+        var glow = '#FFC869';
+        svg.appendChild(svgEl('path', { d: 'M19 23 L27 23 L23 32 Z', fill: glow }));
+        svg.appendChild(svgEl('path', { d: 'M41 23 L33 23 L37 32 Z', fill: glow }));
+        svg.appendChild(svgEl('path', { d: 'M27 33 L33 33 L30 38.5 Z', fill: glow }));
+        svg.appendChild(svgEl('path', {
+          d: 'M15 40 L19.5 35.5 L24 40 L28.5 35.5 L33 40 L37.5 35.5 L42 40 L45 40 L45 43 L15 43 Z',
+          fill: glow
+        }));
+      }
       return svg;
     }
 
@@ -216,17 +254,62 @@
       });
     }
 
-    // small pumpkins tucked into empty corners -- not center-stage
+    // pumpkins tucked into empty corners -- full-size now, one lit as
+    // a jack-o'-lantern
     var pumpkinSpecs = isMobile
-      ? [{ bottom: '4%', left: '4%', size: 30 }]
-      : [{ bottom: '6%', left: '3%', size: 36 }, { bottom: '10%', right: '4%', size: 28 }];
+      ? [{ bottom: '3%', left: '3%', size: 46, lit: true }]
+      : [
+          { bottom: '5%', left: '3%', size: 60, lit: true },
+          { bottom: '9%', right: '4%', size: 44, lit: false }
+        ];
     pumpkinSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
-      wrap.appendChild(pumpkinSVG(spec.size));
-      var style = { bottom: spec.bottom, zIndex: '3', opacity: '0.8' };
+      wrap.appendChild(pumpkinSVG(spec.size, spec.lit));
+      var style = { bottom: spec.bottom, zIndex: '3', opacity: '0.9' };
       if (spec.left) style.left = spec.left; else style.right = spec.right;
       addDeco(wrap, '', style);
     });
+
+    // homepage only: a couple of pumpkins peeking out from behind real
+    // game cards, anchored to each card's actual on-screen position
+    // (not a guessed percentage) so they line up at any viewport size.
+    if (!isMobile) {
+      var cards = document.querySelectorAll('.grid .card');
+      if (cards.length >= 6) {
+        var peekSpecs = [
+          { cardIndex: 0, corner: 'bottom-right', size: 50, lit: true },
+          { cardIndex: 4, corner: 'bottom-left', size: 42, lit: false }
+        ];
+        peekSpecs.forEach(function (spec) {
+          var card = cards[spec.cardIndex];
+          if (!card) return;
+          var rect = card.getBoundingClientRect();
+          var wrap = document.createElement('div');
+          wrap.appendChild(pumpkinSVG(spec.size, spec.lit));
+          wrap.style.position = 'absolute';
+          // Negative, not positive: static in-flow content (the card)
+          // paints after positive/zero z-index but after negative
+          // z-index too -- so this has to be negative to actually
+          // render behind the card instead of on top of it.
+          wrap.style.zIndex = '-1';
+          wrap.style.pointerEvents = 'none';
+          var peekAmount = spec.size * 0.35;
+          // Appended to document.body (not the fixed decoration layer)
+          // and positioned in document coordinates (rect + scroll
+          // offset), so it scrolls together with the actual card
+          // instead of staying pinned to the viewport and drifting
+          // away from it the moment the page scrolls.
+          if (spec.corner === 'bottom-right') {
+            wrap.style.top = (rect.bottom + window.scrollY - spec.size * 0.6) + 'px';
+            wrap.style.left = (rect.right + window.scrollX - peekAmount) + 'px';
+          } else {
+            wrap.style.top = (rect.bottom + window.scrollY - spec.size * 0.6) + 'px';
+            wrap.style.left = (rect.left + window.scrollX - (spec.size - peekAmount)) + 'px';
+          }
+          document.body.appendChild(wrap);
+        });
+      }
+    }
 
     // particles
     if (!isMobile) {
