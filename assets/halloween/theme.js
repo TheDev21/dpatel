@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=16';
+  var cssHref = '/assets/halloween/theme.css?v=17';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -210,13 +210,13 @@
     // spiders on threads, no actual web mesh of their own)
     var spiderSpecs = isMobile
       ? [
-          { top: '0', left: '-6%', w: 190, webCorner: 'tl', webSize: 140 },
-          { top: '0', right: '-6%', w: 220, webCorner: 'tr', webSize: 160 }
+          { top: '0', left: '-6%', w: 190, webCorner: 'tl', webSize: 230 },
+          { top: '0', right: '-6%', w: 220, webCorner: 'tr', webSize: 260 }
         ]
       : [
-          { top: '0', left: '1%', w: 290, webCorner: 'tl', webSize: 220 },
+          { top: '0', left: '1%', w: 290, webCorner: 'tl', webSize: 360 },
           { top: '0', left: '33%', w: 240 },
-          { top: '0', right: '1%', w: 330, webCorner: 'tr', webSize: 250 }
+          { top: '0', right: '1%', w: 330, webCorner: 'tr', webSize: 400 }
         ];
     spiderSpecs.forEach(function (spec) {
       if (spec.webCorner) {
