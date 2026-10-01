@@ -473,6 +473,16 @@
   }
 
   // ================= rendering =================
+  var syncingScroll = false;
+  function syncScrollFrom(sourceEl) {
+    if (syncingScroll) return;
+    syncingScroll = true;
+    document.querySelectorAll('.pads-scroll, #ruler').forEach(function (el) {
+      if (el !== sourceEl) el.scrollLeft = sourceEl.scrollLeft;
+    });
+    syncingScroll = false;
+  }
+
   function renderRow(track, container) {
     var row = document.createElement('div');
     row.className = 'row';
@@ -483,6 +493,10 @@
 
     var scroll = document.createElement('div');
     scroll.className = 'pads-scroll';
+    // every row (and the ruler above them) represents the same 16-step
+    // timeline, so scrolling any one of them horizontally should move
+    // all the others together instead of each row drifting on its own
+    scroll.addEventListener('scroll', function () { syncScrollFrom(scroll); });
     var pads = document.createElement('div');
     pads.className = 'pads';
     for (var i = 0; i < 16; i++) {
@@ -519,6 +533,7 @@
       num.textContent = i + 1;
       ruler.appendChild(num);
     }
+    ruler.addEventListener('scroll', function () { syncScrollFrom(ruler); });
   }
 
   function positionPlayhead(step) {
