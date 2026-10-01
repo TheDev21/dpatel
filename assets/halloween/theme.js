@@ -20,7 +20,9 @@
 
   document.documentElement.setAttribute('data-theme', 'halloween');
 
-  var cssHref = '/assets/halloween/theme.css';
+  // bump this alongside the script tag's ?v= query string whenever
+  // theme.css changes, so a stale cached copy can never linger.
+  var cssHref = '/assets/halloween/theme.css?v=2';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -45,26 +47,29 @@
     }
 
     function ghostSVG(size, opacity) {
+      // Dark body (reads against the site's normal light backgrounds,
+      // no page-background changes needed) with pale eyes for contrast
+      // against the dark body itself.
       var id = nextGradId();
       var w = size, h = size * 1.07;
       var svg = svgEl('svg', { width: w, height: h, viewBox: '0 0 60 64' });
       var defs = svgEl('defs', {});
       var grad = svgEl('linearGradient', { id: id, x1: '0', y1: '0', x2: '0', y2: '1' });
-      var stop1 = svgEl('stop', { offset: '0%', 'stop-color': '#F7F0E3' });
-      var stop2 = svgEl('stop', { offset: '100%', 'stop-color': '#D9CDB8' });
+      var stop1 = svgEl('stop', { offset: '0%', 'stop-color': '#3A3245' });
+      var stop2 = svgEl('stop', { offset: '100%', 'stop-color': '#211C2B' });
       grad.appendChild(stop1); grad.appendChild(stop2);
       defs.appendChild(grad);
       svg.appendChild(defs);
       var body = svgEl('path', {
         d: 'M30,4 C43,4 52,15 52,30 L52,56 C52,58 49,59 47,57 L43,53 C41,51 38,51 36,53 L33,56 C31,58 29,58 27,56 L24,53 C22,51 19,51 17,53 L13,57 C11,59 8,58 8,56 L8,30 C8,15 17,4 30,4 Z',
         fill: 'url(#' + id + ')',
-        stroke: 'rgba(11,10,13,0.5)',
+        stroke: 'rgba(0,0,0,0.3)',
         'stroke-width': '1',
-        opacity: opacity || 0.85
+        opacity: opacity || 0.8
       });
       svg.appendChild(body);
-      var eyeL = svgEl('ellipse', { cx: '21', cy: '28', rx: '2.8', ry: '3.4', fill: '#241b2e', opacity: opacity || 0.85 });
-      var eyeR = svgEl('ellipse', { cx: '39', cy: '28', rx: '2.8', ry: '3.4', fill: '#241b2e', opacity: opacity || 0.85 });
+      var eyeL = svgEl('ellipse', { cx: '21', cy: '28', rx: '2.8', ry: '3.4', fill: '#F2E9D8', opacity: opacity || 0.8 });
+      var eyeR = svgEl('ellipse', { cx: '39', cy: '28', rx: '2.8', ry: '3.4', fill: '#F2E9D8', opacity: opacity || 0.8 });
       svg.appendChild(eyeL);
       svg.appendChild(eyeR);
       return svg;
@@ -116,16 +121,14 @@
     }
     var moonWrap = document.createElement('div');
     var moonSvg = svgEl('svg', { width: 90, height: 90, viewBox: '0 0 90 90' });
-    var glow = svgEl('circle', { cx: '45', cy: '45', r: '32', fill: '#F2E9D8', opacity: '0.08' });
-    glow.style.filter = 'blur(10px)';
-    moonSvg.appendChild(glow);
     moonSvg.appendChild(svgEl('path', {
       // the subtracted circle must stay fully inside the outer one
       // (distance between centers + its radius <= outer radius) or
       // evenodd produces a venn-diagram XOR instead of a clean bite.
+      // Dark fill so it reads against the site's normal light pages.
       d: fullCirclePath(45, 45, 30) + ' ' + fullCirclePath(50, 39, 22),
       'fill-rule': 'evenodd',
-      fill: '#F2E9D8', opacity: '0.6'
+      fill: '#2E2838', opacity: '0.4'
     }));
     moonWrap.appendChild(moonSvg);
     addDeco(moonWrap, 'wlg-h-moon', { top: '6%', right: '8%', zIndex: '1' });
@@ -186,7 +189,7 @@
         var thread = document.createElement('div');
         thread.style.width = '1px';
         thread.style.height = spec.threadLen + 'px';
-        thread.style.background = 'rgba(242,233,216,0.3)';
+        thread.style.background = 'rgba(11,10,13,0.3)';
         thread.style.margin = spec.right ? '0 auto' : '0 0 0 9px';
         corner.appendChild(thread);
 
@@ -203,7 +206,7 @@
 
     // particles
     if (!isMobile) {
-      var particleColors = ['#FF7518', '#B84DFF', '#F2E9D8', '#FF7518', '#B84DFF'];
+      var particleColors = ['#FF7518', '#B84DFF', '#2E2838', '#FF7518', '#B84DFF'];
       for (var i = 0; i < 5; i++) {
         var p = document.createElement('div');
         var size = (i % 2 === 0) ? 3 : 2;
