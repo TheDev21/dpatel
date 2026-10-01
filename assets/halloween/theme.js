@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=5';
+  var cssHref = '/assets/halloween/theme.css?v=6';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -141,6 +141,29 @@
       return svg;
     }
 
+    function webSVG(size, corner) {
+      // A real radial web: spokes fanning out from the corner anchor,
+      // plus connecting rings woven between them -- not just parallel
+      // diagonal lines, which is what read as scratch marks before.
+      var svg = svgEl('svg', { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size });
+      var anchor = corner === 'tr' ? { x: size, y: 0 } : { x: 0, y: 0 };
+      var endpoints = corner === 'tr'
+        ? [{ x: 0, y: size * 0.12 }, { x: 0, y: size * 0.55 }, { x: size * 0.3, y: size * 0.92 }, { x: size * 0.65, y: size }, { x: size, y: size }]
+        : [{ x: size, y: size * 0.12 }, { x: size, y: size * 0.55 }, { x: size * 0.7, y: size * 0.92 }, { x: size * 0.35, y: size }, { x: 0, y: size }];
+      var color = 'rgba(46,40,56,0.4)';
+
+      endpoints.forEach(function (pt) {
+        svg.appendChild(svgEl('line', { x1: anchor.x, y1: anchor.y, x2: pt.x, y2: pt.y, stroke: color, 'stroke-width': '0.6' }));
+      });
+      [0.4, 0.7, 1.0].forEach(function (t) {
+        var ringPts = endpoints.map(function (pt) {
+          return (anchor.x + (pt.x - anchor.x) * t) + ',' + (anchor.y + (pt.y - anchor.y) * t);
+        });
+        svg.appendChild(svgEl('polyline', { points: ringPts.join(' '), stroke: color, 'stroke-width': '0.6', fill: 'none' }));
+      });
+      return svg;
+    }
+
     function spiderSVG(w, h) {
       var svg = svgEl('svg', { width: w, height: h, viewBox: '0 0 20 16' });
       svg.appendChild(svgEl('ellipse', { cx: '10', cy: '9', rx: '5', ry: '4.2', fill: '#0B0A0D' }));
@@ -225,16 +248,22 @@
       addDeco(wrap, spec.cls, { top: spec.top, left: spec.left, zIndex: '3' });
     });
 
-    // spiders hanging from a thread (desktop only) -- no corner web
-    // lines, they didn't read well at any size.
+    // spiders hanging from a thread, over a real radial web (desktop only)
     if (!isMobile) {
-      [{ top: '0', right: '6%', threadLen: 40, spiderCls: '' },
-       { top: '0', left: '8%', threadLen: 28, spiderCls: 'wlg-h-spider-b' }].forEach(function (spec) {
+      [{ top: '0', right: '6%', threadLen: 40, spiderCls: '', webCorner: 'tr', webSize: 80 },
+       { top: '0', left: '8%', threadLen: 28, spiderCls: 'wlg-h-spider-b', webCorner: 'tl', webSize: 60 }].forEach(function (spec) {
         var corner = document.createElement('div');
         corner.style.position = 'absolute';
         corner.style.top = spec.top;
         if (spec.right) corner.style.right = spec.right; else corner.style.left = spec.left;
         corner.style.zIndex = '5';
+
+        var webWrap = document.createElement('div');
+        webWrap.style.position = 'absolute';
+        webWrap.style.top = '0';
+        if (spec.right) webWrap.style.right = '0'; else webWrap.style.left = '0';
+        webWrap.appendChild(webSVG(spec.webSize, spec.webCorner));
+        corner.appendChild(webWrap);
 
         var thread = document.createElement('div');
         thread.style.width = '1px';
