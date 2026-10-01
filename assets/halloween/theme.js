@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=13';
+  var cssHref = '/assets/halloween/theme.css?v=14';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -105,30 +105,6 @@
           fill: glow
         }));
       }
-      return svg;
-    }
-
-    function webSVG(size, corner) {
-      // a real radial web: spokes fanning out from the corner anchor,
-      // plus connecting rings woven between them. sits behind the
-      // spider photos at each top corner -- without this they're just
-      // spiders on threads with no actual web to hang in.
-      var svg = svgEl('svg', { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size });
-      var anchor = corner === 'tr' ? { x: size, y: 0 } : { x: 0, y: 0 };
-      var endpoints = corner === 'tr'
-        ? [{ x: 0, y: size * 0.12 }, { x: 0, y: size * 0.55 }, { x: size * 0.3, y: size * 0.92 }, { x: size * 0.65, y: size }, { x: size, y: size }]
-        : [{ x: size, y: size * 0.12 }, { x: size, y: size * 0.55 }, { x: size * 0.7, y: size * 0.92 }, { x: size * 0.35, y: size }, { x: 0, y: size }];
-      var color = 'rgba(11,10,13,0.75)';
-
-      endpoints.forEach(function (pt) {
-        svg.appendChild(svgEl('line', { x1: anchor.x, y1: anchor.y, x2: pt.x, y2: pt.y, stroke: color, 'stroke-width': '0.9' }));
-      });
-      [0.4, 0.7, 1.0].forEach(function (t) {
-        var ringPts = endpoints.map(function (pt) {
-          return (anchor.x + (pt.x - anchor.x) * t) + ',' + (anchor.y + (pt.y - anchor.y) * t);
-        });
-        svg.appendChild(svgEl('polyline', { points: ringPts.join(' '), stroke: color, 'stroke-width': '0.9', fill: 'none' }));
-      });
       return svg;
     }
 
@@ -251,7 +227,13 @@
     spiderSpecs.forEach(function (spec) {
       if (spec.webCorner) {
         var webWrap = document.createElement('div');
-        webWrap.appendChild(webSVG(spec.webSize, spec.webCorner));
+        var webImg = photoEl('cobweb.png', spec.webSize);
+        // the photo is drawn hanging from the top-left -- mirror it
+        // for the top-right corner instead of a separate asset
+        if (spec.webCorner === 'tr') {
+          webImg.style.transform = 'scaleX(-1)';
+        }
+        webWrap.appendChild(webImg);
         var webStyle = { top: '0', zIndex: '4' };
         if (spec.webCorner === 'tr') webStyle.right = '0'; else webStyle.left = '0';
         addDeco(webWrap, '', webStyle);
