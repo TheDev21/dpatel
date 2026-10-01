@@ -82,6 +82,14 @@
 .wlg-h-ghost-b { animation: wlgGhostB 16s ease-in-out infinite; animation-delay: 1.5s; }
 .wlg-h-ghost-c { animation: wlgGhostC 10s ease-in-out infinite; animation-delay: 3s; }
 
+@keyframes wlgGhostRise {
+  0%   { transform: translate(-50%, 50px); opacity: 0; }
+  15%  { opacity: 0.85; }
+  60%  { transform: translate(-50%, -14px); opacity: 0.6; }
+  100% { transform: translate(-50%, -70px); opacity: 0; }
+}
+.wlg-h-ghost-rise { transform: translate(-50%, -20px); animation: wlgGhostRise 2.6s ease-in-out infinite; }
+
 @keyframes wlgSpiderSwing {
   0%, 100% { transform: rotate(-6deg); }
   50% { transform: rotate(6deg); }
@@ -105,7 +113,7 @@
   .wlg-h-moon, .wlg-h-fog-a, .wlg-h-fog-b,
   .wlg-h-bat-a, .wlg-h-bat-b, .wlg-h-bat-c,
   .wlg-h-bat-a svg, .wlg-h-bat-b svg, .wlg-h-bat-c svg,
-  .wlg-h-ghost-a, .wlg-h-ghost-b, .wlg-h-ghost-c,
+  .wlg-h-ghost-a, .wlg-h-ghost-b, .wlg-h-ghost-c, .wlg-h-ghost-rise,
   .wlg-h-spider, .wlg-h-particle {
     animation: none !important;
   }

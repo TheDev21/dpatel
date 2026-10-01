@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=7';
+  var cssHref = '/assets/halloween/theme.css?v=8';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -46,49 +46,15 @@
       return el;
     }
 
-    function ghostSVG(size, opacity) {
-      // Dark body (reads against the site's normal light backgrounds,
-      // no page-background changes needed) with pale eyes for contrast
-      // against the dark body itself.
-      var id = nextGradId();
-      var w = size, h = size * 1.07;
-      var svg = svgEl('svg', { width: w, height: h, viewBox: '0 0 60 64' });
-      var defs = svgEl('defs', {});
-      var grad = svgEl('linearGradient', { id: id, x1: '0', y1: '0', x2: '0', y2: '1' });
-      var stop1 = svgEl('stop', { offset: '0%', 'stop-color': '#3A3245' });
-      var stop2 = svgEl('stop', { offset: '100%', 'stop-color': '#211C2B' });
-      grad.appendChild(stop1); grad.appendChild(stop2);
-      defs.appendChild(grad);
-      svg.appendChild(defs);
-      var body = svgEl('path', {
-        d: 'M30,4 C43,4 52,15 52,30 L52,56 C52,58 49,59 47,57 L43,53 C41,51 38,51 36,53 L33,56 C31,58 29,58 27,56 L24,53 C22,51 19,51 17,53 L13,57 C11,59 8,58 8,56 L8,30 C8,15 17,4 30,4 Z',
-        fill: 'url(#' + id + ')',
-        stroke: 'rgba(0,0,0,0.3)',
-        'stroke-width': '1',
-        opacity: opacity || 0.8
-      });
-      svg.appendChild(body);
-      var eyeL = svgEl('ellipse', { cx: '21', cy: '28', rx: '2.8', ry: '3.4', fill: '#F2E9D8', opacity: opacity || 0.8 });
-      var eyeR = svgEl('ellipse', { cx: '39', cy: '28', rx: '2.8', ry: '3.4', fill: '#F2E9D8', opacity: opacity || 0.8 });
-      svg.appendChild(eyeL);
-      svg.appendChild(eyeR);
-      return svg;
-    }
-
-    function batSVG(w, h) {
-      // A pure near-black fill is invisible against the theme's own
-      // near-black background -- give it a lighter fill plus a soft
-      // dark outline so it reads as a silhouette regardless of exactly
-      // what's behind it.
-      var svg = svgEl('svg', { width: w, height: h, viewBox: '0 0 46 26' });
-      var path = svgEl('path', {
-        d: 'M23 10 C20 2 10 0 2 6 C9 7 14 10 17 13 C10 13 4 17 0 23 C9 21 16 17 20 13 C21 17 21 21 23 26 C25 21 25 17 26 13 C30 17 37 21 46 23 C42 17 36 13 29 13 C32 10 37 7 44 6 C36 0 26 2 23 10 Z',
-        fill: '#4A4458',
-        stroke: '#0B0A0D',
-        'stroke-width': '0.8'
-      });
-      svg.appendChild(path);
-      return svg;
+    var IMG_BASE = '/assets/halloween/img/';
+    function photoEl(name, widthPx) {
+      var img = document.createElement('img');
+      img.src = IMG_BASE + name;
+      img.alt = '';
+      img.style.display = 'block';
+      img.style.width = widthPx + 'px';
+      img.style.height = 'auto';
+      return img;
     }
 
     function pumpkinSVG(size, jackOLantern) {
@@ -141,40 +107,6 @@
       return svg;
     }
 
-    function webSVG(size, corner) {
-      // A real radial web: spokes fanning out from the corner anchor,
-      // plus connecting rings woven between them -- not just parallel
-      // diagonal lines, which is what read as scratch marks before.
-      var svg = svgEl('svg', { width: size, height: size, viewBox: '0 0 ' + size + ' ' + size });
-      var anchor = corner === 'tr' ? { x: size, y: 0 } : { x: 0, y: 0 };
-      var endpoints = corner === 'tr'
-        ? [{ x: 0, y: size * 0.12 }, { x: 0, y: size * 0.55 }, { x: size * 0.3, y: size * 0.92 }, { x: size * 0.65, y: size }, { x: size, y: size }]
-        : [{ x: size, y: size * 0.12 }, { x: size, y: size * 0.55 }, { x: size * 0.7, y: size * 0.92 }, { x: size * 0.35, y: size }, { x: 0, y: size }];
-      var color = 'rgba(11,10,13,0.75)';
-
-      endpoints.forEach(function (pt) {
-        svg.appendChild(svgEl('line', { x1: anchor.x, y1: anchor.y, x2: pt.x, y2: pt.y, stroke: color, 'stroke-width': '0.9' }));
-      });
-      [0.4, 0.7, 1.0].forEach(function (t) {
-        var ringPts = endpoints.map(function (pt) {
-          return (anchor.x + (pt.x - anchor.x) * t) + ',' + (anchor.y + (pt.y - anchor.y) * t);
-        });
-        svg.appendChild(svgEl('polyline', { points: ringPts.join(' '), stroke: color, 'stroke-width': '0.9', fill: 'none' }));
-      });
-      return svg;
-    }
-
-    function spiderSVG(w, h) {
-      var svg = svgEl('svg', { width: w, height: h, viewBox: '0 0 20 16' });
-      svg.appendChild(svgEl('ellipse', { cx: '10', cy: '9', rx: '5', ry: '4.2', fill: '#0B0A0D' }));
-      svg.appendChild(svgEl('circle', { cx: '10', cy: '4.5', r: '2.6', fill: '#0B0A0D' }));
-      svg.appendChild(svgEl('path', {
-        d: 'M5 8 L0 5 M5 10 L0 12 M15 8 L20 5 M15 10 L20 12 M6 11 L2 15 M14 11 L18 15',
-        stroke: '#0B0A0D', 'stroke-width': '1', fill: 'none', 'stroke-linecap': 'round'
-      }));
-      return svg;
-    }
-
     function addDeco(el, cls, styleObj) {
       el.classList.add('wlg-h-deco');
       if (cls) el.className += ' ' + cls;
@@ -220,66 +152,60 @@
       filter: 'blur(3px)'
     });
 
-    // bats
+    // bats -- one or two lone bats on the real flight paths, plus one
+    // flock photo drifting across on its own slower path
     var batSpecs = isMobile
-      ? [{ cls: 'wlg-h-bat-a', top: '14%', size: 24 }]
+      ? [{ cls: 'wlg-h-bat-a', top: '14%', w: 46 }]
       : [
-          { cls: 'wlg-h-bat-a', top: '12%', size: 28 },
-          { cls: 'wlg-h-bat-b', top: '24%', size: 20 },
-          { cls: 'wlg-h-bat-c', top: '6%', size: 24 }
+          { cls: 'wlg-h-bat-a', top: '12%', w: 60 },
+          { cls: 'wlg-h-bat-c', top: '6%', w: 46 }
         ];
     batSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
-      wrap.appendChild(batSVG(spec.size, spec.size * 0.565));
+      wrap.appendChild(photoEl('bat-single.png', spec.w));
       addDeco(wrap, spec.cls, { top: spec.top, left: '0', zIndex: '4' });
     });
+    if (!isMobile) {
+      var flockWrap = document.createElement('div');
+      flockWrap.appendChild(photoEl('bat-flock.png', 110));
+      addDeco(flockWrap, 'wlg-h-bat-b', { top: '20%', left: '0', zIndex: '4', opacity: '0.85' });
+    }
 
-    // ghosts
+    // ghosts -- a few drifting forever, same wandering float as before
     var ghostSpecs = isMobile
-      ? [{ cls: 'wlg-h-ghost-a', top: '30%', left: '8%', size: 40, op: 0.55 }]
+      ? [{ cls: 'wlg-h-ghost-a', top: '30%', left: '8%', w: 44, op: 0.75 }]
       : [
-          { cls: 'wlg-h-ghost-a', top: '22%', left: '6%', size: 48, op: 0.6 },
-          { cls: 'wlg-h-ghost-b', top: '52%', left: '86%', size: 38, op: 0.5 },
-          { cls: 'wlg-h-ghost-c', top: '74%', left: '12%', size: 32, op: 0.45 }
+          { cls: 'wlg-h-ghost-a', top: '20%', left: '6%', w: 60, op: 0.8 },
+          { cls: 'wlg-h-ghost-b', top: '50%', left: '86%', w: 50, op: 0.7 },
+          { cls: 'wlg-h-ghost-c', top: '72%', left: '12%', w: 42, op: 0.65 },
+          { cls: 'wlg-h-ghost-a', top: '38%', left: '46%', w: 36, op: 0.55 }
         ];
     ghostSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
-      wrap.appendChild(ghostSVG(spec.size, spec.op));
+      var img = photoEl('ghost-single.png', spec.w);
+      img.style.opacity = spec.op;
+      wrap.appendChild(img);
       addDeco(wrap, spec.cls, { top: spec.top, left: spec.left, zIndex: '3' });
     });
 
-    // spiders hanging from a thread, over a real radial web (desktop only)
+    // ghosts rising and vanishing along the bottom of the screen, on a
+    // continuous 2.6s rise-fade-reset loop
+    var riseWrap = document.createElement('div');
+    riseWrap.appendChild(photoEl('ghost-flock.png', isMobile ? 280 : 480));
+    addDeco(riseWrap, 'wlg-h-ghost-rise', { bottom: '0', left: '50%', zIndex: '2' });
+
+    // spiders -- all clustered along the top of the screen (desktop only)
     if (!isMobile) {
-      [{ top: '0', right: '6%', threadLen: 40, spiderCls: '', webCorner: 'tr', webSize: 80 },
-       { top: '0', left: '8%', threadLen: 28, spiderCls: 'wlg-h-spider-b', webCorner: 'tl', webSize: 60 }].forEach(function (spec) {
-        var corner = document.createElement('div');
-        corner.style.position = 'absolute';
-        corner.style.top = spec.top;
-        if (spec.right) corner.style.right = spec.right; else corner.style.left = spec.left;
-        corner.style.zIndex = '5';
-
-        var webWrap = document.createElement('div');
-        webWrap.style.position = 'absolute';
-        webWrap.style.top = '0';
-        if (spec.right) webWrap.style.right = '0'; else webWrap.style.left = '0';
-        webWrap.appendChild(webSVG(spec.webSize, spec.webCorner));
-        corner.appendChild(webWrap);
-
-        var thread = document.createElement('div');
-        thread.style.width = '1px';
-        thread.style.height = spec.threadLen + 'px';
-        thread.style.background = 'rgba(11,10,13,0.3)';
-        thread.style.margin = spec.right ? '0 auto' : '0 0 0 9px';
-        corner.appendChild(thread);
-
-        var spiderWrap = document.createElement('div');
-        spiderWrap.className = 'wlg-h-spider' + (spec.spiderCls ? ' ' + spec.spiderCls : '');
-        spiderWrap.style.margin = spec.right ? '-1px auto 0' : '-1px 0 0 0';
-        spiderWrap.appendChild(spiderSVG(18, 14));
-        corner.appendChild(spiderWrap);
-
-        corner.classList.add('wlg-h-deco');
-        layer.appendChild(corner);
+      var spiderSpecs = [
+        { top: '0', right: '4%', w: 170 },
+        { top: '0', left: '6%', w: 120 }
+      ];
+      spiderSpecs.forEach(function (spec) {
+        var wrap = document.createElement('div');
+        wrap.appendChild(photoEl('spider-group.png', spec.w));
+        var style = { top: spec.top, zIndex: '5' };
+        if (spec.right) style.right = spec.right; else style.left = spec.left;
+        addDeco(wrap, 'wlg-h-spider', style);
       });
     }
 
