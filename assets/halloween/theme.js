@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=6';
+  var cssHref = '/assets/halloween/theme.css?v=7';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -150,16 +150,16 @@
       var endpoints = corner === 'tr'
         ? [{ x: 0, y: size * 0.12 }, { x: 0, y: size * 0.55 }, { x: size * 0.3, y: size * 0.92 }, { x: size * 0.65, y: size }, { x: size, y: size }]
         : [{ x: size, y: size * 0.12 }, { x: size, y: size * 0.55 }, { x: size * 0.7, y: size * 0.92 }, { x: size * 0.35, y: size }, { x: 0, y: size }];
-      var color = 'rgba(46,40,56,0.4)';
+      var color = 'rgba(11,10,13,0.75)';
 
       endpoints.forEach(function (pt) {
-        svg.appendChild(svgEl('line', { x1: anchor.x, y1: anchor.y, x2: pt.x, y2: pt.y, stroke: color, 'stroke-width': '0.6' }));
+        svg.appendChild(svgEl('line', { x1: anchor.x, y1: anchor.y, x2: pt.x, y2: pt.y, stroke: color, 'stroke-width': '0.9' }));
       });
       [0.4, 0.7, 1.0].forEach(function (t) {
         var ringPts = endpoints.map(function (pt) {
           return (anchor.x + (pt.x - anchor.x) * t) + ',' + (anchor.y + (pt.y - anchor.y) * t);
         });
-        svg.appendChild(svgEl('polyline', { points: ringPts.join(' '), stroke: color, 'stroke-width': '0.6', fill: 'none' }));
+        svg.appendChild(svgEl('polyline', { points: ringPts.join(' '), stroke: color, 'stroke-width': '0.9', fill: 'none' }));
       });
       return svg;
     }
