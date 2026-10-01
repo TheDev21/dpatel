@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=2';
+  var cssHref = '/assets/halloween/theme.css?v=3';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -88,6 +88,18 @@
         'stroke-width': '0.8'
       });
       svg.appendChild(path);
+      return svg;
+    }
+
+    function pumpkinSVG(size) {
+      var svg = svgEl('svg', { width: size, height: size * 0.77, viewBox: '0 0 44 34' });
+      svg.appendChild(svgEl('ellipse', { cx: '22', cy: '20', rx: '20', ry: '13', fill: '#7A3F1A', stroke: '#2E2838', 'stroke-width': '1.2' }));
+      svg.appendChild(svgEl('path', {
+        d: 'M8 20 Q15 12 22 20 Q29 12 36 20', stroke: '#2E2838', 'stroke-width': '1', fill: 'none', opacity: '0.5'
+      }));
+      svg.appendChild(svgEl('path', {
+        d: 'M22 4 L22 9', stroke: '#2E2838', 'stroke-width': '2.4', 'stroke-linecap': 'round'
+      }));
       return svg;
     }
 
@@ -203,6 +215,18 @@
         layer.appendChild(corner);
       });
     }
+
+    // small pumpkins tucked into empty corners -- not center-stage
+    var pumpkinSpecs = isMobile
+      ? [{ bottom: '4%', left: '4%', size: 30 }]
+      : [{ bottom: '6%', left: '3%', size: 36 }, { bottom: '10%', right: '4%', size: 28 }];
+    pumpkinSpecs.forEach(function (spec) {
+      var wrap = document.createElement('div');
+      wrap.appendChild(pumpkinSVG(spec.size));
+      var style = { bottom: spec.bottom, zIndex: '3', opacity: '0.8' };
+      if (spec.left) style.left = spec.left; else style.right = spec.right;
+      addDeco(wrap, '', style);
+    });
 
     // particles
     if (!isMobile) {
