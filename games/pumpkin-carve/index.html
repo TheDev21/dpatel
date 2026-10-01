@@ -20,14 +20,14 @@
     background: var(--pink);
     color: var(--ink);
     font-family: 'DM Mono', monospace;
-    padding: 90px 24px calc(24px + env(safe-area-inset-bottom, 0px));
+    padding: 20px 24px calc(20px + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
   }
   @media (max-width: 640px) {
-    body { padding: 70px 24px calc(20px + env(safe-area-inset-bottom, 0px)); }
+    body { padding: 50px 24px calc(20px + env(safe-area-inset-bottom, 0px)); }
   }
   a { color: inherit; text-decoration: none; }
 
@@ -77,7 +77,7 @@
 
   .stage-wrap {
     position: relative;
-    width: min(94vw, 640px, calc(55vh * 380 / 440));
+    width: min(94vw, 760px, calc(78vh * 380 / 440));
     aspect-ratio: 380 / 440;
   }
   .glow-layer {
@@ -204,8 +204,6 @@
   }
 
   app.innerHTML =
-    '<h1>Pumpkin Carve</h1>' +
-    '<p class="sub">Drag across the pumpkin to carve it.</p>' +
     '<div class="stage-wrap">' +
       '<div class="glow-layer lights-on" id="glowLayer"></div>' +
       '<canvas id="pumpkinCanvas"></canvas>' +
