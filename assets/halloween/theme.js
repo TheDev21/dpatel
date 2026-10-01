@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=17';
+  var cssHref = '/assets/halloween/theme.css?v=18';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -47,6 +47,14 @@
     var layer = document.createElement('div');
     layer.id = 'wlg-halloween-layer';
     layer.setAttribute('aria-hidden', 'true');
+    // doomscroll (and possibly future pages) wraps its content in a
+    // positioned #fitWrapper with its own explicit z-index, which
+    // otherwise paints over the entire decoration layer -- the normal
+    // z-index:-1 only has to beat ordinary static content, not a
+    // sibling that's deliberately stacked above the page root.
+    if (document.getElementById('fitWrapper')) {
+      layer.style.zIndex = '2';
+    }
 
     var gradId = 0;
     function nextGradId() { gradId++; return 'wlgGhostGrad' + gradId; }
