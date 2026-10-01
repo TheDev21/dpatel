@@ -58,6 +58,8 @@
       var body = svgEl('path', {
         d: 'M30,4 C43,4 52,15 52,30 L52,56 C52,58 49,59 47,57 L43,53 C41,51 38,51 36,53 L33,56 C31,58 29,58 27,56 L24,53 C22,51 19,51 17,53 L13,57 C11,59 8,58 8,56 L8,30 C8,15 17,4 30,4 Z',
         fill: 'url(#' + id + ')',
+        stroke: 'rgba(11,10,13,0.5)',
+        'stroke-width': '1',
         opacity: opacity || 0.85
       });
       svg.appendChild(body);
@@ -69,10 +71,16 @@
     }
 
     function batSVG(w, h) {
+      // A pure near-black fill is invisible against the theme's own
+      // near-black background -- give it a lighter fill plus a soft
+      // dark outline so it reads as a silhouette regardless of exactly
+      // what's behind it.
       var svg = svgEl('svg', { width: w, height: h, viewBox: '0 0 46 26' });
       var path = svgEl('path', {
         d: 'M23 10 C20 2 10 0 2 6 C9 7 14 10 17 13 C10 13 4 17 0 23 C9 21 16 17 20 13 C21 17 21 21 23 26 C25 21 25 17 26 13 C30 17 37 21 46 23 C42 17 36 13 29 13 C32 10 37 7 44 6 C36 0 26 2 23 10 Z',
-        fill: '#0B0A0D'
+        fill: '#4A4458',
+        stroke: '#0B0A0D',
+        'stroke-width': '0.8'
       });
       svg.appendChild(path);
       return svg;
@@ -110,9 +118,10 @@
     // moon
     var moonWrap = document.createElement('div');
     var moonSvg = svgEl('svg', { width: 90, height: 90, viewBox: '0 0 90 90' });
-    moonSvg.appendChild(svgEl('circle', { cx: '45', cy: '45', r: '36', fill: '#F2E9D8', opacity: '0.12' }));
+    moonSvg.appendChild(svgEl('circle', { cx: '45', cy: '45', r: '38', fill: '#F2E9D8', opacity: '0.06' }));
     moonSvg.appendChild(svgEl('path', {
-      d: 'M45 16 A29 29 0 1 0 45 74 A23 23 0 1 1 45 16 Z', fill: '#F2E9D8', opacity: '0.22'
+      d: 'M45 16 A29 29 0 1 0 45 74 A23 23 0 1 1 45 16 Z',
+      fill: '#F2E9D8', stroke: 'rgba(242,233,216,0.25)', 'stroke-width': '0.6', opacity: '0.38'
     }));
     moonWrap.appendChild(moonSvg);
     addDeco(moonWrap, 'wlg-h-moon', { top: '6%', right: '8%', zIndex: '1' });
