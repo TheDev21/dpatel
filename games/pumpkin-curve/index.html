@@ -82,8 +82,14 @@
     inset: 0;
     background: radial-gradient(circle at 50% 46%, #ffdd8a 0%, #ffb23a 35%, #3a2412 72%, #1a1008 100%);
     transition: opacity 0.4s ease, filter 0.4s ease;
-    clip-path: ellipse(39.5% 31.8% at 50% 56.8%);
-    -webkit-clip-path: ellipse(39.5% 31.8% at 50% 56.8%);
+    -webkit-mask-image: url('/assets/halloween/img/pumpkin-photo.png');
+    mask-image: url('/assets/halloween/img/pumpkin-photo.png');
+    -webkit-mask-size: contain;
+    mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    mask-position: center;
   }
   .glow-layer.lights-off { background: #15121a; filter: none; }
   .glow-layer.lights-on { animation: flicker 2.4s ease-in-out infinite; }
@@ -230,49 +236,36 @@
   }
   window.addEventListener('resize', sizeCanvas);
 
-  function pumpkinPath(ctx2) {
-    ctx2.beginPath();
-    ctx2.ellipse(190, 250, 150, 140, 0, 0, Math.PI * 2);
+  // real photo, drawn "contain"-fit into the WxH logical box -- matches
+  // the glow layer's CSS mask-size:contain so the two line up exactly
+  var pumpkinImg = new Image();
+  var imgFit = { x: 0, y: 0, w: W, h: H };
+  var hitCanvas = document.createElement('canvas');
+  hitCanvas.width = W;
+  hitCanvas.height = H;
+  var hitCtx = hitCanvas.getContext('2d');
+  var hitData = null;
+  var imgReady = false;
+
+  function computeFit() {
+    var scale = Math.min(W / pumpkinImg.naturalWidth, H / pumpkinImg.naturalHeight);
+    var w = pumpkinImg.naturalWidth * scale, h = pumpkinImg.naturalHeight * scale;
+    imgFit = { x: (W - w) / 2, y: (H - h) / 2, w: w, h: h };
   }
+
+  pumpkinImg.onload = function () {
+    computeFit();
+    hitCtx.clearRect(0, 0, W, H);
+    hitCtx.drawImage(pumpkinImg, imgFit.x, imgFit.y, imgFit.w, imgFit.h);
+    hitData = hitCtx.getImageData(0, 0, W, H).data;
+    imgReady = true;
+    render();
+  };
+  pumpkinImg.src = '/assets/halloween/img/pumpkin-photo.png';
 
   function drawBase() {
     ctx.clearRect(0, 0, W, H);
-    ctx.save();
-    pumpkinPath(ctx);
-    ctx.clip();
-
-    var grad = ctx.createRadialGradient(150, 170, 10, 190, 250, 220);
-    grad.addColorStop(0, '#FFA94D');
-    grad.addColorStop(0.55, '#EA7317');
-    grad.addColorStop(1, '#A84A08');
-    ctx.fillStyle = grad;
-    ctx.fillRect(0, 0, W, H);
-
-    [[70, 250], [130, 240], [190, 235], [250, 240], [310, 250]].forEach(function (c, i) {
-      ctx.beginPath();
-      ctx.moveTo(c[0], 120);
-      ctx.quadraticCurveTo(c[0] + (i % 2 ? 10 : -10), 250, c[0], 380);
-      ctx.strokeStyle = 'rgba(122,51,7,0.45)';
-      ctx.lineWidth = 3;
-      ctx.stroke();
-    });
-
-    ctx.beginPath();
-    ctx.ellipse(150, 170, 55, 40, -0.3, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(255,217,160,0.3)';
-    ctx.fill();
-    ctx.restore();
-
-    ctx.beginPath();
-    ctx.moveTo(180, 115);
-    ctx.quadraticCurveTo(178, 80, 195, 55);
-    ctx.lineWidth = 16;
-    ctx.strokeStyle = '#5A7A2A';
-    ctx.lineCap = 'round';
-    ctx.stroke();
-    ctx.lineWidth = 7;
-    ctx.strokeStyle = '#3F5A1C';
-    ctx.stroke();
+    if (imgReady) ctx.drawImage(pumpkinImg, imgFit.x, imgFit.y, imgFit.w, imgFit.h);
   }
 
   function render() {
@@ -301,9 +294,12 @@
   }
 
   function isOverPumpkin(clientX, clientY) {
+    if (!hitData) return false;
     var p = toCanvasPoint(clientX, clientY);
-    var dx = (p.x - 190) / 150, dy = (p.y - 250) / 140;
-    return (dx * dx + dy * dy) <= 1;
+    var px = Math.round(p.x), py = Math.round(p.y);
+    if (px < 0 || py < 0 || px >= W || py >= H) return false;
+    var alpha = hitData[(py * W + px) * 4 + 3];
+    return alpha > 40;
   }
 
   function updateCursor(clientX, clientY) {
