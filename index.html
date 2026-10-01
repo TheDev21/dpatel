@@ -841,7 +841,7 @@
           <path class="heart-crack-line" d="M20 9 L16.5 14.5 L23 18 L15.5 22 L22 26 L17.5 29.5 L20 33" fill="none" stroke="var(--pink)" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
           <path class="heart-crack-line" d="M20 9 L16.5 14.5 L23 18 L15.5 22 L22 26 L17.5 29.5 L20 33" fill="none" stroke="var(--ink)" stroke-width="1" stroke-linejoin="round" stroke-linecap="round" opacity="0.5"/>
         </svg>
-        <svg class="heart-visual heart-beat" data-state="healed" viewBox="0 0 40 36" width="36" height="32">
+        <svg class="heart-visual heart-beat" data-state="bandaged" viewBox="0 0 40 36" width="36" height="32">
           <defs>
             <clipPath id="heartClip">
               <path d="M20 33 C4 22 2 12 8 7 C13 3 19 6 20 12 C21 6 27 3 32 7 C38 12 36 22 20 33 Z"/>
@@ -966,12 +966,13 @@
   var healTimer = null;
 
   var CRACK_LINES = ['ouch.', 'well, now it\'s broken.', 'that\'s gonna need a bandage.'];
-  var HEAL_LINES = ['all better. (for now)', 'good as new. mostly.', 'healed. try not to break it again.'];
+  var BANDAGE_LINES = ['all better. (for now)', 'good as new. mostly.', 'healing. try not to break it again.'];
+  var REMOVE_LINES = ['good as new.', 'bandage off. fully healed.', 'healed up. don\'t jinx it.'];
 
-  function saveHeartState(crackedAt) {
+  function saveHeartState(bandagedAt) {
     try {
-      if (heartState === 'cracked') {
-        localStorage.setItem(HEART_KEY, JSON.stringify({ state: 'cracked', crackedAt: crackedAt }));
+      if (heartState === 'bandaged') {
+        localStorage.setItem(HEART_KEY, JSON.stringify({ state: 'bandaged', bandagedAt: bandagedAt }));
       } else {
         localStorage.setItem(HEART_KEY, JSON.stringify({ state: heartState }));
       }
@@ -992,29 +993,42 @@
   }
 
   function breakHeart() {
+    clearTimeout(healTimer);
     heartState = 'cracked';
     renderHeart();
-    saveHeartState(Date.now());
+    saveHeartState();
     crackSound();
     showHeartStatus(CRACK_LINES);
     heartBtn.classList.add('shatter');
     setTimeout(function () { heartBtn.classList.remove('shatter'); }, 400);
-    clearTimeout(healTimer);
-    healTimer = setTimeout(function () { healHeart(true); }, HEAL_DELAY);
   }
 
-  function healHeart(auto) {
+  // clicking a cracked heart puts the bandage on and starts the 5-minute
+  // heal timer -- it doesn't heal on its own just from sitting cracked
+  function applyBandage() {
     clearTimeout(healTimer);
-    heartState = 'healed';
+    heartState = 'bandaged';
+    renderHeart();
+    saveHeartState(Date.now());
+    healSound();
+    showHeartStatus(BANDAGE_LINES);
+    healTimer = setTimeout(function () { removeBandage(true); }, HEAL_DELAY);
+  }
+
+  // after 5 minutes (or on reload once that time has already passed)
+  // the bandage comes off and the heart is just a plain heart again
+  function removeBandage(auto) {
+    clearTimeout(healTimer);
+    heartState = 'reg';
     renderHeart();
     saveHeartState();
-    healSound();
-    showHeartStatus(auto ? ['all better. took a while, but it healed.'] : HEAL_LINES);
+    if (auto) showHeartStatus(REMOVE_LINES);
   }
 
   heartBtn.addEventListener('click', function () {
-    if (heartState === 'cracked') healHeart(false);
-    else breakHeart();
+    if (heartState === 'reg') breakHeart();
+    else if (heartState === 'cracked') applyBandage();
+    else breakHeart(); // bandaged -- clicking it again breaks it right back open
   });
 
   (function restoreHeartState() {
@@ -1023,19 +1037,17 @@
     if (!raw) return;
     var saved;
     try { saved = JSON.parse(raw); } catch (e) { return; }
-    if (saved.state === 'cracked') {
-      var elapsed = Date.now() - saved.crackedAt;
+    if (saved.state === 'bandaged') {
+      var elapsed = Date.now() - saved.bandagedAt;
       if (elapsed >= HEAL_DELAY) {
-        heartState = 'healed';
-        renderHeart();
-        saveHeartState();
+        removeBandage(false);
       } else {
-        heartState = 'cracked';
+        heartState = 'bandaged';
         renderHeart();
-        healTimer = setTimeout(function () { healHeart(true); }, HEAL_DELAY - elapsed);
+        healTimer = setTimeout(function () { removeBandage(true); }, HEAL_DELAY - elapsed);
       }
-    } else if (saved.state === 'healed') {
-      heartState = 'healed';
+    } else if (saved.state === 'cracked') {
+      heartState = 'cracked';
       renderHeart();
     }
   })();
