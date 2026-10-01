@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=14';
+  var cssHref = '/assets/halloween/theme.css?v=15';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -115,29 +115,6 @@
       layer.appendChild(el);
       return el;
     }
-
-    // moon -- a solid crescent with a soft glow behind it. Built as one
-    // circle minus an offset circle via fill-rule evenodd, which is
-    // the reliable way to get a true crescent (a single arc path here
-    // self-intersected and silently failed to fill at all).
-    function fullCirclePath(cx, cy, r) {
-      return 'M' + (cx - r) + ',' + cy +
-        ' a' + r + ',' + r + ' 0 1,0 ' + (r * 2) + ',0' +
-        ' a' + r + ',' + r + ' 0 1,0 ' + (-r * 2) + ',0 Z';
-    }
-    var moonWrap = document.createElement('div');
-    var moonSvg = svgEl('svg', { width: 90, height: 90, viewBox: '0 0 90 90' });
-    moonSvg.appendChild(svgEl('path', {
-      // the subtracted circle must stay fully inside the outer one
-      // (distance between centers + its radius <= outer radius) or
-      // evenodd produces a venn-diagram XOR instead of a clean bite.
-      // Dark fill so it reads against the site's normal light pages.
-      d: fullCirclePath(45, 45, 30) + ' ' + fullCirclePath(50, 39, 22),
-      'fill-rule': 'evenodd',
-      fill: '#2E2838', opacity: '0.4'
-    }));
-    moonWrap.appendChild(moonSvg);
-    addDeco(moonWrap, 'wlg-h-moon', { top: '6%', right: '8%', zIndex: '1' });
 
     // fog
     var fogA = document.createElement('div');

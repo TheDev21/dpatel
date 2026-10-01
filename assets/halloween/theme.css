@@ -26,12 +26,6 @@
 }
 .wlg-h-deco { position: absolute; pointer-events: none; }
 
-@keyframes wlgMoonDrift {
-  0% { transform: translateX(0px); }
-  100% { transform: translateX(-16px); }
-}
-.wlg-h-moon { animation: wlgMoonDrift 46s ease-in-out infinite alternate; }
-
 @keyframes wlgFogDrift {
   0% { transform: translateX(-6%); }
   100% { transform: translateX(6%); }
@@ -123,7 +117,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .wlg-h-moon, .wlg-h-fog-a, .wlg-h-fog-b,
+  .wlg-h-fog-a, .wlg-h-fog-b,
   .wlg-h-bat-a, .wlg-h-bat-b, .wlg-h-bat-c,
   .wlg-h-bat-a svg, .wlg-h-bat-b svg, .wlg-h-bat-c svg,
   .wlg-h-ghost-a, .wlg-h-ghost-b, .wlg-h-ghost-c, .wlg-h-ghost-rise,
