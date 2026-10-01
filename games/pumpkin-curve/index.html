@@ -304,7 +304,28 @@
         ctx.restore();
       } else if (pts.length >= 3) {
         ctx.save();
-        ctx.fillStyle = lightsOn ? '#F3DFA0' : '#7A6A48';
+        var minX = pts[0].x, maxX = pts[0].x, minY = pts[0].y, maxY = pts[0].y;
+        pts.forEach(function (p) {
+          if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
+          if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
+        });
+        var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+        var r = Math.max(maxX - minX, maxY - minY) / 2 + 2;
+        var grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+        if (lightsOn) {
+          // candle-lit: bright glowing center fading to a warm edge
+          grad.addColorStop(0, '#FFF3CF');
+          grad.addColorStop(0.55, '#FFD36B');
+          grad.addColorStop(1, '#D98A28');
+        } else {
+          // unlit: still reads as a real cut -- pale flesh rim (what
+          // carving actually exposes) darkening into a shadowed cavity,
+          // instead of a flat color that looks like a sticker
+          grad.addColorStop(0, '#3A200C');
+          grad.addColorStop(0.55, '#8A4F1E');
+          grad.addColorStop(1, '#EFC789');
+        }
+        ctx.fillStyle = grad;
         pathPoints(pts, true);
         ctx.fill();
         ctx.strokeStyle = 'rgba(90,45,10,0.5)';
