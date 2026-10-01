@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=15';
+  var cssHref = '/assets/halloween/theme.css?v=16';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -33,6 +33,16 @@
   function init() {
     var isMobile = window.innerWidth < 640;
     var isHomepage = !!document.getElementById('grid');
+
+    // wall-clock-synced animation phase: a negative delay equal to how
+    // far into its own cycle "now" falls means every element picks up
+    // mid-flight instead of snapping back to 0% and restarting from
+    // scratch on every refresh -- across a reload it looks continuous
+    // instead of all the bats/ghosts popping to one spot and pausing.
+    function syncDelay(durationSec, offsetSec) {
+      var phase = ((Date.now() / 1000) + (offsetSec || 0)) % durationSec;
+      return '-' + phase.toFixed(2) + 's';
+    }
 
     var layer = document.createElement('div');
     layer.id = 'wlg-halloween-layer';
@@ -138,15 +148,19 @@
           { cls: 'wlg-h-bat-a', top: '12%', w: 60 },
           { cls: 'wlg-h-bat-c', top: '6%', w: 46 }
         ];
+    var batDurations = { 'wlg-h-bat-a': [19, 0], 'wlg-h-bat-c': [33, 11] };
     batSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
       wrap.appendChild(photoEl('bat-single.png', spec.w));
-      addDeco(wrap, spec.cls, { top: spec.top, left: '0', zIndex: '4' });
+      var d = batDurations[spec.cls];
+      addDeco(wrap, spec.cls, { top: spec.top, left: '0', zIndex: '4', animationDelay: syncDelay(d[0], d[1]) });
     });
     if (!isMobile) {
       var flockWrap = document.createElement('div');
       flockWrap.appendChild(photoEl('bat-flock.png', 170));
-      addDeco(flockWrap, 'wlg-h-bat-b', { top: '20%', left: '0', zIndex: '4', opacity: '0.85' });
+      addDeco(flockWrap, 'wlg-h-bat-b', {
+        top: '20%', left: '0', zIndex: '4', opacity: '0.85', animationDelay: syncDelay(26, 4)
+      });
     }
 
     // ghosts -- bigger, and now cross the full screen edge-to-edge
@@ -154,18 +168,21 @@
     var ghostSpecs = isMobile
       ? [{ cls: 'wlg-h-ghost-a', top: '28%', left: '0', w: 100, op: 0.75 }]
       : [
-          { cls: 'wlg-h-ghost-a', top: '16%', left: '0', w: 150, op: 0.8 },
-          { cls: 'wlg-h-ghost-b', top: '46%', left: '0', w: 130, op: 0.7 },
-          { cls: 'wlg-h-ghost-c', top: '68%', left: '0', w: 110, op: 0.65 },
-          { cls: 'wlg-h-ghost-a', top: '32%', left: '0', w: 95, op: 0.55, delay: '16s' }
+          { cls: 'wlg-h-ghost-a', top: '16%', left: '0', w: 150, op: 0.8, offset: 0 },
+          { cls: 'wlg-h-ghost-b', top: '46%', left: '0', w: 130, op: 0.7, offset: 4 },
+          { cls: 'wlg-h-ghost-c', top: '68%', left: '0', w: 110, op: 0.65, offset: 9 },
+          { cls: 'wlg-h-ghost-a', top: '32%', left: '0', w: 95, op: 0.55, offset: 16 }
         ];
+    var ghostDurations = { 'wlg-h-ghost-a': 32, 'wlg-h-ghost-b': 38, 'wlg-h-ghost-c': 26 };
     ghostSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
       var img = photoEl('ghost-single.png', spec.w);
       img.style.opacity = spec.op;
       wrap.appendChild(img);
-      var style = { top: spec.top, left: spec.left, zIndex: '3' };
-      if (spec.delay) style.animationDelay = spec.delay;
+      var style = {
+        top: spec.top, left: spec.left, zIndex: '3',
+        animationDelay: syncDelay(ghostDurations[spec.cls], spec.offset || 0)
+      };
       addDeco(wrap, spec.cls, style);
     });
 
@@ -183,7 +200,7 @@
         var riseWrap = document.createElement('div');
         riseWrap.appendChild(photoEl('ghost-flock.png', spec.w));
         addDeco(riseWrap, 'wlg-h-ghost-rise', {
-          bottom: '0', left: spec.left, zIndex: '2', animationDelay: spec.delay + 's'
+          bottom: '0', left: spec.left, zIndex: '2', animationDelay: syncDelay(2.6, spec.delay)
         });
       });
     }
@@ -205,6 +222,9 @@
       if (spec.webCorner) {
         var webWrap = document.createElement('div');
         var webImg = photoEl('cobweb.png', spec.webSize);
+        // boost contrast/darkness so the fine strands actually read
+        // against the site's light background instead of washing out
+        webImg.style.filter = 'contrast(1.35) brightness(0.85) drop-shadow(0 2px 3px rgba(0,0,0,0.25))';
         // the photo is drawn hanging from the top-left -- mirror it
         // for the top-right corner instead of a separate asset
         if (spec.webCorner === 'tr') {
