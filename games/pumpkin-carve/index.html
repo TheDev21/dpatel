@@ -95,11 +95,11 @@
 
   .stage-wrap {
     position: relative;
-    width: min(94vw, 760px, calc(78vh * 380 / 440));
-    aspect-ratio: 380 / 440;
+    width: min(94vw, 760px, calc(78vh * 400 / 352));
+    aspect-ratio: 400 / 352;
   }
   @media (min-width: 641px) {
-    .stage-wrap { width: min(94vw, 900px, calc(88vh * 380 / 440)); }
+    .stage-wrap { width: min(94vw, 900px, calc(88vh * 400 / 352)); }
   }
   .glow-layer {
     position: absolute;
@@ -250,7 +250,7 @@
   var glowLayer = document.getElementById('glowLayer');
   var stageWrap = document.querySelector('.stage-wrap');
   var toastEl = document.getElementById('toast');
-  var W = 380, H = 440;
+  var W = 400, H = 352;
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
 
   var strokes = [];
@@ -285,10 +285,10 @@
     var bottomPad = 20;
     var available = window.innerHeight - topPad - titleH - controlsH - bottomPad;
     var maxW = Math.min(window.innerWidth * 0.94, 1000);
-    var heightFromMaxWidth = maxW * (440 / 380);
+    var heightFromMaxWidth = maxW * (352 / 400);
     var finalH = Math.max(200, Math.min(available, heightFromMaxWidth));
     stageWrap.style.height = finalH + 'px';
-    stageWrap.style.width = (finalH * (380 / 440)) + 'px';
+    stageWrap.style.width = (finalH * (400 / 352)) + 'px';
     sizeCanvas();
   }
   window.addEventListener('resize', function () { layoutStage(); sizeCanvas(); });
