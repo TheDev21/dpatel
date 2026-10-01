@@ -130,20 +130,20 @@
   }
   .thumb .deco { position: absolute; z-index: 1; }
 
-  .limited-badge {
+  .limited-banner {
     position: absolute;
-    top: 12px;
-    left: -6px;
+    top: 0;
+    left: 0;
+    right: 0;
     z-index: 3;
-    background: var(--orange);
+    background: linear-gradient(180deg, #ff7a3a, var(--orange) 85%);
     color: #fff;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.06em;
-    padding: 4px 12px 4px 16px;
-    transform: rotate(-4deg);
-    box-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-    border-radius: 0 3px 3px 0;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    padding: 6px 0;
+    box-shadow: 0 2px 0 rgba(0,0,0,0.35);
   }
 
   /* Give It a Minute thumb -- one illustrated scene instead of stacked
@@ -598,6 +598,14 @@
 
   <div class="grid" id="grid">
 
+    <a class="card" id="pumpkinCurveCard" href="games/pumpkin-curve/" style="display:none;">
+      <div class="thumb" style="background: linear-gradient(160deg, #2a1e14, #1a1008 75%); padding-top: 34px;">
+        <div class="limited-banner">LIMITED TIME</div>
+        <img src="assets/halloween/img/pumpkin-photo.png" alt="" style="width:40%; height:auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
+        <div class="word" style="color:#FFC869;">PUMPKIN<br>CURVE</div>
+      </div>
+    </a>
+
     <a class="card" href="games/make-a-beat/">
       <div class="thumb beat">
         <svg viewBox="0 0 200 150" xmlns="http://www.w3.org/2000/svg" style="width:52%; height:auto;" fill="#23201d">
@@ -805,20 +813,6 @@
         <span class="arrow a3">&#8593;</span>
         <div class="phone-shape"></div>
         <div class="word">DOOM<br>SCROLL</div>
-      </div>
-    </a>
-
-    <a class="card" id="pumpkinCurveCard" href="games/pumpkin-curve/" style="display:none;">
-      <div class="thumb" style="background: linear-gradient(160deg, #2a1e14, #1a1008 75%);">
-        <div class="limited-badge">LIMITED TIME</div>
-        <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" style="width:46%; height:auto;">
-          <ellipse cx="60" cy="68" rx="46" ry="42" fill="#EA7317" stroke="#7A3307" stroke-width="3"/>
-          <path d="M60,26 Q58,12 68,4" stroke="#5A7A2A" stroke-width="7" fill="none" stroke-linecap="round"/>
-          <path d="M40,60 L48,70 L40,80" stroke="#2a1e14" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M80,60 L72,70 L80,80" stroke="#2a1e14" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M46,92 Q60,100 74,92" stroke="#2a1e14" stroke-width="7" fill="none" stroke-linecap="round"/>
-        </svg>
-        <div class="word" style="color:#FFC869;">PUMPKIN<br>CURVE</div>
       </div>
     </a>
 
