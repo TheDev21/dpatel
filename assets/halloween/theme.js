@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=18';
+  var cssHref = '/assets/halloween/theme.css?v=19';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -326,6 +326,83 @@
     }
 
     document.body.insertBefore(layer, document.body.firstChild);
+
+    // background music -- homepage only. Browsers block autoplay with
+    // sound until the user interacts with the page, so this starts
+    // paused regardless of the saved preference; the button is what
+    // actually starts it (which itself counts as the interaction).
+    if (isHomepage) {
+      var AUDIO_KEY = 'wlgHalloweenMusic';
+      var audio = document.createElement('audio');
+      audio.src = '/assets/halloween/audio/midnight-at-the-manor.mp3';
+      audio.loop = true;
+      audio.preload = 'none';
+
+      var savedVol = 50;
+      try {
+        var savedRaw = JSON.parse(localStorage.getItem(AUDIO_KEY) || '{}');
+        if (typeof savedRaw.volume === 'number') savedVol = savedRaw.volume;
+      } catch (e) {}
+      audio.volume = savedVol / 100;
+
+      var widget = document.createElement('div');
+      widget.id = 'wlg-h-music';
+      widget.style.cssText =
+        'position:fixed; top:16px; right:16px; z-index:60; display:flex; align-items:center; gap:8px;' +
+        'background:#fffaf7; border:2px solid #23201d; border-radius:999px; padding:7px 14px;' +
+        'box-shadow:2px 2px 0 rgba(35,32,29,0.16); font-family:inherit;';
+
+      var btn = document.createElement('button');
+      btn.id = 'wlg-h-music-btn';
+      btn.setAttribute('aria-label', 'toggle halloween music');
+      btn.style.cssText =
+        'background:none; border:none; padding:0; margin:0; cursor:pointer; display:flex;' +
+        'align-items:center; justify-content:center; width:20px; height:20px;';
+
+      var ICON_ON =
+        '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="#23201d"/>' +
+        '<path d="M16.5 8.5a5 5 0 0 1 0 7" stroke="#ff5a1f" stroke-width="2" fill="none" stroke-linecap="round"/>' +
+        '<path d="M19 6a8.5 8.5 0 0 1 0 12" stroke="#ff5a1f" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
+      var ICON_OFF =
+        '<svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 9v6h4l5 5V4L8 9H4Z" fill="#23201d"/>' +
+        '<path d="M16 9l5 6M21 9l-5 6" stroke="#766f68" stroke-width="2" stroke-linecap="round"/></svg>';
+      btn.innerHTML = ICON_OFF;
+
+      var slider = document.createElement('input');
+      slider.type = 'range';
+      slider.min = '0';
+      slider.max = '100';
+      slider.value = String(savedVol);
+      slider.setAttribute('aria-label', 'music volume');
+      slider.style.cssText = 'width:72px; accent-color:#ff5a1f; cursor:pointer;';
+
+      function savePref(playing, volume) {
+        try { localStorage.setItem(AUDIO_KEY, JSON.stringify({ playing: playing, volume: volume })); } catch (e) {}
+      }
+
+      btn.addEventListener('click', function () {
+        if (audio.paused) {
+          audio.play().then(function () {
+            btn.innerHTML = ICON_ON;
+            savePref(true, audio.volume * 100);
+          }).catch(function () {});
+        } else {
+          audio.pause();
+          btn.innerHTML = ICON_OFF;
+          savePref(false, audio.volume * 100);
+        }
+      });
+
+      slider.addEventListener('input', function () {
+        audio.volume = Number(slider.value) / 100;
+        savePref(!audio.paused, audio.volume * 100);
+      });
+
+      widget.appendChild(btn);
+      widget.appendChild(slider);
+      widget.appendChild(audio);
+      document.body.appendChild(widget);
+    }
   }
 
   if (document.readyState === 'loading') {
