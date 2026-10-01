@@ -4,20 +4,17 @@
    override). Safe to remove this file and its <link> tag at any time
    to fully retire the theme -- nothing else depends on it. */
 
-/* ---- palette override ----
-   Only structural/decorative variables are touched here: backgrounds,
-   card surfaces, body/dim text, and the brand accent (orange). Colors
-   that carry game-state meaning anywhere on the site (correct/wrong
-   feedback, rarity tiers, etc.) are deliberately left alone so no
-   game's feedback colors change meaning during the season. */
-:root[data-theme="halloween"] {
-  --pink: #17131A;
-  --pink-deep: #0B0A0D;
-  --card-bg: #1F1A24;
-  --ink: #F2E9D8;
-  --ink-dim: #948A7E;
-  --orange: #FF7518;
-}
+/* No palette/variable override here on purpose. An earlier version of
+   this file retinted --pink/--ink globally, which broke text
+   legibility on several pages (nothing, a-buck-through-time,
+   give-it-a-minute, where-can-i-go) because they don't all source
+   their background from the same variable -- some use --bg, --sky,
+   --wall-base, or no themeable background var at all, while --ink got
+   flipped to light everywhere regardless. Confirmed broken by actual
+   screenshots, not assumption. Rather than hand-audit and patch each
+   page's exact variable wiring mid-season, the safe fix is to drop
+   the retint entirely: decorations only, every page's own colors and
+   contrast stay exactly as they already are. */
 
 /* ---- decoration layer ---- */
 #wlg-halloween-layer {
