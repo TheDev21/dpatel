@@ -74,6 +74,24 @@
     text-align: center;
     max-width: 440px;
   }
+  /* positioned over the empty gap above the pumpkin instead of taking
+     up flex flow space -- that way it doesn't shrink the stage-wrap's
+     own vh-based size budget */
+  .title-overlay {
+    position: absolute;
+    top: 18px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    pointer-events: none;
+  }
+  .title-overlay h1 { margin: 0 0 2px; }
+  .title-overlay .sub { margin: 0 auto; }
+  @media (max-width: 640px) {
+    .title-overlay { top: 94px; }
+    .title-overlay h1 { font-size: 22px; }
+    .title-overlay .sub { font-size: 11px; max-width: 280px; margin: 0 auto; }
+  }
 
   .stage-wrap {
     position: relative;
@@ -204,6 +222,10 @@
   }
 
   app.innerHTML =
+    '<div class="title-overlay">' +
+      '<h1>Pumpkin Carve</h1>' +
+      '<p class="sub">Drag across the pumpkin to carve it.</p>' +
+    '</div>' +
     '<div class="stage-wrap">' +
       '<div class="glow-layer lights-on" id="glowLayer"></div>' +
       '<canvas id="pumpkinCanvas"></canvas>' +
