@@ -146,7 +146,10 @@
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 12px;
+  }
+  @media (min-width: 641px) {
+    .controls { margin-top: 48px; } /* ~half inch -- the pumpkin itself is sized in JS to fill the rest */
   }
   .btn {
     border: 2px solid var(--ink);
@@ -261,7 +264,34 @@
     canvas.height = Math.round(rect.height * dpr);
     ctx.setTransform(dpr * (rect.width / W), 0, 0, dpr * (rect.height / H), 0, 0);
   }
-  window.addEventListener('resize', sizeCanvas);
+
+  // desktop only: the CSS vh-based cap leaves an inconsistent amount of
+  // slack below the pumpkin depending on the actual window height (fine
+  // on a short window, a big empty gap on a tall one) -- measure the
+  // real available space and size the stage to fill it exactly instead
+  // of guessing at a vh percentage, leaving just the controls' own
+  // margin-top as the gap.
+  var titleEl = document.querySelector('.title-overlay');
+  var controlsEl = document.querySelector('.controls');
+  function layoutStage() {
+    if (window.innerWidth < 641) {
+      stageWrap.style.width = '';
+      stageWrap.style.height = '';
+      return;
+    }
+    var topPad = 20;
+    var titleH = titleEl ? titleEl.offsetHeight + 18 : 0;
+    var controlsH = controlsEl ? controlsEl.offsetHeight + 48 : 0;
+    var bottomPad = 20;
+    var available = window.innerHeight - topPad - titleH - controlsH - bottomPad;
+    var maxW = Math.min(window.innerWidth * 0.94, 1000);
+    var heightFromMaxWidth = maxW * (440 / 380);
+    var finalH = Math.max(200, Math.min(available, heightFromMaxWidth));
+    stageWrap.style.height = finalH + 'px';
+    stageWrap.style.width = (finalH * (380 / 440)) + 'px';
+    sizeCanvas();
+  }
+  window.addEventListener('resize', function () { layoutStage(); sizeCanvas(); });
 
   // real photo, drawn "contain"-fit into the WxH logical box -- matches
   // the glow layer's CSS mask-size:contain so the two line up exactly
@@ -480,6 +510,7 @@
     } catch (e) {}
   }
 
+  layoutStage();
   sizeCanvas();
   loadSave();
   render();
