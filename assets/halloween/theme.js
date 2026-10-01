@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=8';
+  var cssHref = '/assets/halloween/theme.css?v=9';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -32,6 +32,7 @@
 
   function init() {
     var isMobile = window.innerWidth < 640;
+    var isHomepage = !!document.getElementById('grid');
 
     var layer = document.createElement('div');
     layer.id = 'wlg-halloween-layer';
@@ -167,18 +168,19 @@
     });
     if (!isMobile) {
       var flockWrap = document.createElement('div');
-      flockWrap.appendChild(photoEl('bat-flock.png', 110));
+      flockWrap.appendChild(photoEl('bat-flock.png', 170));
       addDeco(flockWrap, 'wlg-h-bat-b', { top: '20%', left: '0', zIndex: '4', opacity: '0.85' });
     }
 
-    // ghosts -- a few drifting forever, same wandering float as before
+    // ghosts -- a few drifting forever, bigger and roaming a wider patch
+    // of the screen than a small in-place wobble
     var ghostSpecs = isMobile
-      ? [{ cls: 'wlg-h-ghost-a', top: '30%', left: '8%', w: 44, op: 0.75 }]
+      ? [{ cls: 'wlg-h-ghost-a', top: '28%', left: '6%', w: 62, op: 0.75 }]
       : [
-          { cls: 'wlg-h-ghost-a', top: '20%', left: '6%', w: 60, op: 0.8 },
-          { cls: 'wlg-h-ghost-b', top: '50%', left: '86%', w: 50, op: 0.7 },
-          { cls: 'wlg-h-ghost-c', top: '72%', left: '12%', w: 42, op: 0.65 },
-          { cls: 'wlg-h-ghost-a', top: '38%', left: '46%', w: 36, op: 0.55 }
+          { cls: 'wlg-h-ghost-a', top: '18%', left: '4%', w: 90, op: 0.8 },
+          { cls: 'wlg-h-ghost-b', top: '48%', left: '84%', w: 76, op: 0.7 },
+          { cls: 'wlg-h-ghost-c', top: '70%', left: '10%', w: 64, op: 0.65 },
+          { cls: 'wlg-h-ghost-a', top: '34%', left: '44%', w: 54, op: 0.55 }
         ];
     ghostSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
@@ -188,17 +190,31 @@
       addDeco(wrap, spec.cls, { top: spec.top, left: spec.left, zIndex: '3' });
     });
 
-    // ghosts rising and vanishing along the bottom of the screen, on a
-    // continuous 2.6s rise-fade-reset loop
-    var riseWrap = document.createElement('div');
-    riseWrap.appendChild(photoEl('ghost-flock.png', isMobile ? 280 : 480));
-    addDeco(riseWrap, 'wlg-h-ghost-rise', { bottom: '0', left: '50%', zIndex: '2' });
+    // ghosts rising and vanishing -- homepage only, spread across the
+    // full width instead of one blob parked in the middle
+    if (isHomepage) {
+      var riseSpecs = isMobile
+        ? [{ left: '50%', w: 320, delay: 0 }]
+        : [
+            { left: '16%', w: 380, delay: 0 },
+            { left: '50%', w: 460, delay: 0.9 },
+            { left: '84%', w: 380, delay: 1.7 }
+          ];
+      riseSpecs.forEach(function (spec) {
+        var riseWrap = document.createElement('div');
+        riseWrap.appendChild(photoEl('ghost-flock.png', spec.w));
+        addDeco(riseWrap, 'wlg-h-ghost-rise', {
+          bottom: '0', left: spec.left, zIndex: '2', animationDelay: spec.delay + 's'
+        });
+      });
+    }
 
-    // spiders -- all clustered along the top of the screen (desktop only)
+    // spiders -- bigger, spread across the whole top edge (desktop only)
     if (!isMobile) {
       var spiderSpecs = [
-        { top: '0', right: '4%', w: 170 },
-        { top: '0', left: '6%', w: 120 }
+        { top: '0', left: '2%', w: 200 },
+        { top: '0', left: '34%', w: 170 },
+        { top: '0', right: '2%', w: 230 }
       ];
       spiderSpecs.forEach(function (spec) {
         var wrap = document.createElement('div');
