@@ -316,9 +316,24 @@
   tryLoadSaved();
 
   // ================= audio =================
+  // iOS Safari routes the Web Audio API through the "ambient" sound
+  // category by default, which is silenced by the physical mute switch.
+  // Playing a silent HTML5 <audio> clip on the first user gesture flips
+  // the page to the "playback" category, which ignores the mute switch --
+  // this has to happen before/alongside creating the AudioContext.
+  function unlockIOSAudio() {
+    var el = document.createElement('audio');
+    el.setAttribute('playsinline', '');
+    el.setAttribute('preload', 'auto');
+    el.src = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//uQxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU//uUZAAP8AAAaQAAAAgAAA0gAAABExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==';
+    var p = el.play();
+    if (p && p.catch) p.catch(function () {});
+  }
+
   var audioCtx = null, masterGain = null, noiseBuffer = null;
   function initAudio() {
     if (audioCtx) return;
+    unlockIOSAudio();
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     masterGain = audioCtx.createGain();
     masterGain.gain.value = 0.85;

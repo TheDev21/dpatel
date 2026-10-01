@@ -840,9 +840,25 @@
 
 <script>
   // ---------- logo click sounds (synthesized, no audio files) ----------
+  // iOS Safari mutes the Web Audio API when the phone's silent switch is
+  // on, unless the page has first played an HTML5 <audio> clip (which
+  // flips the page to the "playback" sound category instead of
+  // "ambient"). Do that once, on the same first click that creates the
+  // AudioContext.
+  function unlockIOSAudio() {
+    var el = document.createElement('audio');
+    el.setAttribute('playsinline', '');
+    el.setAttribute('preload', 'auto');
+    el.src = 'data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4LjI5LjEwMAAAAAAAAAAAAAAA//uQxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU//uUZAAP8AAAaQAAAAgAAA0gAAABExBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==';
+    var p = el.play();
+    if (p && p.catch) p.catch(function () {});
+  }
   var audioCtx = null;
   function ctx() {
-    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (!audioCtx) {
+      unlockIOSAudio();
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
     return audioCtx;
   }
   function tone(freq, dur, type, gainPeak, delay) {
