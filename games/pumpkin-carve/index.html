@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pumpkin Curve — Weird Little Games</title>
+<title>Pumpkin Carve — Weird Little Games</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232a1e3d'/%3E%3Ccircle cx='16' cy='18' r='10' fill='%23ff5a1f'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -177,7 +177,7 @@
 
 <script>
 (function () {
-  function isPumpkinCurveSeason() {
+  function isPumpkinCarveSeason() {
     try {
       var override = new URLSearchParams(location.search).get('season');
       if (override === 'halloween') return true;
@@ -189,11 +189,11 @@
   var app = document.getElementById('app');
   var knifeCursor = document.getElementById('knifeCursor');
 
-  if (!isPumpkinCurveSeason()) {
+  if (!isPumpkinCarveSeason()) {
     knifeCursor.remove();
     app.innerHTML =
       '<div class="offseason">' +
-        '<h1>Pumpkin Curve</h1>' +
+        '<h1>Pumpkin Carve</h1>' +
         '<p class="sub">This one only comes out for October. Come back when the pumpkins are out again.</p>' +
         '<a class="btn" href="/">back home</a>' +
       '</div>';
@@ -201,7 +201,7 @@
   }
 
   app.innerHTML =
-    '<h1>Pumpkin Curve</h1>' +
+    '<h1>Pumpkin Carve</h1>' +
     '<p class="sub">Drag across the pumpkin to carve it. The knife only comes out when you\'re over the pumpkin.</p>' +
     '<div class="stage-wrap">' +
       '<div class="glow-layer lights-on" id="glowLayer"></div>' +
@@ -215,7 +215,7 @@
     '</div>' +
     '<div class="toast" id="toast"></div>';
 
-  var SAVE_KEY = 'wlgPumpkinCurveSaveV1';
+  var SAVE_KEY = 'wlgPumpkinCarveSaveV1';
   var canvas = document.getElementById('pumpkinCanvas');
   var ctx = canvas.getContext('2d');
   var glowLayer = document.getElementById('glowLayer');

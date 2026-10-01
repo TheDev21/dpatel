@@ -598,11 +598,11 @@
 
   <div class="grid" id="grid">
 
-    <a class="card" id="pumpkinCurveCard" href="games/pumpkin-curve/" style="display:none;">
+    <a class="card" id="pumpkinCarveCard" href="games/pumpkin-carve/" style="display:none;">
       <div class="thumb" style="background: linear-gradient(160deg, #2a1e14, #1a1008 75%); padding-top: 34px;">
         <div class="limited-banner">LIMITED TIME</div>
         <img src="assets/halloween/img/pumpkin-photo.png" alt="" style="width:40%; height:auto; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));">
-        <div class="word" style="color:#FFC869;">PUMPKIN<br>CURVE</div>
+        <div class="word" style="color:#FFC869;">PUMPKIN<br>CARVE</div>
       </div>
     </a>
 
@@ -823,7 +823,7 @@
       try {
         var override = new URLSearchParams(location.search).get('season');
         var active = override === 'halloween' ? true : override === 'off' ? false : new Date().getMonth() === 9;
-        if (active) document.getElementById('pumpkinCurveCard').style.display = '';
+        if (active) document.getElementById('pumpkinCarveCard').style.display = '';
       } catch (e) {}
     })();
   </script>
