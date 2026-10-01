@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=10';
+  var cssHref = '/assets/halloween/theme.css?v=11';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -211,21 +211,24 @@
       });
     }
 
-    // spiders -- bigger, spread across the whole top edge (desktop only)
-    if (!isMobile) {
-      var spiderSpecs = [
-        { top: '0', left: '2%', w: 200 },
-        { top: '0', left: '34%', w: 170 },
-        { top: '0', right: '2%', w: 230 }
-      ];
-      spiderSpecs.forEach(function (spec) {
-        var wrap = document.createElement('div');
-        wrap.appendChild(photoEl('spider-group.png', spec.w));
-        var style = { top: spec.top, zIndex: '5' };
-        if (spec.right) style.right = spec.right; else style.left = spec.left;
-        addDeco(wrap, 'wlg-h-spider', style);
-      });
-    }
+    // spiders -- bigger, spread across the whole top edge
+    var spiderSpecs = isMobile
+      ? [
+          { top: '0', left: '-4%', w: 130 },
+          { top: '0', right: '-4%', w: 150 }
+        ]
+      : [
+          { top: '0', left: '2%', w: 200 },
+          { top: '0', left: '34%', w: 170 },
+          { top: '0', right: '2%', w: 230 }
+        ];
+    spiderSpecs.forEach(function (spec) {
+      var wrap = document.createElement('div');
+      wrap.appendChild(photoEl('spider-group.png', spec.w));
+      var style = { top: spec.top, zIndex: '5' };
+      if (spec.right) style.right = spec.right; else style.left = spec.left;
+      addDeco(wrap, 'wlg-h-spider', style);
+    });
 
     // pumpkins tucked into empty corners -- full-size now, one lit as
     // a jack-o'-lantern
