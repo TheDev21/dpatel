@@ -22,7 +22,7 @@
 
   // bump this alongside the script tag's ?v= query string whenever
   // theme.css changes, so a stale cached copy can never linger.
-  var cssHref = '/assets/halloween/theme.css?v=4';
+  var cssHref = '/assets/halloween/theme.css?v=5';
   if (!document.querySelector('link[href="' + cssHref + '"]')) {
     var link = document.createElement('link');
     link.rel = 'stylesheet';
@@ -257,10 +257,10 @@
     // pumpkins tucked into empty corners -- full-size now, one lit as
     // a jack-o'-lantern
     var pumpkinSpecs = isMobile
-      ? [{ bottom: '3%', left: '3%', size: 46, lit: true }]
+      ? [{ bottom: '3%', left: '3%', size: 72, lit: true }]
       : [
-          { bottom: '5%', left: '3%', size: 60, lit: true },
-          { bottom: '9%', right: '4%', size: 44, lit: false }
+          { bottom: '4%', left: '3%', size: 96, lit: true },
+          { bottom: '8%', right: '4%', size: 70, lit: false }
         ];
     pumpkinSpecs.forEach(function (spec) {
       var wrap = document.createElement('div');
@@ -277,8 +277,8 @@
       var cards = document.querySelectorAll('.grid .card');
       if (cards.length >= 6) {
         var peekSpecs = [
-          { cardIndex: 0, corner: 'bottom-right', size: 50, lit: true },
-          { cardIndex: 4, corner: 'bottom-left', size: 42, lit: false }
+          { cardIndex: 0, corner: 'bottom-right', size: 78, lit: true },
+          { cardIndex: 4, corner: 'bottom-left', size: 66, lit: false }
         ];
         peekSpecs.forEach(function (spec) {
           var card = cards[spec.cardIndex];
