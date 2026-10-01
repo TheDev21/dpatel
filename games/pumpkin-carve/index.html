@@ -149,7 +149,7 @@
     margin-top: 12px;
   }
   @media (min-width: 641px) {
-    .controls { margin-top: 48px; } /* ~half inch -- the pumpkin itself is sized in JS to fill the rest */
+    .controls { margin-top: 0; } /* the stage is sized/offset in JS to touch this directly */
   }
   .btn {
     border: 2px solid var(--ink);
@@ -273,22 +273,34 @@
   // margin-top as the gap.
   var titleEl = document.querySelector('.title-overlay');
   var controlsEl = document.querySelector('.controls');
+  var BODY_TOP_PAD = 20, BODY_BOTTOM_PAD = 20;
   function layoutStage() {
     if (window.innerWidth < 641) {
       stageWrap.style.width = '';
       stageWrap.style.height = '';
+      stageWrap.style.marginTop = '';
+      document.body.style.justifyContent = '';
       return;
     }
-    var topPad = 20;
-    var titleH = titleEl ? titleEl.offsetHeight + 18 : 0;
-    var controlsH = controlsEl ? controlsEl.offsetHeight + 48 : 0;
-    var bottomPad = 20;
-    var available = window.innerHeight - topPad - titleH - controlsH - bottomPad;
+    // touch the title above and the controls below: measure the
+    // title's real bottom edge and size+offset the stage so it starts
+    // exactly there and ends exactly at the controls, with zero gap
+    // on either side. justify-content:center (the default, for when
+    // JS hasn't sized anything yet) would otherwise re-split any
+    // leftover space evenly above and below once the stage's own
+    // 94vw/1000px width cap kicks in on a very wide window, reopening
+    // a gap at the top -- flex-start keeps the stage pinned exactly
+    // where marginTop puts it instead.
+    document.body.style.justifyContent = 'flex-start';
+    var titleBottom = titleEl ? titleEl.getBoundingClientRect().bottom : BODY_TOP_PAD;
+    var controlsH = controlsEl ? controlsEl.offsetHeight : 0;
+    var available = window.innerHeight - titleBottom - controlsH - BODY_BOTTOM_PAD;
     var maxW = Math.min(window.innerWidth * 0.94, 1000);
     var heightFromMaxWidth = maxW * (352 / 400);
     var finalH = Math.max(200, Math.min(available, heightFromMaxWidth));
     stageWrap.style.height = finalH + 'px';
     stageWrap.style.width = (finalH * (400 / 352)) + 'px';
+    stageWrap.style.marginTop = Math.max(0, titleBottom - BODY_TOP_PAD) + 'px';
     sizeCanvas();
   }
   window.addEventListener('resize', function () { layoutStage(); sizeCanvas(); });
