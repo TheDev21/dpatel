@@ -557,12 +557,20 @@
     transform: rotate(-10deg) scale(1.15);
   }
   @media (max-width: 480px) {
-    .about .links { gap: 5px; justify-content: flex-start; }
-    .about .beer-link { padding: 8px 9px; font-size: 10px; gap: 4px; }
-    .about .beer-emoji { font-size: 12px; }
-  }
-  @media (max-width: 400px) {
-    .about .beer-link { padding: 7px 7px; font-size: 9px; }
+    .about .links {
+      flex-direction: column;
+      align-items: stretch;
+      overflow-x: visible;
+      gap: 12px;
+    }
+    .about .beer-link {
+      justify-content: center;
+      padding: 14px 20px;
+      font-size: 15px;
+      gap: 10px;
+      white-space: normal;
+    }
+    .about .beer-emoji { font-size: 18px; }
   }
 
   footer {
