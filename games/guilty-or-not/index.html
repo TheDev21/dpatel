@@ -398,9 +398,9 @@
   var CASES = [
     {
       id: 1, title: 'The 2 AM Door', type: 'fictional', category: 'criminal',
-      scenario: "You wake to the sound of your front door being forced open at 2 AM. You grab a bat and strike the figure coming through. It's your neighbor — extremely drunk, at the wrong apartment, trying to get into what he thought was his own unit. He suffers a concussion. You're charged with assault.",
+      scenario: "You wake up to your front door being forced open at 2 AM. You grab a bat and strike the figure coming through. Turns out it's your neighbor, extremely drunk, at the wrong apartment, trying to get into what he thought was his own unit. He suffers a concussion. You're charged with assault.",
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: "Self-defense is judged on what a reasonable person would believe at the moment, not on facts discovered afterward. A door being forced open at 2 AM creates an objectively reasonable fear of a break-in, regardless of who it turns out to be."
+      explanation: "Self-defense is judged on what a reasonable person would believe in the moment, not on facts you only learn afterward. A door being forced open at 2 AM creates a genuinely reasonable fear of a break-in, no matter who it turns out to be."
     },
     {
       id: 2, title: 'The Spring Gun', type: 'real', category: 'civil',
@@ -411,181 +411,181 @@
     },
     {
       id: 3, title: 'The Shredded Files', type: 'fictional', category: 'criminal',
-      scenario: 'A manager tells an employee to "shred the old files" with no further detail. He shreds a box of year-old documents that, unknown to him, had just been placed under an audit hold by a different department that never told him. He’s accused of destroying evidence.',
+      scenario: 'A manager tells an employee to "shred the old files," with no further detail. He shreds a box of year-old documents that, unknown to him, had just been placed under an audit hold by a different department that never told him. He’s accused of destroying evidence.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: "Obstruction requires knowledge that material is under a hold or relevant to a proceeding. Following a routine instruction without that knowledge doesn't meet the required intent, however damaging the outcome."
+      explanation: "Obstruction requires knowledge that material is under a hold or relevant to a proceeding. Following a routine instruction without that knowledge doesn't meet the required intent, no matter how damaging the outcome turned out to be."
     },
     {
       id: 4, title: 'The Private Arrangement', type: 'real', category: 'criminal',
       scenario: 'A group of men privately and consensually engage in sadomasochistic acts over several years, causing injuries but no lasting harm and no complaints. Police discover the activity through an unrelated investigation, and the men are prosecuted for assault.',
       correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
-      explanation: 'By a narrow 3–2 majority, the House of Lords held that consent is not a valid defense to assault causing actual bodily harm outside of recognized exceptions like sports or surgery — even between consenting adults in private.',
+      explanation: 'By a narrow 3-2 majority, the House of Lords held that consent is not a valid defense to assault causing actual bodily harm outside recognized exceptions like sports or surgery, even between consenting adults acting in private.',
       source: 'R v Brown [1993] UKHL 19', sourceUrl: 'https://en.wikipedia.org/wiki/R_v_Brown'
     },
     {
       id: 5, title: 'The Gap in the Fence', type: 'fictional', category: 'civil',
-      scenario: 'A dog owner knows about a small gap in his fence for weeks without fixing it. His dog escapes through it and bites a delivery driver — who was cutting across the lawn instead of using the marked walkway, ignoring a posted "stay on path" sign.',
+      scenario: 'A dog owner knows about a small gap in his fence for weeks without fixing it. His dog escapes through it and bites a delivery driver who was cutting across the lawn instead of using the marked walkway, ignoring a posted "stay on path" sign.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
-      explanation: "Many strict-liability dog-bite laws bar recovery when the injured party wasn't lawfully where they were at the time. Leaving the designated path despite a clear warning defeats the claim here, even though the owner knew about the gap."
+      explanation: "Many strict-liability dog-bite laws bar recovery when the injured party wasn't lawfully where they were at the time. Leaving the designated path despite a clear warning defeats the claim here, even though the owner did know about the gap."
     },
     {
       id: 6, title: 'The Coffee Spill', type: 'real', category: 'civil',
-      scenario: 'An elderly woman is severely burned by coffee that spills in her lap at a drive-through. The coffee was kept at 180–190°F — hotter than most home coffee makers — and the company had received hundreds of prior burn complaints without changing its policy. She sues.',
+      scenario: 'An elderly woman is severely burned by coffee that spills in her lap at a drive-through. The coffee was kept at 180 to 190 degrees Fahrenheit, hotter than most home coffee makers, and the company had received hundreds of prior burn complaints without changing its policy. She sues.',
       correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
-      explanation: 'The jury assigned 80% fault to the company and 20% to the woman, awarding $200,000 in compensatory damages (reduced to $160,000) and $2.7 million in punitive damages — later reduced by the judge to $480,000, who called the company’s conduct "reckless, callous, and willful." The parties settled before appeal.',
+      explanation: 'The jury assigned 80% fault to the company and 20% to the woman, awarding $200,000 in compensatory damages (reduced to $160,000) and $2.7 million in punitive damages. A judge later cut the punitive award to $480,000 and called the company’s conduct "reckless, callous, and willful." The parties settled before any appeal.',
       source: "Liebeck v. McDonald's Restaurants (1994)", sourceUrl: "https://en.wikipedia.org/wiki/Liebeck_v._McDonald's_Restaurants"
     },
     {
       id: 7, title: 'The Reward Fee', type: 'fictional', category: 'criminal',
       scenario: 'A woman finds a wallet on a park bench containing $400 cash and an ID. She mails the wallet back to the owner with the ID and cards intact, but keeps the cash as a "reward for finding it."',
       correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
-      explanation: "Taking found property with intent to permanently keep any part of it is theft. There's no legal right to award yourself a finder's fee — only the owner can offer one."
+      explanation: "Taking found property with intent to permanently keep any part of it is theft. There's no legal right to award yourself a finder's fee. Only the owner can offer one."
     },
     {
       id: 8, title: 'The Dropped Tool', type: 'fictional', category: 'civil',
       scenario: 'A contractor repairing a roof accidentally drops a tool, which injures a pedestrian below. The work zone had cones and warning signage up, but the pedestrian walked through the restricted area because it was faster than going around.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
-      explanation: 'Reasonable precautions — cones and clear signage — satisfy the legal duty of care. A pedestrian who bypasses marked warnings assumes the risk of entering that zone.'
+      explanation: 'Reasonable precautions like cones and clear signage satisfy the legal duty of care. A pedestrian who bypasses marked warnings takes on the risk of entering that zone.'
     },
     {
       id: 9, title: 'The Fox Chase', type: 'real', category: 'civil',
       scenario: 'A hunter is pursuing a fox with hounds across open, unclaimed land. Before he can catch it, a second hunter intercepts the fox, kills it, and takes it for himself. The first hunter sues, arguing the chase gave him ownership.',
-      correctVerdict: 'NOT GUILTY', outcomeLabel: 'Pierson wins — pursuit alone did not establish possession of the fox.',
-      explanation: 'Mere pursuit of a wild animal doesn’t create ownership — only actual capture, mortal wounding, or securing it does. This founding property-law case established the "rule of capture."',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'Pierson wins. Pursuit alone did not establish possession of the fox.',
+      explanation: 'Mere pursuit of a wild animal doesn’t create ownership. Only actual capture, mortal wounding, or otherwise securing it does. This founding property-law case established the "rule of capture."',
       source: 'Pierson v. Post, 3 Cai. R. 175 (N.Y. 1805)', sourceUrl: 'https://en.wikipedia.org/wiki/Pierson_v._Post'
     },
     {
       id: 10, title: 'The Tattoo', type: 'fictional', category: 'civil',
-      scenario: "A tattoo artist gives a client a tattoo on their forearm, exactly as requested. A week later, the client's employer fires them for violating a no-visible-tattoo policy, and the client blames the artist for damaging their livelihood.",
+      scenario: "A tattoo artist gives a client a tattoo on their forearm, exactly as requested. A week later, the client's employer fires them for violating a no-visible-tattoo policy, and the client blames the artist for costing them their job.",
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
-      explanation: "A lawful service performed with informed consent carries no liability for an unrelated employer's own policy decision — that's a separate matter between the client and their employer."
+      explanation: "A lawful service performed with informed consent isn't liable for an employer's unrelated policy decision down the line. That's a separate matter between the client and their employer."
     },
     {
       id: 11, title: 'The Unlocked Phone', type: 'fictional', category: 'criminal',
       scenario: "A student notices a classmate's phone, left unlocked and face-up on a desk, displaying a text thread that reveals cheating on an exam. The student reports it to a teacher. The classmate is expelled and accuses the reporting student of \"stealing private information.\"",
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: "Viewing content that's visible in plain view on an unlocked device — without taking the device or bypassing any password — isn't unlawful access to private data."
+      explanation: "Looking at content that's visible in plain view on an unlocked device, without taking the device or bypassing any password, isn't unlawful access to private data."
     },
     {
       id: 12, title: 'The Lifeboat', type: 'real', category: 'criminal',
       scenario: 'Four sailors are adrift in a lifeboat after their ship sinks, without food or water for nearly three weeks. Two of them kill the weakest and dying member of the crew so the others can survive by eating him. They are rescued days later and prosecuted.',
       correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
-      explanation: 'A five-judge English court held that necessity — no matter how extreme — is not a defense to killing an innocent person. Both men were sentenced to death, later commuted to six months’ imprisonment.',
+      explanation: 'A five-judge English court held that necessity, no matter how extreme, is not a defense to killing an innocent person. Both men were sentenced to death, later commuted to six months in prison.',
       source: 'R v Dudley and Stephens, 14 QBD 273 (1884)', sourceUrl: 'https://en.wikipedia.org/wiki/R_v_Dudley_and_Stephens'
     },
     {
       id: 13, title: 'The "Vintage" Watch', type: 'fictional', category: 'civil',
       scenario: 'A seller lists a watch online as a "vintage antique," genuinely believing this based on what they were told at an estate sale. The buyer later learns it’s a well-made modern replica worth a fraction of the price, and accuses the seller of fraud.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (for fraud)',
-      explanation: 'Fraud requires a knowing misrepresentation. A seller who honestly and reasonably believed the item’s description, without intent to deceive, lacks the mental state fraud requires — this is a mistake, not fraud (though a separate refund claim may still exist).'
+      explanation: 'Fraud requires a knowing misrepresentation. A seller who honestly and reasonably believed the item’s description, with no intent to deceive, doesn’t have the mental state fraud requires. It’s a mistake, not fraud, though a separate refund claim might still hold up.'
     },
     {
       id: 14, title: 'The Storm Shelter', type: 'fictional', category: 'criminal',
       scenario: 'A hiker, lost in a thunderstorm with no cell signal, breaks the lock on an empty mountain cabin to take shelter overnight. She doesn’t damage anything else, and leaves a note with her contact information and cash to cover the lock.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: 'Necessity can excuse trespass or breaking and entering when someone faces real, imminent danger and takes only the minimal action needed — especially when they make good-faith efforts to make it right.'
+      explanation: 'Necessity can excuse trespass or breaking and entering when someone faces real, imminent danger and takes only the minimal action needed, especially when they make a good-faith effort to make it right afterward.'
     },
     {
       id: 15, title: 'The Snail in the Bottle', type: 'real', category: 'civil',
-      scenario: "A woman becomes seriously ill after drinking a ginger beer that, unknown to anyone, contained the decomposed remains of a snail. She sues the manufacturer for negligence — even though she didn't buy the bottle herself; a friend did.",
+      scenario: "A woman becomes seriously ill after drinking a ginger beer that, unknown to anyone, contained the decomposed remains of a snail. She sues the manufacturer for negligence, even though she didn't buy the bottle herself. A friend did.",
       correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
-      explanation: 'The House of Lords held that manufacturers owe a duty of care to the ultimate consumer of their product, even without a direct contract between them — the foundation of the modern law of negligence. (The ruling settled the legal question; the case was then settled before a full trial on the facts.)',
+      explanation: 'The House of Lords held that manufacturers owe a duty of care to the people who actually use their product, even without a direct contract between them. It’s the foundation of modern negligence law. (The ruling settled the legal question; the case itself was then settled before a full trial on the facts.)',
       source: 'Donoghue v Stevenson [1932] AC 562', sourceUrl: 'https://en.wikipedia.org/wiki/Donoghue_v_Stevenson'
     },
     {
       id: 16, title: 'The Prank Drink', type: 'fictional', category: 'criminal',
       scenario: 'As a joke on himself, a man secretly puts a sedative in his own drink at a party. He loses track of which cup is which and hands the drugged one to a friend, who passes out and is hospitalized.',
       correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
-      explanation: "Recklessly creating a dangerous substance and then losing control of where it ends up satisfies the intent requirement for many assault/poisoning laws — they don't require intending harm to that specific person, just reckless disregard for the risk created."
+      explanation: "Recklessly creating a dangerous substance and then losing track of where it ends up satisfies the intent requirement for most assault or poisoning laws. They don't require intending harm to that specific person, just reckless disregard for the risk you created."
     },
     {
       id: 17, title: 'The "Junk" Laptop', type: 'fictional', category: 'criminal',
       scenario: 'An employee takes home a laptop marked for disposal after asking a manager, who casually says "yeah, take it, it’s junk." That manager didn’t actually have authority to approve removing company assets, and the company later accuses the employee of theft.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: "Theft requires intent to take something you know isn't yours to take. Acting on permission from someone who appeared to have that authority negates criminal intent — the authority failure is an internal policy problem, not a crime by the employee."
+      explanation: "Theft requires intent to take something you know isn't yours to take. Acting on permission from someone who appeared to have that authority cancels out criminal intent. The authority failure is an internal policy problem, not a crime by the employee."
     },
     {
       id: 18, title: 'The Drifting Barge', type: 'real', category: 'civil',
-      scenario: "A barge breaks free from its moorings in a busy harbor, due to another company's negligent towing, and causes damage after drifting unattended. No one from the barge's own crew was aboard at the time — they'd gone ashore for the night.",
+      scenario: "A barge breaks free from its moorings in a busy harbor, due to another company's negligent towing, and causes damage after drifting unattended. No one from the barge's own crew was aboard at the time. They'd gone ashore for the night.",
       correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE (contributorily)',
-      explanation: 'If the burden of a precaution — here, keeping an attendant aboard during business hours in a busy harbor — is less than the probability and severity of harm from skipping it, failing to take that precaution is itself negligence. This case established the famous "Hand Formula" for negligence.',
+      explanation: 'If the burden of a precaution, here, keeping an attendant aboard during business hours in a busy harbor, is less than the probability and severity of harm from skipping it, then skipping it is itself negligence. This case established the famous "Hand Formula" for negligence.',
       source: 'United States v. Carroll Towing Co., 159 F.2d 169 (2d Cir. 1947)', sourceUrl: 'https://en.wikipedia.org/wiki/United_States_v._Carroll_Towing_Co.'
     },
     {
       id: 19, title: 'The Shared Driveway', type: 'fictional', category: 'civil',
-      scenario: "Two neighbors share a driveway under an old agreement. One widens his section and, without ever having it surveyed, accidentally paves two feet onto the shared easement — boxing out his neighbor's usual parking spot. He genuinely believed he was staying within his own property line.",
+      scenario: "Two neighbors share a driveway under an old agreement. One widens his section and, without ever having it surveyed, accidentally paves two feet onto the shared easement, boxing out his neighbor's usual parking spot. He genuinely believed he was staying within his own property line.",
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (for willful trespass)',
-      explanation: 'An honest, reasonable mistake about where a property line falls defeats a willful-trespass claim, even though he may still be civilly required to remove the pavement and restore the easement.'
+      explanation: 'An honest, reasonable mistake about where a property line falls defeats a willful-trespass claim, even though he may still be required to remove the pavement and restore the easement civilly.'
     },
     {
       id: 20, title: 'The Classroom Kick', type: 'real', category: 'civil',
-      scenario: 'After class has already resumed, one schoolboy reaches across the aisle and lightly kicks a classmate’s shin as a prank. The classmate had a prior, unknown injury in that exact spot, and the kick triggers a severe infection that leads to permanent disability in the leg.',
+      scenario: 'After class has already resumed, one schoolboy reaches across the aisle and lightly kicks a classmate’s shin as a prank. The classmate had a prior, unknown injury in that exact spot, and the kick triggers a severe infection that leaves him permanently disabled in that leg.',
       correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
-      explanation: 'Because the act occurred after order was called (not during normal horseplay before class), it was legally wrongful contact — no intent to cause this specific harm was required. The "eggshell skull" rule then makes the kicker responsible for the full extent of the injury, however disproportionate to the act. A $2,500 judgment was upheld.',
+      explanation: 'Because the act happened after order was called, not during normal horseplay before class, it counted as legally wrongful contact with no need to intend this specific harm. The "eggshell skull" rule then makes the kicker responsible for the full extent of the injury, however disproportionate to the act itself. A $2,500 judgment was upheld.',
       source: 'Vosburg v. Putney, 80 Wis. 523 (1891)', sourceUrl: 'https://en.wikipedia.org/wiki/Vosburg_v._Putney'
     },
     {
       id: 21, title: 'The Car With No Name', type: 'fictional', category: 'criminal',
-      scenario: 'Police pull over a car and find a bag of drugs under the passenger seat. There are three people in the car — the driver and two passengers. No one admits ownership, and no fingerprints are recovered from the bag. The driver is charged with possession.',
+      scenario: 'Police pull over a car and find a bag of drugs under the passenger seat. There are three people in the car: the driver and two passengers. No one admits ownership, and no fingerprints are recovered from the bag. The driver is charged with possession.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: "Mere presence near contraband isn't enough to prove possession beyond a reasonable doubt — the prosecution must show knowledge and control. With multiple occupants and nothing linking it to any one person specifically, reasonable doubt remains."
+      explanation: "Mere presence near contraband isn't enough to prove possession beyond a reasonable doubt. The prosecution has to show knowledge and control. With multiple occupants and nothing linking it to any one person specifically, reasonable doubt remains."
     },
     {
       id: 22, title: 'The Parking Garage', type: 'fictional', category: 'criminal',
-      scenario: "A woman is being followed and rapidly approached by a man she doesn't know in a dark, empty parking garage at night. She pepper-sprays him, causing injuries requiring medical care. It turns out he was actually running toward her to warn her that her car alarm had been blaring for ten minutes.",
+      scenario: "A woman is being followed and rapidly approached by a man she doesn't know in a dark, empty parking garage at night. She pepper-sprays him, causing injuries that need medical care. Turns out he was actually running toward her to warn her that her car alarm had been blaring for ten minutes.",
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: "Self-defense is judged by the reasonableness of the belief at the time, from the defender's position — not by what's discovered afterward. A stranger rapidly closing distance on a lone woman at night in an isolated space creates an objectively reasonable fear, regardless of his actual intentions."
+      explanation: "Self-defense is judged by how reasonable the belief was at the time, from the defender's position, not by what's discovered afterward. A stranger rapidly closing the distance on a lone woman at night in an isolated space creates a genuinely reasonable fear, regardless of his actual intentions."
     },
     {
       id: 23, title: 'The Smoke Ball', type: 'real', category: 'civil',
-      scenario: "A company advertises that it will pay £100 to anyone who uses its product exactly as directed and still catches the flu, and deposits money in a specific bank account to show it's serious. A woman uses it as directed, catches the flu anyway, and the company refuses to pay — claiming the ad was just advertising puffery, not a real offer.",
-      correctVerdict: 'GUILTY', outcomeLabel: 'Contract enforceable — Carlill wins.',
-      explanation: '"Just an ad" doesn’t automatically mean it isn’t a real promise. A public advertisement can form a binding unilateral contract if it’s specific enough and shows genuine intent to be bound — the bank deposit was exactly that proof.',
+      scenario: "A company advertises that it will pay 100 pounds to anyone who uses its product exactly as directed and still catches the flu, and deposits money in a specific bank account to show it's serious. A woman uses it as directed, catches the flu anyway, and the company refuses to pay, claiming the ad was just advertising puffery, not a real offer.",
+      correctVerdict: 'GUILTY', outcomeLabel: 'Contract enforceable. Carlill wins.',
+      explanation: '"Just an ad" doesn’t automatically mean it isn’t a real promise. A public advertisement can form a binding unilateral contract if it’s specific enough and shows genuine intent to be bound, and the bank deposit here was exactly that proof.',
       source: 'Carlill v Carbolic Smoke Ball Co [1893] 1 QB 256', sourceUrl: 'https://en.wikipedia.org/wiki/Carlill_v_Carbolic_Smoke_Ball_Co'
     },
     {
       id: 24, title: 'The Thirty Seconds', type: 'fictional', category: 'civil',
-      scenario: 'A babysitter looks away from a toddler for about 30 seconds to answer the door for a scheduled delivery. In that time, the toddler — who has never attempted it before — climbs onto a low shelf, falls, and breaks an arm.',
+      scenario: 'A babysitter looks away from a toddler for about 30 seconds to answer the door for a scheduled delivery. In that time, the toddler, who has never attempted it before, climbs onto a low shelf, falls, and breaks an arm.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
-      explanation: 'Negligence requires a failure to exercise reasonable care, not a failure to achieve perfect, uninterrupted supervision. A brief, foreseeable interruption for an unprecedented action by the child doesn’t meet that threshold.'
+      explanation: 'Negligence requires a failure to exercise reasonable care, not a failure to achieve perfect, uninterrupted supervision. A brief, foreseeable interruption for an action the child had never attempted before doesn’t meet that bar.'
     },
     {
       id: 25, title: 'The Filing Delay', type: 'fictional', category: 'civil',
-      scenario: 'A man learns from a lawyer friend about a real jurisdictional filing delay that lets him avoid paying child support for several months without technically being late. He exploits it, then pays the full amount owed the moment the loophole closes, with no late fee technically applicable.',
+      scenario: 'A man learns from a lawyer friend about a real jurisdictional filing delay that lets him avoid paying child support for several months without technically being late. He uses it, then pays the full amount owed the moment the loophole closes, with no late fee technically applicable.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (for the delay itself)',
-      explanation: "Using a legally available procedural mechanism — even one that's morally questionable or exploits a system gap — isn't wrongdoing unless it involves fraud or a false statement. The law doesn't punish taking advantage of its own structural gaps, though it may invite reform."
+      explanation: "Using a legally available procedural mechanism isn't wrongdoing unless it involves fraud or a false statement, even if it's morally questionable or exploits a gap in the system. The law doesn't punish taking advantage of its own structural gaps, though it may invite reform."
     },
     {
       id: 26, title: 'The Pamphlet', type: 'real', category: 'civil',
-      scenario: 'Two activists distribute a pamphlet making several claims against a fast-food company, including that its food directly causes cancer. The company sues for libel. In the actual trial, some of the pamphlet’s claims were found to be true — but the cancer claim specifically was never proven.',
+      scenario: 'Two activists distribute a pamphlet making several claims against a fast-food company, including that its food directly causes cancer. The company sues for libel. In the actual trial, some of the pamphlet’s claims were found to be true, but the cancer claim specifically was never proven.',
       correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE (on the cancer claim specifically)',
-      explanation: 'Truth is only a defense to libel when it’s actually proven. The court found some claims in the pamphlet true (including on advertising to children and low wages) but found the cancer claim unproven — making it libelous, even though the same case vindicated other parts of the pamphlet.',
+      explanation: 'Truth is only a defense to libel when it’s actually proven. The court found some claims in the pamphlet true, including on advertising to children and low wages, but found the cancer claim unproven, which made it libelous even though the same case vindicated other parts of the pamphlet.',
       source: 'McDonald’s Corporation v Steel & Morris ("McLibel"), 1997', sourceUrl: 'https://en.wikipedia.org/wiki/McLibel_case'
     },
     {
       id: 27, title: 'The Mis-Delivered Package', type: 'fictional', category: 'criminal',
-      scenario: "A man signs for a package at his front door, assuming it's something he ordered. It was actually addressed to a house with the same number on a differently-named street nearby — a mail mix-up. He opens it, realizes the mistake, immediately reseals it, and delivers it next door himself.",
+      scenario: "A man signs for a package at his front door, assuming it's something he ordered. It was actually addressed to a house with the same number on a different street nearby, just a mail mix-up. He opens it, realizes the mistake, immediately reseals it, and delivers it next door himself.",
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: "Mail theft or tampering requires knowledge that an item isn't yours. An honest, reasonable mistake about ownership — corrected immediately with no attempt to keep anything — lacks the intent the crime requires."
+      explanation: "Mail theft or tampering requires knowledge that an item isn't yours. An honest, reasonable mistake about ownership, corrected immediately with no attempt to keep anything, doesn't carry the intent the crime requires."
     },
     {
       id: 28, title: 'The Valet Scratch', type: 'fictional', category: 'civil',
       scenario: "A valet accidentally scratches a customer's car while parking it, and says nothing, hoping it won't be noticed. The customer discovers the scratch weeks later and pulls the valet company's security footage, which confirms exactly what happened.",
       correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
-      explanation: "The issue isn't the accidental scratch itself — it's the concealment. Failing to disclose known damage to the property owner, when there was a duty to report it, creates liability separate from the honest accident."
+      explanation: "The issue isn't the accidental scratch itself, it's the cover-up. Failing to disclose known damage to the property owner, when there was a duty to report it, creates liability separate from the honest accident."
     },
     {
       id: 29, title: 'The Unnamed Official', type: 'real', category: 'civil',
       scenario: 'A newspaper runs a full-page ad describing police treatment of civil rights protesters, soliciting donations. The ad contains some factual inaccuracies. A police official, not named anywhere in the ad, sues the newspaper for libel, claiming it damaged his reputation, and wins in state court.',
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (judgment reversed)',
-      explanation: 'Public officials can’t win a libel claim over their official conduct unless they prove "actual malice" — that the publisher knew the statement was false or recklessly disregarded the truth. Ordinary factual errors don’t meet that bar, which exists to protect robust public debate.',
+      explanation: 'Public officials can’t win a libel claim over their official conduct unless they prove "actual malice," meaning the publisher knew the statement was false or recklessly disregarded the truth. Ordinary factual errors don’t meet that bar, which exists to protect robust public debate.',
       source: 'New York Times Co. v. Sullivan, 376 U.S. 254 (1964)', sourceUrl: 'https://en.wikipedia.org/wiki/New_York_Times_Co._v._Sullivan'
     },
     {
       id: 30, title: 'The Window at 3 AM', type: 'fictional', category: 'criminal',
-      scenario: "Woken by a loud crash downstairs at 3 AM, a parent grabs a kitchen knife and goes to investigate. In near-total darkness, they see a shadowy figure climbing through a broken window and stab in the direction of the threat. It's their own teenage child — who had snuck out, broken the window trying to be quiet while climbing back in, and whom the parent couldn't recognize in the dark and panic.",
+      scenario: "Woken by a loud crash downstairs at 3 AM, a parent grabs a kitchen knife and goes to investigate. In near-total darkness, they see a shadowy figure climbing through a broken window and stab in the direction of the threat. It's their own teenage child, who had snuck out, broken the window trying to be quiet while climbing back in, and whom the parent couldn't recognize in the dark and panic.",
       correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
-      explanation: 'Self-defense law evaluates the reasonableness of a response to a perceived threat at the moment it occurs, not the devastating outcome discovered afterward. Responding to an apparent nighttime break-in, with no way to identify the intruder in darkness and confusion, meets the legal standard for a reasonable defensive reaction.'
+      explanation: 'Self-defense law looks at how reasonable a response was to a perceived threat in the moment, not the devastating outcome discovered afterward. Responding to what looks like a nighttime break-in, with no way to identify the intruder in the dark and panic, meets the legal standard for a reasonable defensive reaction.'
     }
   ];
 
@@ -692,6 +692,8 @@
     swapPaper(slot, function () {
       var c = order[pos];
       var el = document.createElement('div');
+      var posLabel = c.category === 'civil' ? 'LIABLE' : 'GUILTY';
+      var negLabel = c.category === 'civil' ? 'NOT LIABLE' : 'NOT GUILTY';
       el.innerHTML =
         '<div class="paper-row">' +
           '<span class="case-id">CASE FILE #' + pad3(c.id) + '</span>' +
@@ -704,8 +706,8 @@
         '<h2 class="case-title">' + c.title + '</h2>' +
         '<p class="case-scenario">' + c.scenario + '</p>' +
         '<div class="verdict-row">' +
-          '<button class="verdict-btn guilty" data-v="GUILTY">GUILTY</button>' +
-          '<button class="verdict-btn notguilty" data-v="NOT GUILTY">NOT GUILTY</button>' +
+          '<button class="verdict-btn guilty" data-v="GUILTY">' + posLabel + '</button>' +
+          '<button class="verdict-btn notguilty" data-v="NOT GUILTY">' + negLabel + '</button>' +
         '</div>';
       el.querySelectorAll('.verdict-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -722,11 +724,9 @@
     swapPaper(slot, function () {
       var el = document.createElement('div');
       var isG = choice === 'GUILTY';
-      var sourceHtml = '';
-      if (c.type === 'real' && c.sourceUrl) {
-        sourceHtml = '<p class="outcome-line" style="margin-top:14px;">SOURCE</p>' +
-          '<p style="margin:0 0 16px;"><a class="source-link" href="' + c.sourceUrl + '" target="_blank" rel="noopener">' + c.source + '</a></p>';
-      }
+      var posLabel = c.category === 'civil' ? 'LIABLE' : 'GUILTY';
+      var negLabel = c.category === 'civil' ? 'NOT LIABLE' : 'NOT GUILTY';
+      var choiceLabel = isG ? posLabel : negLabel;
       var flavor = Math.random() < 0.3
         ? '<p class="flavor-line">' + FLAVOR_LINES[Math.floor(Math.random() * FLAVOR_LINES.length)] + '</p>'
         : '';
@@ -739,14 +739,13 @@
         '<div class="verdict-stamp-row" style="margin-top:14px;">' +
           '<div>' +
             '<div class="verdict-label">YOUR VERDICT</div>' +
-            '<div class="verdict-stamp ' + (isG ? 'g' : 'ng') + '">' + choice + '</div>' +
+            '<div class="verdict-stamp ' + (isG ? 'g' : 'ng') + '">' + choiceLabel + '</div>' +
           '</div>' +
         '</div>' +
         '<p class="outcome-line">ACTUAL OUTCOME</p>' +
         '<p class="outcome-text">' + c.outcomeLabel + '</p>' +
         '<p class="why-label">WHY?</p>' +
         '<p class="why-text">' + c.explanation + '</p>' +
-        sourceHtml +
         flavor +
         '<div class="next-row">' +
           '<button class="btn primary" id="nextBtn">' + (isLast ? 'SEE RESULTS →' : 'NEXT CASE →') + '</button>' +
