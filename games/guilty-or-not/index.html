@@ -6,7 +6,7 @@
 <title>Guilty or Not? — Weird Little Games</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f3ead9'/%3E%3Crect x='8' y='6' width='14' height='20' rx='1' fill='none' stroke='%23231f1a' stroke-width='1.6'/%3E%3Cline x1='11' y1='12' x2='19' y2='12' stroke='%23231f1a' stroke-width='1.3'/%3E%3Cline x1='11' y1='16' x2='19' y2='16' stroke='%23231f1a' stroke-width='1.3'/%3E%3Cline x1='11' y1='20' x2='16' y2='20' stroke='%238c1f28' stroke-width='1.3'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=Lora:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --paper-bg: #f3ead9;
@@ -32,20 +32,33 @@
 
   .corner-badge {
     position: fixed;
-    top: 22px;
-    left: 24px;
+    top: 55px;
+    left: 26px;
     z-index: 50;
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    color: var(--ink-dim);
-    text-decoration: none;
-    border: 1px solid var(--ink-dim);
-    padding: 6px 10px;
-    border-radius: 3px;
-    background: var(--paper);
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
   }
-  .corner-badge:hover { color: var(--red); border-color: var(--red); }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--red); }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+  @media (max-width: 960px) {
+    .corner-badge { position: absolute; top: 30px; left: 14px; font-size: 22px; }
+  }
 
   #stage {
     min-height: 100vh;
@@ -372,7 +385,7 @@
 </head>
 <body>
 
-<a class="corner-badge" href="https://weirdlittlegames.lol">&larr; Weird Little Games</a>
+<a class="corner-badge" href="https://weirdlittlegames.lol">Weird<br>Little<br>Games.</a>
 <div id="stage"></div>
 
 <script>
