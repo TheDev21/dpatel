@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guilty or Not? — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23f3ead9'/%3E%3Crect x='8' y='6' width='14' height='20' rx='1' fill='none' stroke='%23231f1a' stroke-width='1.6'/%3E%3Cline x1='11' y1='12' x2='19' y2='12' stroke='%23231f1a' stroke-width='1.3'/%3E%3Cline x1='11' y1='16' x2='19' y2='16' stroke='%23231f1a' stroke-width='1.3'/%3E%3Cline x1='11' y1='20' x2='16' y2='20' stroke='%238c1f28' stroke-width='1.3'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Lora:ital@0;1&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper-bg: #f3ead9;
+    --manila: #d8b87c;
+    --manila-dark: #c2a066;
+    --ink: #231f1a;
+    --ink-dim: #6b6153;
+    --red: #8c1f28;
+    --paper: #faf6ec;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--paper-bg);
+    background-image: radial-gradient(circle at 15% 10%, rgba(140,31,40,0.04), transparent 35%),
+                       radial-gradient(circle at 85% 90%, rgba(35,31,26,0.04), transparent 35%);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+  a { color: inherit; }
+
+  .corner-badge {
+    position: fixed;
+    top: 22px;
+    left: 24px;
+    z-index: 50;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    text-decoration: none;
+    border: 1px solid var(--ink-dim);
+    padding: 6px 10px;
+    border-radius: 3px;
+    background: var(--paper);
+  }
+  .corner-badge:hover { color: var(--red); border-color: var(--red); }
+
+  #stage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 90px 20px 50px;
+  }
+
+  .scene {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+    width: 100%;
+    max-width: 640px;
+  }
+
+  /* ---------- title screen ---------- */
+  .title-display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(42px, 9vw, 74px);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin: 0;
+    text-align: center;
+  }
+  .title-display .not { color: var(--red); }
+  .subtitle {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: clamp(14px, 2.6vw, 17px);
+    color: var(--ink-dim);
+    text-align: center;
+    line-height: 1.5;
+    margin: -10px 0 6px;
+  }
+
+  /* ---------- folder ---------- */
+  .folder-zone {
+    position: relative;
+    width: 260px;
+    height: 190px;
+    margin: 10px 0 6px;
+  }
+  .folder-base {
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(115deg, rgba(0,0,0,0.025) 0 2px, transparent 2px 5px),
+      linear-gradient(160deg, var(--manila), var(--manila-dark));
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    box-shadow: 4px 7px 0 rgba(35,31,26,0.16);
+    transform: rotate(-1.4deg);
+  }
+  .folder-well {
+    position: absolute;
+    left: 10px; right: 10px; top: 14px; bottom: 10px;
+    background: linear-gradient(160deg, #b99355, #a8824a);
+    border-radius: 2px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .folder-zone.open .folder-well { opacity: 1; }
+  .folder-tab {
+    position: absolute;
+    top: -16px; left: 22px;
+    width: 108px; height: 22px;
+    background: var(--manila);
+    border: 2px solid var(--ink);
+    border-bottom: none;
+    border-radius: 4px 7px 0 0;
+    transform: rotate(-1.4deg);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-dim);
+  }
+  .folder-flap {
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(115deg, rgba(0,0,0,0.025) 0 2px, transparent 2px 5px),
+      linear-gradient(160deg, var(--manila), var(--manila-dark));
+    border: 2px solid var(--ink);
+    border-radius: 3px;
+    transform: rotate(-1.4deg);
+    transform-origin: 50% 100%;
+    transition: transform 0.4s cubic-bezier(.4,0,.2,1), opacity 0.4s ease;
+  }
+  .folder-zone.open .folder-flap {
+    transform: rotate(-16deg) translateY(-18px) scaleY(0.82);
+    opacity: 0;
+  }
+  .folder-stamp {
+    position: absolute;
+    top: 48px; right: 22px;
+    border: 2.5px solid var(--red);
+    color: var(--red);
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    padding: 3px 7px;
+    transform: rotate(-9deg);
+    opacity: 0.72;
+    border-radius: 2px;
+  }
+  .folder-label {
+    position: absolute;
+    left: 24px; bottom: 26px;
+    font-size: 10px;
+    letter-spacing: 0.05em;
+    color: rgba(35,31,26,0.55);
+    line-height: 1.6;
+  }
+  .folder-zone.open .folder-stamp,
+  .folder-zone.open .folder-label { opacity: 0; transition: opacity 0.2s ease; }
+
+  /* ---------- paper ---------- */
+  .paper-slot {
+    position: relative;
+    width: 100%;
+    max-width: 440px;
+    min-height: 120px;
+  }
+  .paper {
+    position: relative;
+    width: 100%;
+    background: var(--paper);
+    border: 1.5px solid rgba(35,31,26,0.35);
+    border-radius: 2px;
+    box-shadow: 3px 5px 0 rgba(35,31,26,0.14), 0 0 0 1px rgba(255,255,255,0.4) inset;
+    padding: 22px 24px 24px;
+    transform: rotate(-0.6deg);
+    transition: transform 0.32s cubic-bezier(.4,0,.2,1), opacity 0.32s ease;
+  }
+  .paper.enter { transform: translateY(26px) rotate(-0.6deg); opacity: 0; }
+  .paper.leave { transform: translateY(-22px) rotate(0.8deg) !important; opacity: 0 !important; }
+  .paper-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .case-id { color: var(--ink); font-weight: 500; }
+  .status-tag {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    border: 1px solid var(--ink-dim);
+    padding: 1px 6px;
+    border-radius: 2px;
+  }
+  .status-tag.closed { border-color: var(--red); color: var(--red); }
+  .case-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(22px, 5vw, 28px);
+    letter-spacing: 0.015em;
+    margin: 0 0 10px;
+  }
+  .case-scenario {
+    font-family: 'Lora', serif;
+    font-size: clamp(14.5px, 2.4vw, 16px);
+    line-height: 1.6;
+    color: #2c271f;
+    margin: 0 0 20px;
+  }
+  .verdict-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+  .verdict-btn {
+    flex: 1;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 0.04em;
+    padding: 13px 10px;
+    border: 2px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 2px 3px 0 rgba(35,31,26,0.18);
+    transition: transform 0.1s ease;
+  }
+  .verdict-btn:hover { transform: translateY(-2px); }
+  .verdict-btn:active { transform: translateY(0); }
+  .verdict-btn.guilty:hover { background: var(--red); color: #fff; border-color: var(--red); }
+  .verdict-btn.notguilty:hover { background: var(--ink); color: #fff; }
+
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    border: 2px solid var(--ink);
+    background: #fff;
+    color: var(--ink);
+    padding: 10px 20px;
+    border-radius: 3px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(35,31,26,0.16);
+  }
+  .btn:hover { transform: translateY(-1px); }
+  .btn.primary { background: var(--ink); color: #faf6ec; }
+  .btn.primary:hover { background: var(--red); border-color: var(--red); }
+
+  .verdict-stamp-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .verdict-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+  }
+  .verdict-stamp {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(26px, 6vw, 34px);
+    letter-spacing: 0.04em;
+    border: 3px solid currentColor;
+    padding: 2px 12px;
+    border-radius: 3px;
+    display: inline-block;
+    transform: rotate(-4deg);
+  }
+  .verdict-stamp.g { color: var(--red); }
+  .verdict-stamp.ng { color: #2a5a3a; }
+
+  .outcome-line {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    margin: 4px 0 2px;
+  }
+  .outcome-text {
+    font-family: 'Lora', serif;
+    font-weight: 600;
+    font-size: 15px;
+    margin: 0 0 14px;
+  }
+  .why-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--ink-dim);
+    margin-bottom: 4px;
+  }
+  .why-text {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #2c271f;
+    margin: 0 0 10px;
+  }
+  .flavor-line {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    margin: 0 0 16px;
+  }
+  .next-row { display: flex; justify-content: flex-end; }
+
+  /* ---------- results ---------- */
+  .results-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(26px, 6vw, 34px);
+    letter-spacing: 0.03em;
+    text-align: center;
+    margin: 0 0 6px;
+  }
+  .results-sub {
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--ink-dim);
+    text-align: center;
+    margin: 0 0 18px;
+  }
+  .score-block { text-align: center; margin-bottom: 8px; }
+  .score-label { font-size: 11px; letter-spacing: 0.1em; color: var(--ink-dim); }
+  .score-num { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 9vw, 58px); color: var(--red); line-height: 1.1; }
+  .results-flavor {
+    font-family: 'Lora', serif;
+    font-style: italic;
+    text-align: center;
+    color: var(--ink-dim);
+    margin: 10px 0 22px;
+  }
+  .results-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* ---------- sources ---------- */
+  .sources-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.03em;
+    margin: 0 0 4px;
+  }
+  .sources-sub { font-size: 10.5px; color: var(--ink-dim); letter-spacing: 0.06em; margin-bottom: 14px; }
+  .source-item { border-top: 1px dashed rgba(35,31,26,0.25); padding: 10px 0; }
+  .source-item:first-of-type { border-top: none; }
+  .source-case-num { font-size: 10.5px; color: var(--ink-dim); letter-spacing: 0.06em; }
+  .source-case-title { font-family: 'Lora', serif; font-weight: 600; font-size: 14.5px; margin: 2px 0; }
+  .source-cite { font-size: 12px; color: var(--ink-dim); margin-bottom: 4px; }
+  .source-link { font-size: 12px; color: var(--red); text-decoration: underline; }
+
+  @media (max-width: 480px) {
+    #stage { padding: 70px 14px 40px; }
+    .paper { padding: 18px 16px 20px; }
+    .folder-zone { width: 220px; height: 160px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="corner-badge" href="https://weirdlittlegames.lol">&larr; Weird Little Games</a>
+<div id="stage"></div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ===================== CASE DATABASE =====================
+  // Add new cases by appending objects here -- everything else
+  // (counter, shuffle, scoring, sources list) adapts automatically.
+  var CASES = [
+    {
+      id: 1, title: 'The 2 AM Door', type: 'fictional', category: 'criminal',
+      scenario: "You wake to the sound of your front door being forced open at 2 AM. You grab a bat and strike the figure coming through. It's your neighbor — extremely drunk, at the wrong apartment, trying to get into what he thought was his own unit. He suffers a concussion. You're charged with assault.",
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: "Self-defense is judged on what a reasonable person would believe at the moment, not on facts discovered afterward. A door being forced open at 2 AM creates an objectively reasonable fear of a break-in, regardless of who it turns out to be."
+    },
+    {
+      id: 2, title: 'The Spring Gun', type: 'real', category: 'civil',
+      scenario: 'A farmer rigs a loaded shotgun trap inside an abandoned, unoccupied farmhouse to stop trespassers from stealing old bottles and fixtures, with a warning sign posted outside. A trespasser breaking in to take the bottles is shot in the leg and sues the farmer.',
+      correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
+      explanation: 'You cannot use force capable of causing death or serious injury to protect unoccupied property alone, even against someone committing a property crime. The Iowa Supreme Court affirmed a jury award of $20,000 in actual damages and $10,000 in punitive damages against the property owners.',
+      source: 'Katko v. Briney, 183 N.W.2d 657 (Iowa 1971)', sourceUrl: 'https://en.wikipedia.org/wiki/Katko_v._Briney'
+    },
+    {
+      id: 3, title: 'The Shredded Files', type: 'fictional', category: 'criminal',
+      scenario: 'A manager tells an employee to "shred the old files" with no further detail. He shreds a box of year-old documents that, unknown to him, had just been placed under an audit hold by a different department that never told him. He’s accused of destroying evidence.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: "Obstruction requires knowledge that material is under a hold or relevant to a proceeding. Following a routine instruction without that knowledge doesn't meet the required intent, however damaging the outcome."
+    },
+    {
+      id: 4, title: 'The Private Arrangement', type: 'real', category: 'criminal',
+      scenario: 'A group of men privately and consensually engage in sadomasochistic acts over several years, causing injuries but no lasting harm and no complaints. Police discover the activity through an unrelated investigation, and the men are prosecuted for assault.',
+      correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
+      explanation: 'By a narrow 3–2 majority, the House of Lords held that consent is not a valid defense to assault causing actual bodily harm outside of recognized exceptions like sports or surgery — even between consenting adults in private.',
+      source: 'R v Brown [1993] UKHL 19', sourceUrl: 'https://en.wikipedia.org/wiki/R_v_Brown'
+    },
+    {
+      id: 5, title: 'The Gap in the Fence', type: 'fictional', category: 'civil',
+      scenario: 'A dog owner knows about a small gap in his fence for weeks without fixing it. His dog escapes through it and bites a delivery driver — who was cutting across the lawn instead of using the marked walkway, ignoring a posted "stay on path" sign.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
+      explanation: "Many strict-liability dog-bite laws bar recovery when the injured party wasn't lawfully where they were at the time. Leaving the designated path despite a clear warning defeats the claim here, even though the owner knew about the gap."
+    },
+    {
+      id: 6, title: 'The Coffee Spill', type: 'real', category: 'civil',
+      scenario: 'An elderly woman is severely burned by coffee that spills in her lap at a drive-through. The coffee was kept at 180–190°F — hotter than most home coffee makers — and the company had received hundreds of prior burn complaints without changing its policy. She sues.',
+      correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
+      explanation: 'The jury assigned 80% fault to the company and 20% to the woman, awarding $200,000 in compensatory damages (reduced to $160,000) and $2.7 million in punitive damages — later reduced by the judge to $480,000, who called the company’s conduct "reckless, callous, and willful." The parties settled before appeal.',
+      source: "Liebeck v. McDonald's Restaurants (1994)", sourceUrl: "https://en.wikipedia.org/wiki/Liebeck_v._McDonald's_Restaurants"
+    },
+    {
+      id: 7, title: 'The Reward Fee', type: 'fictional', category: 'criminal',
+      scenario: 'A woman finds a wallet on a park bench containing $400 cash and an ID. She mails the wallet back to the owner with the ID and cards intact, but keeps the cash as a "reward for finding it."',
+      correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
+      explanation: "Taking found property with intent to permanently keep any part of it is theft. There's no legal right to award yourself a finder's fee — only the owner can offer one."
+    },
+    {
+      id: 8, title: 'The Dropped Tool', type: 'fictional', category: 'civil',
+      scenario: 'A contractor repairing a roof accidentally drops a tool, which injures a pedestrian below. The work zone had cones and warning signage up, but the pedestrian walked through the restricted area because it was faster than going around.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
+      explanation: 'Reasonable precautions — cones and clear signage — satisfy the legal duty of care. A pedestrian who bypasses marked warnings assumes the risk of entering that zone.'
+    },
+    {
+      id: 9, title: 'The Fox Chase', type: 'real', category: 'civil',
+      scenario: 'A hunter is pursuing a fox with hounds across open, unclaimed land. Before he can catch it, a second hunter intercepts the fox, kills it, and takes it for himself. The first hunter sues, arguing the chase gave him ownership.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'Pierson wins — pursuit alone did not establish possession of the fox.',
+      explanation: 'Mere pursuit of a wild animal doesn’t create ownership — only actual capture, mortal wounding, or securing it does. This founding property-law case established the "rule of capture."',
+      source: 'Pierson v. Post, 3 Cai. R. 175 (N.Y. 1805)', sourceUrl: 'https://en.wikipedia.org/wiki/Pierson_v._Post'
+    },
+    {
+      id: 10, title: 'The Tattoo', type: 'fictional', category: 'civil',
+      scenario: "A tattoo artist gives a client a tattoo on their forearm, exactly as requested. A week later, the client's employer fires them for violating a no-visible-tattoo policy, and the client blames the artist for damaging their livelihood.",
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
+      explanation: "A lawful service performed with informed consent carries no liability for an unrelated employer's own policy decision — that's a separate matter between the client and their employer."
+    },
+    {
+      id: 11, title: 'The Unlocked Phone', type: 'fictional', category: 'criminal',
+      scenario: "A student notices a classmate's phone, left unlocked and face-up on a desk, displaying a text thread that reveals cheating on an exam. The student reports it to a teacher. The classmate is expelled and accuses the reporting student of \"stealing private information.\"",
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: "Viewing content that's visible in plain view on an unlocked device — without taking the device or bypassing any password — isn't unlawful access to private data."
+    },
+    {
+      id: 12, title: 'The Lifeboat', type: 'real', category: 'criminal',
+      scenario: 'Four sailors are adrift in a lifeboat after their ship sinks, without food or water for nearly three weeks. Two of them kill the weakest and dying member of the crew so the others can survive by eating him. They are rescued days later and prosecuted.',
+      correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
+      explanation: 'A five-judge English court held that necessity — no matter how extreme — is not a defense to killing an innocent person. Both men were sentenced to death, later commuted to six months’ imprisonment.',
+      source: 'R v Dudley and Stephens, 14 QBD 273 (1884)', sourceUrl: 'https://en.wikipedia.org/wiki/R_v_Dudley_and_Stephens'
+    },
+    {
+      id: 13, title: 'The "Vintage" Watch', type: 'fictional', category: 'civil',
+      scenario: 'A seller lists a watch online as a "vintage antique," genuinely believing this based on what they were told at an estate sale. The buyer later learns it’s a well-made modern replica worth a fraction of the price, and accuses the seller of fraud.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (for fraud)',
+      explanation: 'Fraud requires a knowing misrepresentation. A seller who honestly and reasonably believed the item’s description, without intent to deceive, lacks the mental state fraud requires — this is a mistake, not fraud (though a separate refund claim may still exist).'
+    },
+    {
+      id: 14, title: 'The Storm Shelter', type: 'fictional', category: 'criminal',
+      scenario: 'A hiker, lost in a thunderstorm with no cell signal, breaks the lock on an empty mountain cabin to take shelter overnight. She doesn’t damage anything else, and leaves a note with her contact information and cash to cover the lock.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: 'Necessity can excuse trespass or breaking and entering when someone faces real, imminent danger and takes only the minimal action needed — especially when they make good-faith efforts to make it right.'
+    },
+    {
+      id: 15, title: 'The Snail in the Bottle', type: 'real', category: 'civil',
+      scenario: "A woman becomes seriously ill after drinking a ginger beer that, unknown to anyone, contained the decomposed remains of a snail. She sues the manufacturer for negligence — even though she didn't buy the bottle herself; a friend did.",
+      correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
+      explanation: 'The House of Lords held that manufacturers owe a duty of care to the ultimate consumer of their product, even without a direct contract between them — the foundation of the modern law of negligence. (The ruling settled the legal question; the case was then settled before a full trial on the facts.)',
+      source: 'Donoghue v Stevenson [1932] AC 562', sourceUrl: 'https://en.wikipedia.org/wiki/Donoghue_v_Stevenson'
+    },
+    {
+      id: 16, title: 'The Prank Drink', type: 'fictional', category: 'criminal',
+      scenario: 'As a joke on himself, a man secretly puts a sedative in his own drink at a party. He loses track of which cup is which and hands the drugged one to a friend, who passes out and is hospitalized.',
+      correctVerdict: 'GUILTY', outcomeLabel: 'GUILTY',
+      explanation: "Recklessly creating a dangerous substance and then losing control of where it ends up satisfies the intent requirement for many assault/poisoning laws — they don't require intending harm to that specific person, just reckless disregard for the risk created."
+    },
+    {
+      id: 17, title: 'The "Junk" Laptop', type: 'fictional', category: 'criminal',
+      scenario: 'An employee takes home a laptop marked for disposal after asking a manager, who casually says "yeah, take it, it’s junk." That manager didn’t actually have authority to approve removing company assets, and the company later accuses the employee of theft.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: "Theft requires intent to take something you know isn't yours to take. Acting on permission from someone who appeared to have that authority negates criminal intent — the authority failure is an internal policy problem, not a crime by the employee."
+    },
+    {
+      id: 18, title: 'The Drifting Barge', type: 'real', category: 'civil',
+      scenario: "A barge breaks free from its moorings in a busy harbor, due to another company's negligent towing, and causes damage after drifting unattended. No one from the barge's own crew was aboard at the time — they'd gone ashore for the night.",
+      correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE (contributorily)',
+      explanation: 'If the burden of a precaution — here, keeping an attendant aboard during business hours in a busy harbor — is less than the probability and severity of harm from skipping it, failing to take that precaution is itself negligence. This case established the famous "Hand Formula" for negligence.',
+      source: 'United States v. Carroll Towing Co., 159 F.2d 169 (2d Cir. 1947)', sourceUrl: 'https://en.wikipedia.org/wiki/United_States_v._Carroll_Towing_Co.'
+    },
+    {
+      id: 19, title: 'The Shared Driveway', type: 'fictional', category: 'civil',
+      scenario: "Two neighbors share a driveway under an old agreement. One widens his section and, without ever having it surveyed, accidentally paves two feet onto the shared easement — boxing out his neighbor's usual parking spot. He genuinely believed he was staying within his own property line.",
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (for willful trespass)',
+      explanation: 'An honest, reasonable mistake about where a property line falls defeats a willful-trespass claim, even though he may still be civilly required to remove the pavement and restore the easement.'
+    },
+    {
+      id: 20, title: 'The Classroom Kick', type: 'real', category: 'civil',
+      scenario: 'After class has already resumed, one schoolboy reaches across the aisle and lightly kicks a classmate’s shin as a prank. The classmate had a prior, unknown injury in that exact spot, and the kick triggers a severe infection that leads to permanent disability in the leg.',
+      correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
+      explanation: 'Because the act occurred after order was called (not during normal horseplay before class), it was legally wrongful contact — no intent to cause this specific harm was required. The "eggshell skull" rule then makes the kicker responsible for the full extent of the injury, however disproportionate to the act. A $2,500 judgment was upheld.',
+      source: 'Vosburg v. Putney, 80 Wis. 523 (1891)', sourceUrl: 'https://en.wikipedia.org/wiki/Vosburg_v._Putney'
+    },
+    {
+      id: 21, title: 'The Car With No Name', type: 'fictional', category: 'criminal',
+      scenario: 'Police pull over a car and find a bag of drugs under the passenger seat. There are three people in the car — the driver and two passengers. No one admits ownership, and no fingerprints are recovered from the bag. The driver is charged with possession.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: "Mere presence near contraband isn't enough to prove possession beyond a reasonable doubt — the prosecution must show knowledge and control. With multiple occupants and nothing linking it to any one person specifically, reasonable doubt remains."
+    },
+    {
+      id: 22, title: 'The Parking Garage', type: 'fictional', category: 'criminal',
+      scenario: "A woman is being followed and rapidly approached by a man she doesn't know in a dark, empty parking garage at night. She pepper-sprays him, causing injuries requiring medical care. It turns out he was actually running toward her to warn her that her car alarm had been blaring for ten minutes.",
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: "Self-defense is judged by the reasonableness of the belief at the time, from the defender's position — not by what's discovered afterward. A stranger rapidly closing distance on a lone woman at night in an isolated space creates an objectively reasonable fear, regardless of his actual intentions."
+    },
+    {
+      id: 23, title: 'The Smoke Ball', type: 'real', category: 'civil',
+      scenario: "A company advertises that it will pay £100 to anyone who uses its product exactly as directed and still catches the flu, and deposits money in a specific bank account to show it's serious. A woman uses it as directed, catches the flu anyway, and the company refuses to pay — claiming the ad was just advertising puffery, not a real offer.",
+      correctVerdict: 'GUILTY', outcomeLabel: 'Contract enforceable — Carlill wins.',
+      explanation: '"Just an ad" doesn’t automatically mean it isn’t a real promise. A public advertisement can form a binding unilateral contract if it’s specific enough and shows genuine intent to be bound — the bank deposit was exactly that proof.',
+      source: 'Carlill v Carbolic Smoke Ball Co [1893] 1 QB 256', sourceUrl: 'https://en.wikipedia.org/wiki/Carlill_v_Carbolic_Smoke_Ball_Co'
+    },
+    {
+      id: 24, title: 'The Thirty Seconds', type: 'fictional', category: 'civil',
+      scenario: 'A babysitter looks away from a toddler for about 30 seconds to answer the door for a scheduled delivery. In that time, the toddler — who has never attempted it before — climbs onto a low shelf, falls, and breaks an arm.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE',
+      explanation: 'Negligence requires a failure to exercise reasonable care, not a failure to achieve perfect, uninterrupted supervision. A brief, foreseeable interruption for an unprecedented action by the child doesn’t meet that threshold.'
+    },
+    {
+      id: 25, title: 'The Filing Delay', type: 'fictional', category: 'civil',
+      scenario: 'A man learns from a lawyer friend about a real jurisdictional filing delay that lets him avoid paying child support for several months without technically being late. He exploits it, then pays the full amount owed the moment the loophole closes, with no late fee technically applicable.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (for the delay itself)',
+      explanation: "Using a legally available procedural mechanism — even one that's morally questionable or exploits a system gap — isn't wrongdoing unless it involves fraud or a false statement. The law doesn't punish taking advantage of its own structural gaps, though it may invite reform."
+    },
+    {
+      id: 26, title: 'The Pamphlet', type: 'real', category: 'civil',
+      scenario: 'Two activists distribute a pamphlet making several claims against a fast-food company, including that its food directly causes cancer. The company sues for libel. In the actual trial, some of the pamphlet’s claims were found to be true — but the cancer claim specifically was never proven.',
+      correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE (on the cancer claim specifically)',
+      explanation: 'Truth is only a defense to libel when it’s actually proven. The court found some claims in the pamphlet true (including on advertising to children and low wages) but found the cancer claim unproven — making it libelous, even though the same case vindicated other parts of the pamphlet.',
+      source: 'McDonald’s Corporation v Steel & Morris ("McLibel"), 1997', sourceUrl: 'https://en.wikipedia.org/wiki/McLibel_case'
+    },
+    {
+      id: 27, title: 'The Mis-Delivered Package', type: 'fictional', category: 'criminal',
+      scenario: "A man signs for a package at his front door, assuming it's something he ordered. It was actually addressed to a house with the same number on a differently-named street nearby — a mail mix-up. He opens it, realizes the mistake, immediately reseals it, and delivers it next door himself.",
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: "Mail theft or tampering requires knowledge that an item isn't yours. An honest, reasonable mistake about ownership — corrected immediately with no attempt to keep anything — lacks the intent the crime requires."
+    },
+    {
+      id: 28, title: 'The Valet Scratch', type: 'fictional', category: 'civil',
+      scenario: "A valet accidentally scratches a customer's car while parking it, and says nothing, hoping it won't be noticed. The customer discovers the scratch weeks later and pulls the valet company's security footage, which confirms exactly what happened.",
+      correctVerdict: 'GUILTY', outcomeLabel: 'LIABLE',
+      explanation: "The issue isn't the accidental scratch itself — it's the concealment. Failing to disclose known damage to the property owner, when there was a duty to report it, creates liability separate from the honest accident."
+    },
+    {
+      id: 29, title: 'The Unnamed Official', type: 'real', category: 'civil',
+      scenario: 'A newspaper runs a full-page ad describing police treatment of civil rights protesters, soliciting donations. The ad contains some factual inaccuracies. A police official, not named anywhere in the ad, sues the newspaper for libel, claiming it damaged his reputation, and wins in state court.',
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT LIABLE (judgment reversed)',
+      explanation: 'Public officials can’t win a libel claim over their official conduct unless they prove "actual malice" — that the publisher knew the statement was false or recklessly disregarded the truth. Ordinary factual errors don’t meet that bar, which exists to protect robust public debate.',
+      source: 'New York Times Co. v. Sullivan, 376 U.S. 254 (1964)', sourceUrl: 'https://en.wikipedia.org/wiki/New_York_Times_Co._v._Sullivan'
+    },
+    {
+      id: 30, title: 'The Window at 3 AM', type: 'fictional', category: 'criminal',
+      scenario: "Woken by a loud crash downstairs at 3 AM, a parent grabs a kitchen knife and goes to investigate. In near-total darkness, they see a shadowy figure climbing through a broken window and stab in the direction of the threat. It's their own teenage child — who had snuck out, broken the window trying to be quiet while climbing back in, and whom the parent couldn't recognize in the dark and panic.",
+      correctVerdict: 'NOT GUILTY', outcomeLabel: 'NOT GUILTY',
+      explanation: 'Self-defense law evaluates the reasonableness of a response to a perceived threat at the moment it occurs, not the devastating outcome discovered afterward. Responding to an apparent nighttime break-in, with no way to identify the intruder in darkness and confusion, meets the legal standard for a reasonable defensive reaction.'
+    }
+  ];
+
+  var FLAVOR_LINES = [
+    'The gavel has left the building.',
+    'No objections were raised. There was no one to object.',
+    'Filed and forgotten.',
+    'The judge has seen weirder.',
+    'This file will self-store, eventually.',
+    'Case closed. Coffee gone cold.',
+    'Somewhere, a paralegal sighs.'
+  ];
+
+  var stage = document.getElementById('stage');
+
+  function pad3(n) { return String(n).padStart(3, '0'); }
+  function shuffle(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    return a;
+  }
+
+  // ===================== GAME STATE =====================
+  var order = [];
+  var pos = 0;
+  var matched = 0;
+
+  function newGame() {
+    order = shuffle(CASES);
+    pos = 0;
+    matched = 0;
+  }
+
+  // ===================== PAPER TRANSITION =====================
+  // Reusable: swap whatever paper is currently in #paperSlot for a
+  // freshly-built one, with a small physical slide/fade in between.
+  function swapPaper(slot, buildFn) {
+    var old = slot.querySelector('.paper');
+    function mount() {
+      var next = buildFn();
+      next.classList.add('paper', 'enter');
+      slot.appendChild(next);
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { next.classList.remove('enter'); });
+      });
+    }
+    if (old) {
+      old.classList.add('leave');
+      setTimeout(function () { old.remove(); mount(); }, 220);
+    } else {
+      mount();
+    }
+  }
+
+  // ===================== SCREENS =====================
+  function showStart() {
+    newGame();
+    stage.innerHTML = '';
+    var scene = document.createElement('div');
+    scene.className = 'scene';
+    scene.innerHTML =
+      '<h1 class="title-display">GUILTY <span class="not">OR NOT?</span></h1>' +
+      '<p class="subtitle">You have the facts.<br>You make the call.</p>' +
+      '<div class="folder-zone" id="folderZone">' +
+        '<div class="folder-tab">CASE FILES</div>' +
+        '<div class="folder-base"></div>' +
+        '<div class="folder-well"></div>' +
+        '<div class="folder-flap"></div>' +
+        '<div class="folder-stamp">CONFIDENTIAL</div>' +
+        '<div class="folder-label">' + CASES.length + ' CASES ON FILE<br>STATUS: SEALED</div>' +
+      '</div>' +
+      '<button class="btn primary" id="openBtn">OPEN CASE FILE</button>';
+    stage.appendChild(scene);
+
+    document.getElementById('openBtn').addEventListener('click', function () {
+      var folder = document.getElementById('folderZone');
+      var openBtn = document.getElementById('openBtn');
+      folder.classList.add('open');
+      openBtn.style.visibility = 'hidden';
+      setTimeout(showGame, 420);
+    });
+  }
+
+  function showGame() {
+    stage.innerHTML = '';
+    var scene = document.createElement('div');
+    scene.className = 'scene';
+    scene.innerHTML =
+      '<div class="folder-zone open" style="margin-bottom:-110px; z-index:0;">' +
+        '<div class="folder-tab">CASE FILES</div>' +
+        '<div class="folder-base"></div>' +
+        '<div class="folder-well"></div>' +
+      '</div>' +
+      '<div class="paper-slot" id="paperSlot" style="z-index:1;"></div>';
+    stage.appendChild(scene);
+    var slot = document.getElementById('paperSlot');
+    renderCase(slot);
+  }
+
+  function renderCase(slot) {
+    swapPaper(slot, function () {
+      var c = order[pos];
+      var el = document.createElement('div');
+      el.innerHTML =
+        '<div class="paper-row">' +
+          '<span class="case-id">CASE FILE #' + pad3(c.id) + '</span>' +
+          '<span>CASE ' + (pos + 1) + ' / ' + order.length + '</span>' +
+        '</div>' +
+        '<div class="paper-row" style="margin-top:-4px;">' +
+          '<span class="status-tag">STATUS: UNDECIDED</span>' +
+          '<span>MATCHED: ' + matched + '</span>' +
+        '</div>' +
+        '<h2 class="case-title">' + c.title + '</h2>' +
+        '<p class="case-scenario">' + c.scenario + '</p>' +
+        '<div class="verdict-row">' +
+          '<button class="verdict-btn guilty" data-v="GUILTY">GUILTY</button>' +
+          '<button class="verdict-btn notguilty" data-v="NOT GUILTY">NOT GUILTY</button>' +
+        '</div>';
+      el.querySelectorAll('.verdict-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          var choice = btn.getAttribute('data-v');
+          if (choice === c.correctVerdict) matched++;
+          renderVerdict(slot, c, choice);
+        });
+      });
+      return el;
+    });
+  }
+
+  function renderVerdict(slot, c, choice) {
+    swapPaper(slot, function () {
+      var el = document.createElement('div');
+      var isG = choice === 'GUILTY';
+      var sourceHtml = '';
+      if (c.type === 'real' && c.sourceUrl) {
+        sourceHtml = '<p class="outcome-line" style="margin-top:14px;">SOURCE</p>' +
+          '<p style="margin:0 0 16px;"><a class="source-link" href="' + c.sourceUrl + '" target="_blank" rel="noopener">' + c.source + '</a></p>';
+      }
+      var flavor = Math.random() < 0.3
+        ? '<p class="flavor-line">' + FLAVOR_LINES[Math.floor(Math.random() * FLAVOR_LINES.length)] + '</p>'
+        : '';
+      var isLast = pos >= order.length - 1;
+      el.innerHTML =
+        '<div class="paper-row">' +
+          '<span class="case-id">CASE FILE #' + pad3(c.id) + '</span>' +
+          '<span class="status-tag closed">STATUS: CLOSED</span>' +
+        '</div>' +
+        '<div class="verdict-stamp-row" style="margin-top:14px;">' +
+          '<div>' +
+            '<div class="verdict-label">YOUR VERDICT</div>' +
+            '<div class="verdict-stamp ' + (isG ? 'g' : 'ng') + '">' + choice + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<p class="outcome-line">ACTUAL OUTCOME</p>' +
+        '<p class="outcome-text">' + c.outcomeLabel + '</p>' +
+        '<p class="why-label">WHY?</p>' +
+        '<p class="why-text">' + c.explanation + '</p>' +
+        sourceHtml +
+        flavor +
+        '<div class="next-row">' +
+          '<button class="btn primary" id="nextBtn">' + (isLast ? 'SEE RESULTS →' : 'NEXT CASE →') + '</button>' +
+        '</div>';
+      el.querySelector('#nextBtn').addEventListener('click', function () {
+        if (isLast) {
+          showResults();
+        } else {
+          pos++;
+          renderCase(slot);
+        }
+      });
+      return el;
+    });
+  }
+
+  function showResults() {
+    stage.innerHTML = '';
+    var scene = document.createElement('div');
+    scene.className = 'scene';
+    scene.innerHTML =
+      '<div class="folder-zone" style="margin-bottom:-110px; z-index:0;">' +
+        '<div class="folder-tab">CASE FILES</div>' +
+        '<div class="folder-base"></div>' +
+        '<div class="folder-flap"></div>' +
+        '<div class="folder-stamp">CONFIDENTIAL</div>' +
+      '</div>' +
+      '<div class="paper-slot" id="resultSlot" style="z-index:1;"></div>';
+    stage.appendChild(scene);
+    renderResultsPaper(document.getElementById('resultSlot'));
+  }
+
+  function renderResultsPaper(slot) {
+    swapPaper(slot, function () {
+      var el = document.createElement('div');
+      el.innerHTML =
+        '<h2 class="results-title">CASE FILE CLOSED</h2>' +
+        '<p class="results-sub">' + order.length + ' CASES REVIEWED</p>' +
+        '<div class="score-block">' +
+          '<div class="score-label">YOUR VERDICTS MATCHED</div>' +
+          '<div class="score-num">' + matched + ' / ' + order.length + '</div>' +
+        '</div>' +
+        '<p class="results-flavor">“Apparently you have opinions about the law.”</p>' +
+        '<div class="results-actions">' +
+          '<button class="btn primary" id="againBtn">PLAY AGAIN</button>' +
+          '<button class="btn" id="sourcesBtn">SOURCES</button>' +
+        '</div>';
+      el.querySelector('#againBtn').addEventListener('click', showStart);
+      el.querySelector('#sourcesBtn').addEventListener('click', function () { renderSourcesPaper(slot); });
+      return el;
+    });
+  }
+
+  function renderSourcesPaper(slot) {
+    swapPaper(slot, function () {
+      var el = document.createElement('div');
+      var reals = CASES.filter(function (c) { return c.type === 'real'; })
+        .sort(function (a, b) { return a.id - b.id; });
+      var items = reals.map(function (c) {
+        return '<div class="source-item">' +
+          '<div class="source-case-num">CASE #' + pad3(c.id) + '</div>' +
+          '<div class="source-case-title">' + c.title + '</div>' +
+          '<div class="source-cite">' + c.source + '</div>' +
+          (c.sourceUrl ? '<a class="source-link" href="' + c.sourceUrl + '" target="_blank" rel="noopener">View Source</a>' : '') +
+        '</div>';
+      }).join('');
+      el.innerHTML =
+        '<h2 class="sources-title">CASE FILE — SOURCES</h2>' +
+        '<p class="sources-sub">REAL CASES REFERENCED IN THIS FILE</p>' +
+        items +
+        '<div class="next-row" style="margin-top:16px;">' +
+          '<button class="btn" id="closeSourcesBtn">← BACK TO RESULTS</button>' +
+        '</div>';
+      el.querySelector('#closeSourcesBtn').addEventListener('click', function () { renderResultsPaper(slot); });
+      return el;
+    });
+  }
+
+  showStart();
+})();
+</script>
+</body>
+</html>
