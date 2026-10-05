@@ -104,13 +104,13 @@
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
-    gap: clamp(8px, 2vh, 24px);
-    padding: clamp(66px, 10vh, 110px) 20px clamp(16px, 4vh, 40px);
+    gap: clamp(4px, 1.6vh, 24px);
+    padding: clamp(50px, 8vh, 110px) 20px clamp(8px, 2vh, 40px);
   }
 
   h1.title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(40px, 9vw, 70px);
+    font-size: clamp(28px, min(9vw, 7vh), 70px);
     letter-spacing: 0.02em;
     line-height: 1;
     margin: 0;
@@ -126,15 +126,15 @@
 
   .deck-pile {
     position: relative;
-    width: 62px;
-    height: 88px;
+    width: clamp(44px, 8vh, 62px);
+    height: clamp(62px, 11vh, 88px);
   }
   .deck-pile .stack-card {
     position: absolute;
     top: 0;
     left: 0;
-    width: 62px;
-    height: 88px;
+    width: 100%;
+    height: 100%;
     border-radius: 8px;
     border: 2px solid var(--gold);
     background: repeating-linear-gradient(45deg, var(--red), var(--red) 4px, var(--gold-dim) 4px, var(--gold-dim) 8px);
@@ -181,11 +181,11 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 10px;
-    min-height: 96px;
+    min-height: clamp(62px, 11vh, 96px);
   }
   .playing-card {
-    width: 62px;
-    height: 88px;
+    width: clamp(44px, 8vh, 62px);
+    height: clamp(62px, 11vh, 88px);
     background: var(--card-bg);
     border: 2px solid var(--text-dark);
     border-radius: 8px;
@@ -196,7 +196,7 @@
     padding: 6px 7px;
     font-family: Georgia, serif;
     font-weight: 700;
-    font-size: 17px;
+    font-size: clamp(13px, 2.2vh, 17px);
     line-height: 1;
     animation: dealIn 0.3s ease;
     flex: none;
@@ -215,7 +215,7 @@
 
   .total-line {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 28px;
+    font-size: clamp(18px, 3.2vh, 28px);
     letter-spacing: 0.03em;
   }
   .total-line .num { color: var(--red); }
@@ -231,7 +231,7 @@
     font-family: 'DM Mono', monospace;
     font-size: 15px;
     letter-spacing: 0.03em;
-    padding: 13px 26px;
+    padding: clamp(8px, 1.6vh, 13px) 26px;
     border-radius: 999px;
     border: 2px solid var(--gold);
     background: rgba(0,0,0,0.22);
@@ -246,7 +246,7 @@
 
   .result-banner {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(26px, 6vw, 42px);
+    font-size: clamp(18px, min(6vw, 4.5vh), 42px);
     text-align: center;
     min-height: 1.2em;
   }
