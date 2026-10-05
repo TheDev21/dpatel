@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reverse 21 — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23faf6ec'/%3E%3Crect x='7' y='6' width='13' height='18' rx='2' fill='%23faf6ec' stroke='%23231f1a' stroke-width='1.5' transform='rotate(-8 13.5 15)'/%3E%3Crect x='12' y='8' width='13' height='18' rx='2' fill='%23faf6ec' stroke='%238c1f28' stroke-width='1.5'/%3E%3Ctext x='15.2' y='14.5' font-family='Georgia,serif' font-size='6' fill='%238c1f28'%3E0%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f3ead9;
+    --ink: #231f1a;
+    --ink-dim: #6b6153;
+    --red: #8c1f28;
+    --green: #2f6b4f;
+    --card-bg: #faf6ec;
+    --gold: #c98f00;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    background-image: radial-gradient(circle at 12% 8%, rgba(47,107,79,0.05), transparent 35%),
+                       radial-gradient(circle at 88% 92%, rgba(140,31,40,0.05), transparent 35%);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+  a { color: inherit; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--red); }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+  @media (max-width: 960px) {
+    .corner-badge { position: absolute; top: 30px; left: 14px; font-size: 22px; }
+  }
+
+  .howto-btn {
+    position: fixed;
+    top: 30px;
+    right: 26px;
+    z-index: 50;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.03em;
+    color: var(--ink);
+    background: var(--card-bg);
+    border: 2px solid var(--ink);
+    border-radius: 999px;
+    padding: 9px 16px;
+    cursor: pointer;
+  }
+  .howto-btn:hover { border-color: var(--red); color: var(--red); }
+  @media (max-width: 960px) {
+    .howto-btn { top: 16px; right: 14px; font-size: 11px; padding: 7px 12px; }
+  }
+
+  #stage {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 34px;
+    padding: 110px 20px 60px;
+  }
+
+  h1.title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 9vw, 70px);
+    letter-spacing: 0.02em;
+    line-height: 1;
+    margin: 0;
+    text-align: center;
+  }
+  .title .zero { color: var(--red); }
+  .subtitle {
+    margin: 6px 0 0;
+    text-align: center;
+    color: var(--ink-dim);
+    font-size: 14px;
+  }
+
+  .deck-pile {
+    position: relative;
+    width: 62px;
+    height: 88px;
+  }
+  .deck-pile .stack-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 62px;
+    height: 88px;
+    border-radius: 8px;
+    border: 2px solid var(--ink);
+    background: repeating-linear-gradient(45deg, var(--ink), var(--ink) 5px, #3a342c 5px, #3a342c 10px);
+    box-shadow: 2px 3px 0 rgba(35,31,26,0.15);
+  }
+  .deck-pile .stack-card:nth-child(1) { transform: rotate(-3deg) translate(-2px, 1px); }
+  .deck-pile .stack-card:nth-child(2) { transform: rotate(1deg) translate(1px, -1px); }
+  .deck-pile .stack-card:nth-child(3) { transform: rotate(-1deg); }
+  .deck-count {
+    position: absolute;
+    bottom: -10px;
+    right: -10px;
+    background: var(--red);
+    color: var(--card-bg);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 3px 7px;
+    border: 2px solid var(--bg);
+  }
+  .deck-row {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .deck-row .zone-label { margin-top: 2px; }
+
+  .zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .zone-label {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .hand {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 96px;
+  }
+  .playing-card {
+    width: 62px;
+    height: 88px;
+    background: var(--card-bg);
+    border: 2px solid var(--ink);
+    border-radius: 8px;
+    box-shadow: 2px 3px 0 rgba(35,31,26,0.15);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 6px 7px;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: 17px;
+    line-height: 1;
+    animation: dealIn 0.3s ease;
+    flex: none;
+  }
+  .playing-card.red { color: var(--red); }
+  .playing-card.black { color: var(--ink); }
+  .playing-card.face-down {
+    background: repeating-linear-gradient(45deg, var(--ink), var(--ink) 5px, #3a342c 5px, #3a342c 10px);
+    border-color: var(--ink);
+  }
+  .playing-card .bottom { align-self: flex-end; transform: rotate(180deg); }
+  @keyframes dealIn {
+    from { opacity: 0; transform: translateY(-14px) rotate(-4deg); }
+    to { opacity: 1; transform: translateY(0) rotate(0); }
+  }
+
+  .total-line {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.03em;
+  }
+  .total-line .num { color: var(--red); }
+  .total-line.dim { color: var(--ink-dim); font-size: 16px; font-family: 'DM Mono', monospace; letter-spacing: 0; }
+
+  .actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 15px;
+    letter-spacing: 0.03em;
+    padding: 13px 26px;
+    border-radius: 999px;
+    border: 2px solid var(--ink);
+    background: var(--card-bg);
+    color: var(--ink);
+    cursor: pointer;
+    transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+  }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn:disabled { opacity: 0.35; cursor: default; }
+  .btn.primary { background: var(--ink); color: var(--card-bg); }
+  .btn.primary:hover:not(:disabled) { background: var(--red); border-color: var(--red); }
+
+  .result-banner {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(26px, 6vw, 42px);
+    text-align: center;
+    min-height: 1.2em;
+  }
+  .result-banner.win { color: var(--green); }
+  .result-banner.lose { color: var(--red); }
+  .result-banner.push { color: var(--gold); }
+
+  .record {
+    font-size: 12.5px;
+    color: var(--ink-dim);
+    letter-spacing: 0.04em;
+  }
+  .record span { color: var(--ink); font-weight: 600; }
+
+  /* ---------- how-to-play overlay ---------- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(35,31,26,0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .overlay[hidden] { display: none; }
+  .howto-card {
+    background: var(--card-bg);
+    border: 2px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: 6px 8px 0 rgba(35,31,26,0.2);
+    max-width: 440px;
+    width: 100%;
+    padding: 30px 28px 26px;
+    transform: rotate(-0.6deg);
+  }
+  .howto-card h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    margin: 0 0 4px;
+    letter-spacing: 0.02em;
+  }
+  .howto-card h2 .zero { color: var(--red); }
+  .howto-card ul {
+    margin: 16px 0 22px;
+    padding: 0 0 0 20px;
+    font-size: 14.5px;
+    line-height: 1.7;
+  }
+  .howto-card li { margin-bottom: 8px; }
+  .howto-card li b { color: var(--red); }
+  .howto-card .close-btn {
+    width: 100%;
+    display: block;
+  }
+
+  @media (max-width: 480px) {
+    #stage { gap: 26px; padding: 90px 16px 50px; }
+    .playing-card { width: 52px; height: 74px; font-size: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<a class="corner-badge" href="https://weirdlittlegames.lol">Weird<br>Little<br>Games.</a>
+<button class="howto-btn" id="howtoBtn">How to Play</button>
+
+<div id="stage">
+  <div>
+    <h1 class="title">REVERSE <span class="zero">0</span></h1>
+    <p class="subtitle">Count down from 21. Closest to zero without going under wins.</p>
+  </div>
+
+  <div class="zone">
+    <span class="zone-label">House</span>
+    <div class="hand" id="houseHand"></div>
+    <div class="total-line dim" id="houseTotal">—</div>
+  </div>
+
+  <div class="deck-row">
+    <div class="deck-pile">
+      <div class="stack-card"></div>
+      <div class="stack-card"></div>
+      <div class="stack-card"></div>
+      <span class="deck-count" id="deckCount">52</span>
+    </div>
+    <span class="zone-label">Deck</span>
+  </div>
+
+  <div class="result-banner" id="resultBanner"></div>
+
+  <div class="zone">
+    <span class="zone-label">You</span>
+    <div class="hand" id="playerHand"></div>
+    <div class="total-line"><span class="num" id="playerTotal">21</span> left</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn primary" id="hitBtn">Hit</button>
+    <button class="btn" id="standBtn">Stand</button>
+    <button class="btn" id="newRoundBtn" hidden>New Round</button>
+  </div>
+
+  <div class="record" id="record">Wins <span id="winCount">0</span> · Losses <span id="lossCount">0</span> · Pushes <span id="pushCount">0</span></div>
+</div>
+
+<div class="overlay" id="howtoOverlay">
+  <div class="howto-card">
+    <h2>REVERSE <span class="zero">0</span></h2>
+    <ul>
+      <li>You start at <b>21</b>. Every card you draw <b>subtracts</b> from your total instead of adding.</li>
+      <li>Number cards subtract their face value. Jack, Queen, King each subtract <b>10</b>.</li>
+      <li>Ace subtracts <b>1 or 11</b>, whichever keeps you from going below zero.</li>
+      <li>Go below <b>0</b> and you bust — instant loss.</li>
+      <li><b>Hit</b> to draw another card, <b>Stand</b> to lock in your total and let the house play.</li>
+      <li>The house keeps drawing until its own total would stand at 17 or better in regular blackjack terms — here, until it's down to <b>4 or less</b>.</li>
+      <li>Whoever lands closer to <b>0</b> without busting wins. Same total is a push.</li>
+    </ul>
+    <button class="btn primary close-btn" id="howtoCloseBtn">Got it</button>
+  </div>
+</div>
+
+<script>
+(function () {
+  var SUITS = [
+    { s: '♠', color: 'black' },
+    { s: '♥', color: 'red' },
+    { s: '♦', color: 'red' },
+    { s: '♣', color: 'black' }
+  ];
+  var RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'];
+
+  var houseHandEl = document.getElementById('houseHand');
+  var playerHandEl = document.getElementById('playerHand');
+  var houseTotalEl = document.getElementById('houseTotal');
+  var playerTotalEl = document.getElementById('playerTotal');
+  var resultBanner = document.getElementById('resultBanner');
+  var hitBtn = document.getElementById('hitBtn');
+  var standBtn = document.getElementById('standBtn');
+  var newRoundBtn = document.getElementById('newRoundBtn');
+  var winCountEl = document.getElementById('winCount');
+  var lossCountEl = document.getElementById('lossCount');
+  var pushCountEl = document.getElementById('pushCount');
+  var howtoBtn = document.getElementById('howtoBtn');
+  var howtoOverlay = document.getElementById('howtoOverlay');
+  var howtoCloseBtn = document.getElementById('howtoCloseBtn');
+  var deckCountEl = document.getElementById('deckCount');
+
+  var deck = [];
+  var playerCards = [];
+  var houseCards = [];
+  var houseHoleHidden = true;
+  var roundOver = false;
+  var record = { win: 0, loss: 0, push: 0 };
+
+  function buildDeck() {
+    var d = [];
+    for (var i = 0; i < SUITS.length; i++) {
+      for (var j = 0; j < RANKS.length; j++) {
+        d.push({ rank: RANKS[j], suit: SUITS[i].s, color: SUITS[i].color });
+      }
+    }
+    return d;
+  }
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+    }
+    return arr;
+  }
+  function draw() {
+    if (deck.length === 0) deck = shuffle(buildDeck());
+    var card = deck.pop();
+    deckCountEl.textContent = deck.length;
+    return card;
+  }
+  function rankValue(rank) {
+    if (rank === 'A') return 11;
+    if (rank === 'J' || rank === 'Q' || rank === 'K') return 10;
+    return parseInt(rank, 10);
+  }
+  // Standard blackjack total: bust if > 21. We display (21 - total) as the
+  // countdown number, so "closer to 0" here is identical to "closer to 21" there.
+  function handTotal(cards) {
+    var total = 0, aces = 0;
+    cards.forEach(function (c) {
+      total += rankValue(c.rank);
+      if (c.rank === 'A') aces++;
+    });
+    while (total > 21 && aces > 0) {
+      total -= 10;
+      aces--;
+    }
+    return total;
+  }
+
+  function renderCard(card, faceDown) {
+    var el = document.createElement('div');
+    el.className = 'playing-card ' + (faceDown ? 'face-down' : card.color);
+    if (!faceDown) {
+      el.innerHTML =
+        '<span class="top">' + card.rank + card.suit + '</span>' +
+        '<span class="bottom">' + card.rank + card.suit + '</span>';
+    }
+    return el;
+  }
+
+  function renderHands() {
+    playerHandEl.innerHTML = '';
+    playerCards.forEach(function (c) { playerHandEl.appendChild(renderCard(c, false)); });
+
+    houseHandEl.innerHTML = '';
+    houseCards.forEach(function (c, i) {
+      var hidden = houseHoleHidden && i === 1;
+      houseHandEl.appendChild(renderCard(c, hidden));
+    });
+
+    var pTotal = handTotal(playerCards);
+    var pLeft = 21 - pTotal;
+    playerTotalEl.textContent = pTotal > 21 ? 'BUST' : pLeft;
+
+    if (houseHoleHidden) {
+      houseTotalEl.textContent = '?';
+    } else {
+      var hTotal = handTotal(houseCards);
+      var hLeft = 21 - hTotal;
+      houseTotalEl.textContent = hTotal > 21 ? 'BUST (' + (hTotal - 21) + ' over)' : hLeft + ' left';
+    }
+  }
+
+  function updateRecordDisplay() {
+    winCountEl.textContent = record.win;
+    lossCountEl.textContent = record.loss;
+    pushCountEl.textContent = record.push;
+  }
+
+  function setBanner(text, kind) {
+    resultBanner.textContent = text;
+    resultBanner.className = 'result-banner' + (kind ? ' ' + kind : '');
+  }
+
+  function endRound(outcome) {
+    roundOver = true;
+    houseHoleHidden = false;
+    hitBtn.disabled = true;
+    standBtn.disabled = true;
+    newRoundBtn.hidden = false;
+    renderHands();
+
+    if (outcome === 'player-bust') {
+      setBanner('BUST — YOU LOSE', 'lose');
+      record.loss++;
+    } else if (outcome === 'house-bust') {
+      setBanner('HOUSE BUSTS — YOU WIN', 'win');
+      record.win++;
+    } else if (outcome === 'win') {
+      setBanner('YOU WIN', 'win');
+      record.win++;
+    } else if (outcome === 'lose') {
+      setBanner('HOUSE WINS', 'lose');
+      record.loss++;
+    } else {
+      setBanner('PUSH', 'push');
+      record.push++;
+    }
+    updateRecordDisplay();
+  }
+
+  function houseFinishPlay() {
+    while (handTotal(houseCards) < 17) {
+      houseCards.push(draw());
+    }
+    var hTotal = handTotal(houseCards);
+    var pTotal = handTotal(playerCards);
+    if (hTotal > 21) {
+      endRound('house-bust');
+    } else if (hTotal > pTotal) {
+      endRound('lose');
+    } else if (hTotal < pTotal) {
+      endRound('win');
+    } else {
+      endRound('push');
+    }
+  }
+
+  function hit() {
+    if (roundOver) return;
+    playerCards.push(draw());
+    renderHands();
+    if (handTotal(playerCards) > 21) {
+      endRound('player-bust');
+    }
+  }
+
+  function stand() {
+    if (roundOver) return;
+    houseHoleHidden = false;
+    houseFinishPlay();
+  }
+
+  function newRound() {
+    playerCards = [draw(), draw()];
+    houseCards = [draw(), draw()];
+    houseHoleHidden = true;
+    roundOver = false;
+    hitBtn.disabled = false;
+    standBtn.disabled = false;
+    newRoundBtn.hidden = true;
+    setBanner('', '');
+    renderHands();
+
+    if (handTotal(playerCards) === 21) {
+      houseHoleHidden = false;
+      var hTotal = handTotal(houseCards);
+      if (hTotal === 21) {
+        endRound('push');
+      } else {
+        endRound('win');
+      }
+    }
+  }
+
+  hitBtn.addEventListener('click', hit);
+  standBtn.addEventListener('click', stand);
+  newRoundBtn.addEventListener('click', newRound);
+
+  function openHowto() { howtoOverlay.hidden = false; }
+  function closeHowto() {
+    howtoOverlay.hidden = true;
+    try { localStorage.setItem('reverse21-seen-howto', '1'); } catch (e) {}
+  }
+  howtoBtn.addEventListener('click', openHowto);
+  howtoCloseBtn.addEventListener('click', closeHowto);
+  howtoOverlay.addEventListener('click', function (e) {
+    if (e.target === howtoOverlay) closeHowto();
+  });
+
+  var seenHowto = false;
+  try { seenHowto = !!localStorage.getItem('reverse21-seen-howto'); } catch (e) {}
+  if (!seenHowto) openHowto();
+
+  deck = shuffle(buildDeck());
+  newRound();
+})();
+</script>
+</body>
+</html>
