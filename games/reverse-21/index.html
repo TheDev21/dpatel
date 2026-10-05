@@ -9,26 +9,43 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #f3ead9;
-    --ink: #231f1a;
-    --ink-dim: #6b6153;
-    --red: #8c1f28;
+    --bg: #0f3d2e;
+    --bg-deep: #0a2c21;
+    --ink: #f3ead9;
+    --ink-dim: #a9c4b6;
+    --red: #c6303e;
     --green: #2f6b4f;
     --card-bg: #faf6ec;
-    --gold: #c98f00;
+    --gold: #d4af37;
+    --gold-dim: #9c8339;
+    --text-dark: #231f1a;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
     min-height: 100vh;
-    background: var(--bg);
-    background-image: radial-gradient(circle at 12% 8%, rgba(47,107,79,0.05), transparent 35%),
-                       radial-gradient(circle at 88% 92%, rgba(140,31,40,0.05), transparent 35%);
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(212,175,55,0.08), transparent 45%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 14px),
+      radial-gradient(circle at 12% 8%, rgba(212,175,55,0.06), transparent 35%),
+      radial-gradient(circle at 88% 92%, rgba(0,0,0,0.25), transparent 45%),
+      linear-gradient(160deg, var(--bg), var(--bg-deep));
     color: var(--ink);
     font-family: 'DM Mono', monospace;
     -webkit-tap-highlight-color: transparent;
+    overflow-x: hidden;
   }
   a { color: inherit; }
+
+  .suit-watermark {
+    position: fixed;
+    font-size: 160px;
+    color: rgba(212,175,55,0.05);
+    pointer-events: none;
+    z-index: 0;
+    line-height: 1;
+    user-select: none;
+  }
 
   .corner-badge {
     position: fixed;
@@ -69,8 +86,8 @@
     font-size: 13px;
     letter-spacing: 0.03em;
     color: var(--ink);
-    background: var(--card-bg);
-    border: 2px solid var(--ink);
+    background: rgba(0,0,0,0.22);
+    border: 2px solid var(--gold);
     border-radius: 999px;
     padding: 9px 16px;
     cursor: pointer;
@@ -81,6 +98,8 @@
   }
 
   #stage {
+    position: relative;
+    z-index: 1;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -118,9 +137,9 @@
     width: 62px;
     height: 88px;
     border-radius: 8px;
-    border: 2px solid var(--ink);
-    background: repeating-linear-gradient(45deg, var(--ink), var(--ink) 5px, #3a342c 5px, #3a342c 10px);
-    box-shadow: 2px 3px 0 rgba(35,31,26,0.15);
+    border: 2px solid var(--gold);
+    background: repeating-linear-gradient(45deg, var(--red), var(--red) 4px, var(--gold-dim) 4px, var(--gold-dim) 8px);
+    box-shadow: 2px 3px 0 rgba(0,0,0,0.35);
   }
   .deck-pile .stack-card:nth-child(1) { transform: rotate(-3deg) translate(-2px, 1px); }
   .deck-pile .stack-card:nth-child(2) { transform: rotate(1deg) translate(1px, -1px); }
@@ -169,7 +188,7 @@
     width: 62px;
     height: 88px;
     background: var(--card-bg);
-    border: 2px solid var(--ink);
+    border: 2px solid var(--text-dark);
     border-radius: 8px;
     box-shadow: 2px 3px 0 rgba(35,31,26,0.15);
     display: flex;
@@ -184,10 +203,10 @@
     flex: none;
   }
   .playing-card.red { color: var(--red); }
-  .playing-card.black { color: var(--ink); }
+  .playing-card.black { color: var(--text-dark); }
   .playing-card.face-down {
-    background: repeating-linear-gradient(45deg, var(--ink), var(--ink) 5px, #3a342c 5px, #3a342c 10px);
-    border-color: var(--ink);
+    background: repeating-linear-gradient(45deg, var(--red), var(--red) 4px, var(--gold-dim) 4px, var(--gold-dim) 8px);
+    border-color: var(--gold);
   }
   .playing-card .bottom { align-self: flex-end; transform: rotate(180deg); }
   @keyframes dealIn {
@@ -215,16 +234,16 @@
     letter-spacing: 0.03em;
     padding: 13px 26px;
     border-radius: 999px;
-    border: 2px solid var(--ink);
-    background: var(--card-bg);
+    border: 2px solid var(--gold);
+    background: rgba(0,0,0,0.22);
     color: var(--ink);
     cursor: pointer;
     transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
   }
-  .btn:hover:not(:disabled) { transform: translateY(-2px); }
+  .btn:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--red); color: var(--red); }
   .btn:disabled { opacity: 0.35; cursor: default; }
-  .btn.primary { background: var(--ink); color: var(--card-bg); }
-  .btn.primary:hover:not(:disabled) { background: var(--red); border-color: var(--red); }
+  .btn.primary { background: var(--gold); color: var(--text-dark); border-color: var(--gold); }
+  .btn.primary:hover:not(:disabled) { background: var(--red); border-color: var(--red); color: var(--card-bg); }
 
   .result-banner {
     font-family: 'Bebas Neue', sans-serif;
@@ -257,9 +276,10 @@
   .overlay[hidden] { display: none; }
   .howto-card {
     background: var(--card-bg);
-    border: 2px solid var(--ink);
+    color: var(--text-dark);
+    border: 3px solid var(--gold);
     border-radius: 14px;
-    box-shadow: 6px 8px 0 rgba(35,31,26,0.2);
+    box-shadow: 6px 8px 0 rgba(0,0,0,0.3);
     max-width: 440px;
     width: 100%;
     padding: 30px 28px 26px;
@@ -293,6 +313,8 @@
 </head>
 <body>
 
+<span class="suit-watermark" style="top:-30px; left:-20px;">♠</span>
+<span class="suit-watermark" style="bottom:-40px; right:-20px;">♦</span>
 <a class="corner-badge" href="https://weirdlittlegames.lol">Weird<br>Little<br>Games.</a>
 <button class="howto-btn" id="howtoBtn">How to Play</button>
 
