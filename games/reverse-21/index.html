@@ -24,11 +24,8 @@
   html, body { margin: 0; height: 100%; overflow: hidden; }
   body {
     background:
-      radial-gradient(ellipse at 50% -10%, rgba(212,175,55,0.08), transparent 45%),
-      repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0, rgba(255,255,255,0.015) 2px, transparent 2px, transparent 14px),
-      radial-gradient(circle at 12% 8%, rgba(212,175,55,0.06), transparent 35%),
-      radial-gradient(circle at 88% 92%, rgba(0,0,0,0.25), transparent 45%),
-      linear-gradient(160deg, var(--bg), var(--bg-deep));
+      radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.04), transparent 55%),
+      linear-gradient(160deg, #1c1712, #0b0906);
     color: var(--ink);
     font-family: 'DM Mono', monospace;
     -webkit-tap-highlight-color: transparent;
@@ -37,11 +34,11 @@
   a { color: inherit; }
 
   .suit-watermark {
-    position: fixed;
+    position: absolute;
     font-size: 160px;
-    color: rgba(212,175,55,0.05);
+    color: rgba(212,175,55,0.08);
     pointer-events: none;
-    z-index: 0;
+    z-index: -1;
     line-height: 1;
     user-select: none;
   }
@@ -101,68 +98,129 @@
     z-index: 1;
     height: 100%;
     display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(10px, 2.4vh, 24px) 14px;
+  }
+
+  .table-rail {
+    width: min(92vw, 460px);
+    height: min(96%, 840px);
+    padding: clamp(10px, 2vh, 16px);
+    border-radius: clamp(28px, 6vh, 54px);
+    background: linear-gradient(160deg, #8a5a2e, #5c3a1a 55%, #2e1c0c);
+    box-shadow: 0 16px 36px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.18);
+  }
+  .table-felt {
+    position: relative;
+    z-index: 0;
+    height: 100%;
+    border-radius: clamp(20px, 4.6vh, 42px);
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(212,175,55,0.1), transparent 45%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 14px),
+      radial-gradient(circle at 88% 92%, rgba(0,0,0,0.25), transparent 45%),
+      linear-gradient(160deg, var(--bg), var(--bg-deep));
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.3), inset 0 10px 30px rgba(0,0,0,0.35);
+    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-evenly;
-    gap: clamp(4px, 1.6vh, 24px);
-    padding: clamp(50px, 8vh, 110px) 20px clamp(8px, 2vh, 40px);
+    gap: clamp(4px, 1.4vh, 20px);
+    padding: clamp(14px, 3vh, 26px) 14px;
+    overflow: hidden;
   }
 
-  h1.title {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(28px, min(9vw, 7vh), 70px);
-    letter-spacing: 0.02em;
-    line-height: 1;
-    margin: 0;
-    text-align: center;
+  .title-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
   }
-  .title .zero { color: var(--red); }
-  .subtitle {
-    margin: 6px 0 0;
-    text-align: center;
-    color: var(--ink-dim);
-    font-size: 14px;
-  }
-
-  .deck-pile {
-    position: relative;
-    width: clamp(44px, 8vh, 62px);
-    height: clamp(62px, 11vh, 88px);
-  }
-  .deck-pile .stack-card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 8px;
-    border: 2px solid var(--gold);
-    background: repeating-linear-gradient(45deg, var(--red), var(--red) 4px, var(--gold-dim) 4px, var(--gold-dim) 8px);
-    box-shadow: 2px 3px 0 rgba(0,0,0,0.35);
-  }
-  .deck-pile .stack-card:nth-child(1) { transform: rotate(-3deg) translate(-2px, 1px); }
-  .deck-pile .stack-card:nth-child(2) { transform: rotate(1deg) translate(1px, -1px); }
-  .deck-pile .stack-card:nth-child(3) { transform: rotate(-1deg); }
-  .deck-count {
-    position: absolute;
-    bottom: -10px;
-    right: -10px;
-    background: var(--red);
-    color: var(--card-bg);
+  .title-chip .eyebrow {
     font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    font-weight: 700;
-    border-radius: 999px;
-    padding: 3px 7px;
-    border: 2px solid var(--bg);
+    font-size: clamp(10px, 1.6vh, 14px);
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-indent: 0.5em;
   }
-  .deck-row {
+  .title-chip .chip-badge {
+    position: relative;
+    width: clamp(58px, 11vh, 92px);
+    height: clamp(58px, 11vh, 92px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #1a4e3a, var(--bg-deep) 70%);
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 0 3px var(--bg-deep), 0 0 0 6px var(--gold-dim),
+                inset 0 0 16px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .title-chip .chip-badge::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(212,175,55,0.5);
+  }
+  .title-chip .chip-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(24px, 5vh, 40px);
+    color: var(--red);
+    line-height: 1;
+  }
+  .title-chip .suit-pip {
+    position: absolute;
+    font-size: clamp(9px, 1.4vh, 13px);
+    color: var(--gold);
+  }
+  .title-chip .suit-pip.tl { top: 9px; left: 12px; }
+  .title-chip .suit-pip.br { bottom: 9px; right: 12px; transform: rotate(180deg); }
+
+  .shoe-row {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 6px;
   }
-  .deck-row .zone-label { margin-top: 2px; }
+  .shoe {
+    position: relative;
+    width: clamp(64px, 12vh, 92px);
+    height: clamp(40px, 7.4vh, 56px);
+  }
+  .shoe-box {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 78%;
+    background: linear-gradient(160deg, #332b22, #16110c);
+    border: 2px solid var(--gold-dim);
+    border-radius: 7px 7px 4px 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.45), inset 0 2px 3px rgba(255,255,255,0.08);
+  }
+  .shoe-box::before {
+    content: '';
+    position: absolute;
+    top: 22%;
+    left: 8%;
+    width: 84%;
+    height: 2px;
+    background: rgba(212,175,55,0.5);
+  }
+  .shoe-card {
+    position: absolute;
+    top: -22%;
+    right: 8%;
+    width: 46%;
+    height: 72%;
+    border-radius: 4px;
+    border: 2px solid var(--gold);
+    background: repeating-linear-gradient(45deg, var(--red), var(--red) 3px, var(--gold-dim) 3px, var(--gold-dim) 6px);
+    transform: rotate(-10deg);
+    box-shadow: 1px 2px 0 rgba(0,0,0,0.35);
+  }
 
   .zone {
     display: flex;
@@ -305,7 +363,6 @@
   }
 
   @media (max-width: 480px) {
-    #stage { padding: clamp(60px, 9vh, 90px) 16px clamp(14px, 3vh, 30px); }
     .playing-card { width: 52px; height: 74px; font-size: 14px; }
     .hand { min-height: 80px; }
   }
@@ -313,46 +370,55 @@
 </head>
 <body>
 
-<span class="suit-watermark" style="top:-30px; left:-20px;">♠</span>
-<span class="suit-watermark" style="bottom:-40px; right:-20px;">♦</span>
 <a class="corner-badge" href="https://weirdlittlegames.lol">Weird<br>Little<br>Games.</a>
 <button class="howto-btn" id="howtoBtn">How to Play</button>
 
 <div id="stage">
-  <div>
-    <h1 class="title">REVERSE <span class="zero">21</span></h1>
-  </div>
+  <div class="table-rail">
+    <div class="table-felt">
+      <span class="suit-watermark" style="top:4%; left:4%; font-size:60px;">♠</span>
+      <span class="suit-watermark" style="bottom:4%; right:4%; font-size:60px;">♦</span>
 
-  <div class="zone">
-    <span class="zone-label">House</span>
-    <div class="hand" id="houseHand"></div>
-    <div class="total-line dim" id="houseTotal">—</div>
-  </div>
+      <div class="title-chip">
+        <span class="eyebrow">REVERSE</span>
+        <div class="chip-badge">
+          <span class="suit-pip tl">♠</span>
+          <span class="chip-num">21</span>
+          <span class="suit-pip br">♠</span>
+        </div>
+      </div>
 
-  <div class="deck-row">
-    <div class="deck-pile">
-      <div class="stack-card"></div>
-      <div class="stack-card"></div>
-      <div class="stack-card"></div>
+      <div class="zone">
+        <span class="zone-label">House</span>
+        <div class="hand" id="houseHand"></div>
+        <div class="total-line dim" id="houseTotal">—</div>
+      </div>
+
+      <div class="shoe-row">
+        <div class="shoe">
+          <div class="shoe-box"></div>
+          <div class="shoe-card"></div>
+        </div>
+        <span class="zone-label">Shoe</span>
+      </div>
+
+      <div class="result-banner" id="resultBanner"></div>
+
+      <div class="zone">
+        <span class="zone-label">You</span>
+        <div class="hand" id="playerHand"></div>
+        <div class="total-line"><span class="num" id="playerTotal">21</span> left</div>
+      </div>
+
+      <div class="actions">
+        <button class="btn primary" id="hitBtn">Hit</button>
+        <button class="btn" id="standBtn">Stand</button>
+        <button class="btn" id="newRoundBtn" hidden>New Round</button>
+      </div>
+
+      <div class="record" id="record">Wins <span id="winCount">0</span> · Losses <span id="lossCount">0</span> · Pushes <span id="pushCount">0</span></div>
     </div>
-    <span class="zone-label">Deck</span>
   </div>
-
-  <div class="result-banner" id="resultBanner"></div>
-
-  <div class="zone">
-    <span class="zone-label">You</span>
-    <div class="hand" id="playerHand"></div>
-    <div class="total-line"><span class="num" id="playerTotal">21</span> left</div>
-  </div>
-
-  <div class="actions">
-    <button class="btn primary" id="hitBtn">Hit</button>
-    <button class="btn" id="standBtn">Stand</button>
-    <button class="btn" id="newRoundBtn" hidden>New Round</button>
-  </div>
-
-  <div class="record" id="record">Wins <span id="winCount">0</span> · Losses <span id="lossCount">0</span> · Pushes <span id="pushCount">0</span></div>
 </div>
 
 <div class="overlay" id="howtoOverlay">
