@@ -107,7 +107,7 @@
     width: min(92vw, 460px);
     height: min(96%, 840px);
     padding: clamp(10px, 2vh, 16px);
-    border-radius: clamp(28px, 6vh, 54px);
+    border-radius: 26px 26px 50% 50% / 26px 26px 42% 42%;
     background: linear-gradient(160deg, #8a5a2e, #5c3a1a 55%, #2e1c0c);
     box-shadow: 0 16px 36px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.18);
   }
@@ -115,7 +115,7 @@
     position: relative;
     z-index: 0;
     height: 100%;
-    border-radius: clamp(20px, 4.6vh, 42px);
+    border-radius: 18px 18px 50% 50% / 18px 18px 40% 40%;
     background:
       radial-gradient(ellipse at 50% -10%, rgba(212,175,55,0.1), transparent 45%),
       repeating-linear-gradient(45deg, rgba(255,255,255,0.02) 0, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 14px),
@@ -127,7 +127,7 @@
     align-items: center;
     justify-content: space-evenly;
     gap: clamp(4px, 1.4vh, 20px);
-    padding: clamp(14px, 3vh, 26px) 14px;
+    padding: clamp(14px, 3vh, 26px) 14px clamp(26px, 5vh, 44px);
     overflow: hidden;
   }
 
@@ -316,6 +316,8 @@
     font-size: 12.5px;
     color: var(--ink-dim);
     letter-spacing: 0.04em;
+    text-align: center;
+    max-width: 78%;
   }
   .record span { color: var(--ink); font-weight: 600; }
 
