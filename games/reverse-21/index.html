@@ -32,16 +32,57 @@
   a { color: inherit; }
 
   .table-rail {
+    position: relative;
+    width: min(98vw, 980px);
+    aspect-ratio: 985 / 717;
+    max-height: 55vh;
+    z-index: 0;
+  }
+  .table-img {
     position: absolute;
     inset: 0;
-    margin: auto;
-    width: min(98vw, 980px);
-    height: min(97%, 980px);
-    padding: clamp(10px, 2vh, 16px);
-    border-radius: 26px 26px 50% 50% / 26px 26px 42% 42%;
-    background: linear-gradient(160deg, #8a2e4a, #5c1a30 55%, #2e0c18);
-    box-shadow: 0 16px 36px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.14), inset 0 0 0 3px var(--gold-dim);
-    z-index: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+    user-select: none;
+  }
+  .table-overlay {
+    position: absolute;
+    inset: 0;
+  }
+  .table-overlay .zone {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .table-overlay .zone.house { top: 55.6%; height: 11.4%; }
+  .table-overlay .zone.player { top: 84.7%; height: 11.4%; }
+  .table-overlay .zone .hand {
+    flex-wrap: nowrap;
+    min-height: 0;
+    gap: 6px;
+  }
+  .table-overlay .zone .playing-card {
+    width: clamp(22px, 4vh, 36px);
+    height: clamp(31px, 5.6vh, 51px);
+    padding: 3px 4px;
+    font-size: clamp(7px, 1.1vh, 10px);
+    border-width: 1.5px;
+  }
+  .table-overlay .zone .total-line {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    margin-top: clamp(10px, 2.4vh, 18px);
+    font-size: clamp(11px, 1.8vh, 15px);
   }
   .suit-watermark {
     position: absolute;
@@ -107,6 +148,18 @@
     position: relative;
     z-index: 1;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(20px, 4vh, 40px);
+    padding: clamp(60px, 10vh, 110px) 14px clamp(16px, 3vh, 36px);
+  }
+  .below-table {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(8px, 2vh, 20px);
   }
   .table-felt {
     position: relative;
@@ -126,70 +179,11 @@
     overflow: hidden;
   }
 
-  .mid-row {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: clamp(8px, 2.4vh, 28px);
-  }
-  .title-chip {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2px;
-  }
-  .title-chip .eyebrow {
-    font-family: 'DM Mono', monospace;
-    font-size: clamp(10px, 1.6vh, 14px);
-    letter-spacing: 0.5em;
-    color: var(--gold);
-    text-indent: 0.5em;
-  }
-  .title-chip .chip-badge {
-    position: relative;
-    width: clamp(58px, 11vh, 92px);
-    height: clamp(58px, 11vh, 92px);
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #1a4e3a, var(--bg-deep) 70%);
-    border: 3px solid var(--gold);
-    box-shadow: 0 0 0 3px var(--bg-deep), 0 0 0 6px var(--gold-dim),
-                inset 0 0 16px rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .title-chip .chip-badge::before {
-    content: '';
-    position: absolute;
-    inset: 8px;
-    border-radius: 50%;
-    border: 1.5px dashed rgba(212,175,55,0.5);
-  }
-  .title-chip .chip-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(24px, 5vh, 40px);
-    color: var(--red);
-    line-height: 1;
-  }
-  .title-chip .suit-pip {
-    position: absolute;
-    font-size: clamp(9px, 1.4vh, 13px);
-    color: var(--gold);
-  }
-  .title-chip .suit-pip.tl { top: 9px; left: 12px; }
-  .title-chip .suit-pip.br { bottom: 9px; right: 12px; transform: rotate(180deg); }
-
   .zone {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 10px;
-  }
-  .zone-label {
-    font-size: 12px;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--ink-dim);
   }
   .hand {
     display: flex;
@@ -364,45 +358,31 @@
 <button class="howto-btn" id="howtoBtn">How to Play</button>
 
 <div id="stage">
-<div class="table-rail">
-<div class="table-felt">
-  <span class="suit-watermark" style="top:4%; left:4%; font-size:60px;">♠</span>
-  <span class="suit-watermark" style="bottom:4%; right:4%; font-size:60px;">♦</span>
-
-  <div class="title-chip">
-    <span class="eyebrow">REVERSE</span>
-    <div class="chip-badge">
-      <span class="suit-pip tl">♠</span>
-      <span class="chip-num">21</span>
-      <span class="suit-pip br">♠</span>
+  <div class="table-rail">
+    <img class="table-img" src="img/table.png" alt="">
+    <div class="table-overlay">
+      <div class="zone house">
+        <div class="hand" id="houseHand"></div>
+        <div class="total-line dim" id="houseTotal">—</div>
+      </div>
+      <div class="zone player">
+        <div class="hand" id="playerHand"></div>
+        <div class="total-line" id="playerTotal">21 left</div>
+      </div>
     </div>
   </div>
 
-  <div class="mid-row">
-    <div class="zone">
-      <span class="zone-label">House</span>
-      <div class="hand" id="houseHand"></div>
-      <div class="total-line dim" id="houseTotal">—</div>
+  <div class="below-table">
+    <div class="result-banner" id="resultBanner"></div>
+
+    <div class="actions">
+      <button class="btn primary" id="hitBtn">Hit</button>
+      <button class="btn" id="standBtn">Stand</button>
+      <button class="btn" id="newRoundBtn" hidden>New Round</button>
     </div>
 
-    <div class="zone">
-      <span class="zone-label">You</span>
-      <div class="hand" id="playerHand"></div>
-      <div class="total-line"><span class="num" id="playerTotal">21</span> left</div>
-    </div>
+    <div class="record" id="record">Wins <span id="winCount">0</span> · Losses <span id="lossCount">0</span> · Pushes <span id="pushCount">0</span></div>
   </div>
-
-  <div class="result-banner" id="resultBanner"></div>
-
-  <div class="actions">
-    <button class="btn primary" id="hitBtn">Hit</button>
-    <button class="btn" id="standBtn">Stand</button>
-    <button class="btn" id="newRoundBtn" hidden>New Round</button>
-  </div>
-
-  <div class="record" id="record">Wins <span id="winCount">0</span> · Losses <span id="lossCount">0</span> · Pushes <span id="pushCount">0</span></div>
-</div>
-</div>
 </div>
 
 <div class="overlay" id="howtoOverlay">
@@ -517,7 +497,7 @@
 
     var pTotal = handTotal(playerCards);
     var pLeft = 21 - pTotal;
-    playerTotalEl.textContent = pTotal > 21 ? 'BUST' : pLeft;
+    playerTotalEl.textContent = pTotal > 21 ? '-' + (pTotal - 21) : pLeft + ' left';
 
     var visibleHouseCards = houseHoleHidden ? houseCards.slice(0, 1) : houseCards;
     var hTotal = handTotal(visibleHouseCards);
