@@ -228,7 +228,20 @@
     font-size: 11px;
     color: rgba(230,230,230,0.8);
   }
-  .shoe-card::after { content: '21'; font-family: 'Bebas Neue', sans-serif; }
+  .shoe-card::before {
+    content: '';
+    width: 1.6em;
+    height: 1.6em;
+    border-radius: 50%;
+    border: 0.12em solid var(--gold);
+  }
+  .shoe-card::after {
+    content: '21';
+    position: absolute;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 0.85em;
+    color: var(--red);
+  }
 
   .zone {
     display: flex;
@@ -286,17 +299,23 @@
     justify-content: center;
     padding: 0;
   }
+  .playing-card.face-down::before {
+    content: '';
+    width: 2.3em;
+    height: 2.3em;
+    border-radius: 50%;
+    border: 0.14em solid var(--gold);
+    box-shadow: 0 0 0 0.05em var(--bg-deep), 0 0 0 0.1em var(--gold-dim);
+  }
   .playing-card.face-down::after {
     content: '21';
+    position: absolute;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.7em;
+    font-size: 1.15em;
     line-height: 1;
     letter-spacing: 0.02em;
-    background: linear-gradient(160deg, #f0f0f0, #8e8e8e 55%, #d8d8d8);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    filter: drop-shadow(0 1px 1px rgba(0,0,0,0.5));
+    color: var(--red);
+    text-shadow: 0 1px 1px rgba(0,0,0,0.5);
   }
   .playing-card .bottom { align-self: flex-end; transform: rotate(180deg); }
   @keyframes dealIn {
