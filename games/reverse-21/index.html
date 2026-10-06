@@ -112,14 +112,6 @@
     align-items: center;
     gap: clamp(8px, 2.4vh, 28px);
   }
-  .dealer-row {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    gap: clamp(14px, 4vw, 40px);
-  }
-
   .title-chip {
     display: flex;
     flex-direction: column;
@@ -166,28 +158,6 @@
   }
   .title-chip .suit-pip.tl { top: 9px; left: 12px; }
   .title-chip .suit-pip.br { bottom: 9px; right: 12px; transform: rotate(180deg); }
-
-  .deck-stack-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px;
-  }
-  .deck-stack {
-    position: relative;
-    width: clamp(44px, 8vh, 62px);
-    height: clamp(62px, 11vh, 88px);
-  }
-  .deck-stack .playing-card {
-    position: absolute;
-    top: 0;
-    left: 0;
-    margin: 0;
-    animation: none;
-  }
-  .deck-stack .playing-card:nth-child(1) { transform: rotate(-4deg) translate(-3px, 1px); }
-  .deck-stack .playing-card:nth-child(2) { transform: rotate(2deg) translate(2px, -1px); }
-  .deck-stack .playing-card:nth-child(3) { transform: rotate(-1deg); }
 
   .zone {
     display: flex;
@@ -387,21 +357,10 @@
   </div>
 
   <div class="mid-row">
-    <div class="dealer-row">
-      <div class="zone">
-        <span class="zone-label">House</span>
-        <div class="hand" id="houseHand"></div>
-        <div class="total-line dim" id="houseTotal">—</div>
-      </div>
-
-      <div class="deck-stack-wrap">
-        <div class="deck-stack">
-          <div class="playing-card face-down"></div>
-          <div class="playing-card face-down"></div>
-          <div class="playing-card face-down"></div>
-        </div>
-        <span class="zone-label">Deck</span>
-      </div>
+    <div class="zone">
+      <span class="zone-label">House</span>
+      <div class="hand" id="houseHand"></div>
+      <div class="total-line dim" id="houseTotal">—</div>
     </div>
 
     <div class="zone">
