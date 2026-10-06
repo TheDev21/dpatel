@@ -178,6 +178,11 @@
     width: clamp(96px, 18vh, 150px);
     height: clamp(58px, 11vh, 90px);
   }
+  .shoe-flip {
+    position: absolute;
+    inset: 0;
+    transform: scaleX(-1);
+  }
   .shoe-box {
     position: absolute;
     bottom: 0;
@@ -188,37 +193,29 @@
     object-position: bottom;
     filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
   }
-  .shoe-card {
+  .shoe-cards-inside {
     position: absolute;
-    top: -22%;
-    right: 8%;
-    width: 46%;
-    height: 72%;
-    border-radius: 4px;
-    border: 2px solid var(--gold-dim);
-    background: repeating-linear-gradient(45deg, #1c1712 0 3px, #241c15 3px 6px);
-    transform: rotate(-10deg);
-    box-shadow: 1px 2px 0 rgba(0,0,0,0.35);
+    left: 7%;
+    top: 22%;
+    width: 34%;
+    height: 46%;
+    transform: scaleX(-1);
     display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: rgba(230,230,230,0.8);
+    align-items: flex-end;
   }
-  .shoe-card::before {
-    content: '';
-    width: 1.6em;
-    height: 1.6em;
-    border-radius: 50%;
-    border: 0.12em solid var(--gold);
-  }
-  .shoe-card::after {
-    content: '21';
+  .shoe-cards-inside .mini-card {
     position: absolute;
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 0.85em;
-    color: var(--red);
+    bottom: 0;
+    width: 86%;
+    height: 92%;
+    border-radius: 2px 2px 0 0;
+    border: 1.3px solid var(--gold-dim);
+    border-bottom: none;
+    background: repeating-linear-gradient(45deg, #1c1712 0 3px, #241c15 3px 6px);
   }
+  .shoe-cards-inside .mini-card:nth-child(1) { left: 0; }
+  .shoe-cards-inside .mini-card:nth-child(2) { left: 14%; height: 95%; }
+  .shoe-cards-inside .mini-card:nth-child(3) { left: 28%; height: 98%; }
 
   .zone {
     display: flex;
@@ -427,8 +424,14 @@
 
       <div class="shoe-row">
         <div class="shoe">
-          <img class="shoe-box" src="img/shoe.png" alt="">
-          <div class="shoe-card"></div>
+          <div class="shoe-flip">
+            <img class="shoe-box" src="img/shoe.png" alt="">
+          </div>
+          <div class="shoe-cards-inside">
+            <div class="mini-card"></div>
+            <div class="mini-card"></div>
+            <div class="mini-card"></div>
+          </div>
         </div>
         <span class="zone-label">Shoe</span>
       </div>
