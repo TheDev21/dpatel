@@ -107,6 +107,53 @@
     overflow: hidden;
   }
 
+  .title-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .title-chip .eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(10px, 1.6vh, 14px);
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-indent: 0.5em;
+  }
+  .title-chip .chip-badge {
+    position: relative;
+    width: clamp(58px, 11vh, 92px);
+    height: clamp(58px, 11vh, 92px);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #1a4e3a, var(--bg-deep) 70%);
+    border: 3px solid var(--gold);
+    box-shadow: 0 0 0 3px var(--bg-deep), 0 0 0 6px var(--gold-dim),
+                inset 0 0 16px rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .title-chip .chip-badge::before {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(212,175,55,0.5);
+  }
+  .title-chip .chip-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(24px, 5vh, 40px);
+    color: var(--red);
+    line-height: 1;
+  }
+  .title-chip .suit-pip {
+    position: absolute;
+    font-size: clamp(9px, 1.4vh, 13px);
+    color: var(--gold);
+  }
+  .title-chip .suit-pip.tl { top: 9px; left: 12px; }
+  .title-chip .suit-pip.br { bottom: 9px; right: 12px; transform: rotate(180deg); }
+
   .zone {
     display: flex;
     flex-direction: column;
@@ -292,6 +339,15 @@
 <button class="howto-btn" id="howtoBtn">How to Play</button>
 
 <div id="stage">
+  <div class="title-chip">
+    <span class="eyebrow">REVERSE</span>
+    <div class="chip-badge">
+      <span class="suit-pip tl">♠</span>
+      <span class="chip-num">21</span>
+      <span class="suit-pip br">♠</span>
+    </div>
+  </div>
+
   <div class="zone house">
     <div class="zone-label">House</div>
     <div class="hand" id="houseHand"></div>
