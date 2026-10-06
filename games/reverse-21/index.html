@@ -104,9 +104,9 @@
   }
 
   .table-rail {
-    width: min(97vw, 560px);
-    height: min(96%, 840px);
-    padding: clamp(10px, 2vh, 16px);
+    width: min(98vw, 980px);
+    height: min(97%, 980px);
+    padding: clamp(10px, 2vh, 18px);
     border-radius: 26px 26px 50% 50% / 26px 26px 42% 42%;
     background: linear-gradient(160deg, #8a5a2e, #5c3a1a 55%, #2e1c0c);
     box-shadow: 0 16px 36px rgba(0,0,0,0.55), inset 0 2px 3px rgba(255,255,255,0.18);
@@ -135,32 +135,14 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: clamp(4px, 1.4vh, 18px);
+    gap: clamp(8px, 2.4vh, 28px);
   }
-
-  /* ---------- landscape oval table (wide screens) ---------- */
-  @media (min-width: 760px) {
-    .table-rail {
-      width: 98vw;
-      height: min(86vh, 480px);
-      border-radius: 50%;
-      padding: clamp(16px, 3vh, 26px);
-    }
-    .table-felt {
-      border-radius: 50%;
-      padding: clamp(6px, 3vh, 24px) 13% clamp(34px, 8vh, 60px);
-    }
-    .mid-row {
-      flex-direction: row;
-      justify-content: center;
-      gap: clamp(20px, 5vw, 64px);
-      width: 100%;
-    }
-    .mid-row .zone { flex: none; }
-    .shoe-row { order: 2; margin: 0 clamp(6px, 1.4vw, 18px); }
-    .mid-row .zone:first-of-type { order: 1; }
-    .mid-row .zone:last-of-type { order: 3; }
-    .title-chip { transform: scale(0.82); margin-top: -6px; }
+  .dealer-row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(14px, 4vw, 40px);
   }
 
   .title-chip {
@@ -293,12 +275,13 @@
     min-height: clamp(62px, 11vh, 96px);
   }
   .playing-card {
+    position: relative;
     width: clamp(44px, 8vh, 62px);
     height: clamp(62px, 11vh, 88px);
-    background: var(--card-bg);
-    border: 2px solid var(--text-dark);
+    background: linear-gradient(160deg, #2a2419, #16120b);
+    border: 2px solid var(--gold-dim);
     border-radius: 8px;
-    box-shadow: 2px 3px 0 rgba(35,31,26,0.15);
+    box-shadow: 2px 3px 0 rgba(0,0,0,0.4), inset 0 1px 1px rgba(255,255,255,0.08);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -311,7 +294,15 @@
     flex: none;
   }
   .playing-card.red { color: var(--red); }
-  .playing-card.black { color: var(--text-dark); }
+  .playing-card.black { color: #e8e2d4; }
+  .playing-card .center-pip {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2.1em;
+    opacity: 0.9;
+  }
   .playing-card.face-down {
     background: repeating-linear-gradient(45deg, #1c1712 0 3px, #241c15 3px 6px);
     border-color: var(--gold-dim);
@@ -456,18 +447,20 @@
       </div>
 
       <div class="mid-row">
-        <div class="zone">
-          <span class="zone-label">House</span>
-          <div class="hand" id="houseHand"></div>
-          <div class="total-line dim" id="houseTotal">—</div>
-        </div>
-
-        <div class="shoe-row">
-          <div class="shoe">
-            <div class="shoe-box"></div>
-            <div class="shoe-card"></div>
+        <div class="dealer-row">
+          <div class="zone">
+            <span class="zone-label">House</span>
+            <div class="hand" id="houseHand"></div>
+            <div class="total-line dim" id="houseTotal">—</div>
           </div>
-          <span class="zone-label">Shoe</span>
+
+          <div class="shoe-row">
+            <div class="shoe">
+              <div class="shoe-box"></div>
+              <div class="shoe-card"></div>
+            </div>
+            <span class="zone-label">Shoe</span>
+          </div>
         </div>
 
         <div class="zone">
@@ -584,6 +577,7 @@
     if (!faceDown) {
       el.innerHTML =
         '<span class="top">' + card.rank + card.suit + '</span>' +
+        '<span class="center-pip">' + card.suit + '</span>' +
         '<span class="bottom">' + card.rank + card.suit + '</span>';
     }
     return el;
