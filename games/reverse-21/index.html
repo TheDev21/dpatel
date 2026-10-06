@@ -101,8 +101,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-evenly;
-    gap: clamp(4px, 1.4vh, 20px);
+    justify-content: center;
+    gap: clamp(6px, 1.6vh, 18px);
     padding: clamp(60px, 10vh, 110px) 14px clamp(20px, 4vh, 40px);
     overflow: hidden;
   }
@@ -112,6 +112,10 @@
     flex-direction: column;
     align-items: center;
     gap: 2px;
+    margin-bottom: clamp(16px, 3.4vh, 34px);
+  }
+  .zone.player {
+    margin-bottom: clamp(-6px, -1.2vh, -2px);
   }
   .title-chip .eyebrow {
     font-family: 'DM Mono', monospace;
@@ -122,13 +126,13 @@
   }
   .title-chip .chip-badge {
     position: relative;
-    width: clamp(58px, 11vh, 92px);
-    height: clamp(58px, 11vh, 92px);
+    width: clamp(76px, 14vh, 118px);
+    height: clamp(76px, 14vh, 118px);
     border-radius: 50%;
     background: radial-gradient(circle at 35% 30%, #1a4e3a, var(--bg-deep) 70%);
-    border: 3px solid var(--gold);
-    box-shadow: 0 0 0 3px var(--bg-deep), 0 0 0 6px var(--gold-dim),
-                inset 0 0 16px rgba(0,0,0,0.5);
+    border: 4px solid var(--gold);
+    box-shadow: 0 0 0 3px var(--bg-deep), 0 0 0 7px var(--gold-dim),
+                inset 0 0 20px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -142,17 +146,17 @@
   }
   .title-chip .chip-num {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(24px, 5vh, 40px);
+    font-size: clamp(30px, 6.4vh, 52px);
     color: var(--red);
     line-height: 1;
   }
   .title-chip .suit-pip {
     position: absolute;
-    font-size: clamp(9px, 1.4vh, 13px);
+    font-size: clamp(11px, 1.8vh, 16px);
     color: var(--gold);
   }
-  .title-chip .suit-pip.tl { top: 9px; left: 12px; }
-  .title-chip .suit-pip.br { bottom: 9px; right: 12px; transform: rotate(180deg); }
+  .title-chip .suit-pip.tl { top: 11px; left: 15px; }
+  .title-chip .suit-pip.br { bottom: 11px; right: 15px; transform: rotate(180deg); }
 
   .zone {
     display: flex;
