@@ -175,41 +175,18 @@
   }
   .shoe {
     position: relative;
-    width: clamp(64px, 12vh, 92px);
-    height: clamp(40px, 7.4vh, 56px);
+    width: clamp(96px, 18vh, 150px);
+    height: clamp(58px, 11vh, 90px);
   }
   .shoe-box {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 85%;
-    background: linear-gradient(160deg, rgba(255,255,255,0.14), rgba(255,255,255,0.03) 40%, rgba(255,255,255,0.1));
-    border: 1.5px solid rgba(255,255,255,0.55);
-    border-radius: 3px 10px 10px 3px;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.4);
-    backdrop-filter: blur(0.5px);
-  }
-  .shoe-box::before {
-    content: '';
-    position: absolute;
-    right: 6%;
-    top: 10%;
-    width: 60%;
-    height: 80%;
-    background: linear-gradient(160deg, #15110c, #000);
-    border-radius: 2px 8px 8px 2px;
-  }
-  .shoe-box::after {
-    content: '';
-    position: absolute;
-    right: 16%;
-    top: 46%;
-    width: 30%;
-    height: 34%;
-    border: 2.5px solid rgba(255,255,255,0.75);
-    border-top: none;
-    border-radius: 0 0 50% 50%;
+    height: 100%;
+    object-fit: contain;
+    object-position: bottom;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.5));
   }
   .shoe-card {
     position: absolute;
@@ -450,7 +427,7 @@
 
       <div class="shoe-row">
         <div class="shoe">
-          <div class="shoe-box"></div>
+          <img class="shoe-box" src="img/shoe.png" alt="">
           <div class="shoe-card"></div>
         </div>
         <span class="zone-label">Shoe</span>
