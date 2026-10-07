@@ -168,13 +168,7 @@
     gap: 2px;
     padding: 10px 0 14px;
   }
-  .thumb.reverse21 img {
-    height: 62%;
-    width: auto;
-    max-width: 78%;
-    object-fit: contain;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
-  }
+  .thumb.reverse21 svg { width: 44%; height: auto; }
   .thumb.reverse21 .word {
     color: #f0c879;
     font-size: clamp(14px, 3.2vw, 19px);
@@ -654,7 +648,25 @@
 
     <a class="card" href="games/reverse-21/">
       <div class="thumb reverse21">
-        <img src="games/reverse-21/img/thumb-medallion.png" alt="">
+        <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+          <!-- crown -->
+          <g transform="translate(80 18)">
+            <path d="M -14 10 L -10 -6 L -3 4 L 0 -9 L 3 4 L 10 -6 L 14 10 Z" fill="#d4af37" stroke="#9c6b1f" stroke-width="1"/>
+            <circle cx="0" cy="0" r="2.4" fill="#c6303e"/>
+            <rect x="-14" y="9" width="28" height="4" rx="1.5" fill="#d4af37" stroke="#9c6b1f" stroke-width="1"/>
+          </g>
+          <!-- outer ring -->
+          <circle cx="80" cy="88" r="56" fill="none" stroke="#9c6b1f" stroke-width="2" opacity="0.55"/>
+          <circle cx="80" cy="88" r="56" fill="none" stroke="#d4af37" stroke-width="2" stroke-dasharray="3 5" opacity="0.8"/>
+          <!-- badge body -->
+          <circle cx="80" cy="88" r="48" fill="#123b2c" stroke="#d4af37" stroke-width="3.5"/>
+          <circle cx="80" cy="88" r="40" fill="none" stroke="#d4af37" stroke-width="1" stroke-dasharray="2 4" opacity="0.6"/>
+          <!-- card -->
+          <rect x="54" y="60" width="52" height="68" rx="6" fill="#141210" stroke="#d4af37" stroke-width="2"/>
+          <text x="60" y="77" font-family="Georgia, serif" font-weight="700" font-size="15" fill="#f3ead9">A</text>
+          <text x="100" y="122" font-family="Georgia, serif" font-weight="700" font-size="15" fill="#f3ead9" text-anchor="end">A</text>
+          <text x="80" y="104" font-family="Georgia, serif" font-size="34" fill="#f3ead9" text-anchor="middle">&#9824;</text>
+        </svg>
         <div class="word">REVERSE<br>21</div>
       </div>
     </a>
