@@ -161,42 +161,22 @@
 
   /* Reverse 21 thumb */
   .thumb.reverse21 {
-    background:
-      radial-gradient(ellipse at 50% -10%, rgba(212,175,55,0.1), transparent 45%),
-      linear-gradient(160deg, #0f3d2e, #0a2c21);
+    background: #9a1256;
     flex-direction: column;
-    gap: 8px;
+    gap: 2px;
+    padding: 10px 0 14px;
+  }
+  .thumb.reverse21 img {
+    width: 62%;
+    height: auto;
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.35));
   }
   .thumb.reverse21 .word {
-    color: #f3ead9;
+    color: #f0c879;
     font-size: clamp(16px, 3.6vw, 22px);
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.4);
   }
-  .thumb.reverse21 .chip-badge {
-    position: relative;
-    width: clamp(48px, 13vw, 68px);
-    height: clamp(48px, 13vw, 68px);
-    border-radius: 50%;
-    background: radial-gradient(circle at 35% 30%, #1a4e3a, #0a2c21 70%);
-    border: 3px solid #d4af37;
-    box-shadow: 0 0 0 3px #0a2c21, 0 0 0 5px #9c8339;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .thumb.reverse21 .chip-num {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: clamp(18px, 5vw, 28px);
-    color: #c6303e;
-    line-height: 1;
-  }
-  .thumb.reverse21 .suit-pip {
-    position: absolute;
-    font-size: clamp(8px, 2vw, 11px);
-    color: #d4af37;
-  }
-  .thumb.reverse21 .suit-pip.tl { top: 7px; left: 10px; }
-  .thumb.reverse21 .suit-pip.br { bottom: 7px; right: 10px; transform: rotate(180deg); }
 
   /* Doomscroll thumb */
   .thumb.doom { background: linear-gradient(160deg, #23283d, var(--navy)); }
@@ -670,11 +650,7 @@
 
     <a class="card" href="games/reverse-21/">
       <div class="thumb reverse21">
-        <div class="chip-badge">
-          <span class="suit-pip tl">♠</span>
-          <span class="chip-num">21</span>
-          <span class="suit-pip br">♠</span>
-        </div>
+        <img src="games/reverse-21/img/thumb-medallion.png" alt="">
         <div class="word">REVERSE<br>21</div>
       </div>
     </a>
