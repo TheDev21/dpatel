@@ -378,11 +378,43 @@
         // gradient (brighter center, darker toward the rind) and its own
         // flicker animation -- erasing real pixels here lets that show
         // through, which reads as actual light rather than a painted glow
+        // a loose freehand lasso often crosses its own path -- the default
+        // "nonzero" fill rule can leave those self-crossing loops unfilled,
+        // so the carved hole ends up smaller than the line you actually
+        // dragged, leaving a stray bit of outline visible outside the cut.
+        // "evenodd" fills the whole enclosed shape regardless of winding.
         ctx.save();
         ctx.globalCompositeOperation = 'destination-out';
         pathPoints(pts, true);
-        ctx.fill();
+        ctx.fill('evenodd');
         ctx.restore();
+
+        if (lightsOn) {
+          // the glow-layer's gradient is sized for the whole pumpkin, so a
+          // single large cut can land on a stretch of it that's barely
+          // brighter than the surrounding rind -- reads as a pasted-on
+          // patch, not a hole. layer a proper bright core back on top,
+          // sized to this cut specifically, fading to fully transparent
+          // at its own edges so the real erased/flickering glow still
+          // shows through right at the rim
+          var minX = pts[0].x, maxX = pts[0].x, minY = pts[0].y, maxY = pts[0].y;
+          pts.forEach(function (p) {
+            if (p.x < minX) minX = p.x; if (p.x > maxX) maxX = p.x;
+            if (p.y < minY) minY = p.y; if (p.y > maxY) maxY = p.y;
+          });
+          var cx2 = (minX + maxX) / 2, cy2 = (minY + maxY) / 2;
+          var r2 = Math.max(maxX - minX, maxY - minY) / 2 + 2;
+          ctx.save();
+          pathPoints(pts, true);
+          ctx.clip('evenodd');
+          var glow = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, r2);
+          glow.addColorStop(0, 'rgba(255,243,207,0.95)');
+          glow.addColorStop(0.5, 'rgba(255,179,58,0.7)');
+          glow.addColorStop(1, 'rgba(255,140,20,0)');
+          ctx.fillStyle = glow;
+          ctx.fillRect(cx2 - r2, cy2 - r2, r2 * 2, r2 * 2);
+          ctx.restore();
+        }
 
         // a dark rim right at the cut edge reads as carved thickness/depth
         ctx.save();
@@ -394,6 +426,18 @@
       }
     });
     ctx.restore();
+
+    // a lasso dragged past the pumpkin's edge can paint its glow/rim onto
+    // the transparent background behind it (source-over doesn't care what
+    // was there before). re-drawing the pumpkin image once more in
+    // destination-in mode clips everything on the canvas -- base image and
+    // every cut's glow/rim -- back to exactly the pumpkin's own silhouette
+    if (imgReady) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'destination-in';
+      ctx.drawImage(pumpkinImg, imgFit.x, imgFit.y, imgFit.w, imgFit.h);
+      ctx.restore();
+    }
   }
 
   function toCanvasPoint(clientX, clientY) {
