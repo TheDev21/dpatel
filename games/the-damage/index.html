@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Damage — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23151b14'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%237fae6e' stroke-width='2'/%3E%3Cpath d='M9 13 Q16 9 23 13' stroke='%237fae6e' stroke-width='1.4' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12160f;
+    --bg2: #171d13;
+    --ink: #e8e4d8;
+    --ink-dim: #8c9183;
+    --accent: #7fae6e;
+    --warn: #c96a3f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+  a { color: inherit; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--accent); }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+  @media (max-width: 960px) {
+    .corner-badge { position: absolute; top: 30px; left: 14px; font-size: 22px; }
+  }
+
+  .beat {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px;
+    overflow: hidden;
+  }
+  .beat .content {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .beat.in .content { opacity: 1; transform: translateY(0); }
+
+  .beat .bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.06);
+    filter: sepia(0.45) saturate(1.15) brightness(0.72);
+    transition: opacity 1.4s ease, transform 2.4s ease;
+  }
+  .beat.in .bg { opacity: 1; transform: scale(1); }
+  .beat .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, rgba(10,12,8,0.75), rgba(10,12,8,0.4) 40%, rgba(10,12,8,0.85));
+  }
+
+  .year {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(54px, 13vw, 140px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  }
+  .stat {
+    margin-top: 18px;
+    font-size: clamp(15px, 2.4vw, 19px);
+    color: var(--ink-dim);
+    max-width: 560px;
+    line-height: 1.6;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  }
+  .stat b { color: var(--ink); font-weight: 600; }
+  .stat2 {
+    margin-top: 10px;
+    font-size: clamp(12px, 1.9vw, 14px);
+    color: var(--ink-dim);
+    opacity: 0.75;
+    max-width: 520px;
+    line-height: 1.6;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  }
+  .stat2 b { color: var(--warn); font-weight: 600; }
+
+  .beat.warn .year { color: var(--warn); }
+
+  .beat.pause .scrim {
+    background: linear-gradient(180deg, rgba(10,12,8,0.5), rgba(10,12,8,0.3) 30%, rgba(10,12,8,0.6));
+  }
+  .pause-line {
+    font-size: clamp(16px, 2.8vw, 22px);
+    color: var(--ink);
+    max-width: 580px;
+    line-height: 1.7;
+    margin-top: 6px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  }
+  .pause-line.in { opacity: 1; transform: translateY(0); }
+  .pause-line.small { color: var(--ink-dim); font-size: clamp(13px, 2vw, 15px); }
+
+  .recap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 24px;
+  }
+  .recap-title {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(22px, 4vw, 32px);
+    letter-spacing: 0.02em;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .recap.in .recap-title { opacity: 1; transform: translateY(0); }
+  .recap-table {
+    width: 100%;
+    max-width: 640px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 12px;
+  }
+  .recap-head {
+    display: contents;
+  }
+  .recap-head span {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    padding-bottom: 10px;
+  }
+  .recap-head span:nth-child(2) { text-align: right; color: var(--accent); }
+  .recap-head span:last-child { text-align: right; color: var(--warn); }
+  .recap-row {
+    display: contents;
+  }
+  .recap-row span {
+    padding: 14px 0;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: clamp(13px, 2vw, 15px);
+    line-height: 1.4;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .recap-row.in span { opacity: 1; transform: translateY(0); }
+  .recap-row span:first-child { text-align: left; color: var(--ink-dim); }
+  .recap-row span:nth-child(2) { text-align: right; color: var(--ink); font-weight: 600; }
+  .recap-row span:last-child { text-align: right; color: var(--warn); font-weight: 600; }
+  @media (max-width: 640px) {
+    .recap-table { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr); }
+    .recap-row span, .recap-head span { font-size: 12px; }
+  }
+
+  .closing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px;
+  }
+  .closing .line {
+    font-size: clamp(18px, 3vw, 26px);
+    color: var(--ink);
+    max-width: 520px;
+    line-height: 1.6;
+  }
+  .closing .back {
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--ink-dim);
+    text-decoration: underline;
+  }
+  .closing .back:hover { color: var(--accent); }
+
+  .divider {
+    width: 1px;
+    height: 60px;
+    background: var(--ink-dim);
+    opacity: 0.25;
+    margin: 0 auto;
+  }
+
+</style>
+<script src="/assets/halloween/theme.js?v=19" defer></script>
+</head>
+<body>
+
+<a class="corner-badge" href="https://weirdlittlegames.lol">Weird<br>Little<br>Games.</a>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/1950.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">1950</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: about <b>6 billion tons</b> a year. The postwar industrial boom is just getting started.</div>
+    <div class="stat2">Pollution is still mostly local — factory smoke, coal soot — not yet a planetary problem. Wildlife populations are still largely intact.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/1970.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">1970</div>
+    <div class="stat">The first Earth Day. <b>20 million</b> people turn out. Emissions: <b>15 billion tons</b> a year, and rising.</div>
+    <div class="stat2">Smog over major cities is now thick enough to see from space. Species are already vanishing at roughly <b>100x</b> the natural background rate.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/1990.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">1990</div>
+    <div class="stat">The IPCC's first report confirms what scientists already knew. Emissions: <b>22 billion tons</b> a year.</div>
+    <div class="stat2">Acid rain and a hole in the ozone layer are both daily headlines. The Amazon is losing over <b>1%</b> of its forest every year.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/2000.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">2000</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>25 billion tons</b> a year.</div>
+    <div class="stat2">Global plastic production has passed <b>200 million tons</b> a year. Wildlife populations are already down roughly <b>30%</b> since 1970.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/2010.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">2010</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>33 billion tons</b> a year. Arctic sea ice is now declining at over <b>12% a decade</b>.</div>
+    <div class="stat2">Ocean dead zones — mostly from fertilizer runoff — have roughly quadrupled since 1950.</div>
+  </div>
+</div>
+
+<div class="beat warn" data-beat>
+  <div class="bg" style="background-image:url('img/2019.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">2019</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>36.7 billion tons.</b> The highest ever recorded, at that point. It would not stay the record for long.</div>
+    <div class="stat2">Global plastic production has passed <b>460 million tons</b> a year. Roughly <b>1 million species</b> are now at risk of extinction.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ---------- 2020: the pause ---------- -->
+<div class="beat pause" data-beat>
+  <div class="bg" style="background-image:url('img/2020.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year" style="font-size: clamp(44px, 10vw, 100px);">2020</div>
+    <div class="pause-line" data-line>Then everyone stayed home.</div>
+    <div class="pause-line" data-line>Global CO<sub>2</sub> emissions fell by roughly <b>5.4%</b> — the largest annual drop ever recorded.</div>
+    <div class="pause-line" data-line>Nitrogen dioxide levels over major cities dropped by <b>30–60%</b> within weeks, visible from satellites.</div>
+    <div class="pause-line" data-line>The Himalayas became visible from parts of Punjab for the first time in <b>30 years</b>.</div>
+    <div class="pause-line" data-line>Venice's canals ran clear enough to see the bottom. Wild boar wandered Barcelona. Deer walked through English towns.</div>
+    <div class="pause-line small" data-line>It took the entire world stopping.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="beat warn" data-beat>
+  <div class="bg" style="background-image:url('img/2021.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">2021</div>
+    <div class="stat">Emissions rebounded to <b>36.4 billion tons</b> — nearly erasing the drop in under twelve months.</div>
+    <div class="stat2">Wildlife populations are now down an estimated <b>69%</b> since 1970 — and still falling.</div>
+  </div>
+</div>
+
+<div class="beat warn" data-beat>
+  <div class="bg" style="background-image:url('img/2023.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">2023</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>37.4 billion tons.</b> A new record. 2024 broke it again.</div>
+    <div class="stat2">Microplastics have now been found in human blood and lungs. Coral reefs are bleaching on a global scale for the fourth time on record.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/now.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="content">
+    <div class="year">Now</div>
+    <div class="stat">Atmospheric CO<sub>2</sub> sits above <b>420 parts per million</b> — a level the planet hasn't seen in roughly <b>3 million years</b>.</div>
+    <div class="stat2">Species are going extinct at an estimated <b>1,000x</b> the natural rate. Wildlife populations are down roughly <b>73%</b> since 1970.</div>
+  </div>
+</div>
+
+<div class="recap" data-recap>
+  <div class="recap-title">1950 vs now</div>
+  <div class="recap-table">
+    <div class="recap-head">
+      <span></span>
+      <span>1950</span>
+      <span>Now</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Atmospheric CO<sub>2</sub></span>
+      <span>~311 ppm</span>
+      <span>420+ ppm</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Global CO<sub>2</sub> emissions / year</span>
+      <span>~6 billion tons</span>
+      <span>37+ billion tons</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Global average temperature</span>
+      <span>near pre-industrial baseline</span>
+      <span>+1.2°C and rising</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Wildlife populations</span>
+      <span>largely intact</span>
+      <span>down ~69% since 1970</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Arctic summer sea ice</span>
+      <span>stable, unbroken</span>
+      <span>down ~40% since satellite records began</span>
+    </div>
+  </div>
+</div>
+
+<div class="closing">
+  <div class="line">The planet showed us exactly what it needed. For a few months, it got it.</div>
+  <div class="line" style="margin-top: 20px;">Then things went back to normal.</div>
+  <a class="back" href="https://weirdlittlegames.lol">back to the games</a>
+</div>
+
+<script>
+  var beats = document.querySelectorAll('[data-beat]');
+  var lines = document.querySelectorAll('[data-line]');
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      entry.target.classList.toggle('in', entry.isIntersecting);
+    });
+  }, { threshold: 0.35 });
+
+  beats.forEach(function (b) { io.observe(b); });
+
+  // stagger the pause-section lines once that beat comes into view
+  var pauseBeat = document.querySelector('.beat.pause');
+  var lineIo = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        lines.forEach(function (line, i) {
+          setTimeout(function () { line.classList.add('in'); }, i * 450);
+        });
+        lineIo.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  if (pauseBeat) lineIo.observe(pauseBeat);
+
+  // ---------- 1950 vs now recap ----------
+  var recap = document.querySelector('[data-recap]');
+  var recapRows = document.querySelectorAll('[data-row]');
+  var recapIo = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        recapRows.forEach(function (row, i) {
+          setTimeout(function () { row.classList.add('in'); }, i * 180);
+        });
+        recapIo.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  if (recap) recapIo.observe(recap);
+</script>
+</body>
+</html>
