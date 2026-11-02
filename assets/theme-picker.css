@@ -87,21 +87,24 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
   top: 20px;
   left: 20px;
   z-index: 80;
-  width: 40px;
   height: 40px;
-  border-radius: 50%;
+  border-radius: 20px;
   background: var(--card-bg);
+  color: var(--ink);
   border: 1.5px solid var(--ink);
   cursor: pointer;
   box-shadow: 2px 2px 0 rgba(35,32,29,0.14);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0;
+  gap: 7px;
+  padding: 0 16px 0 12px;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
   transition: transform 0.15s ease;
 }
-.theme-picker-btn:hover { transform: translateY(-1px) rotate(12deg); }
-.theme-picker-btn svg { width: 20px; height: 20px; color: var(--ink); }
+.theme-picker-btn:hover { transform: translateY(-1px); }
+.theme-picker-btn svg { width: 17px; height: 17px; color: var(--ink); flex: 0 0 auto; }
 
 .theme-picker-panel {
   position: fixed;
@@ -185,6 +188,6 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
 .theme-name { font-size: 12px; color: var(--ink); }
 
 @media (max-width: 500px) {
-  .theme-picker-btn { top: 12px; left: 12px; width: 36px; height: 36px; }
+  .theme-picker-btn { top: 12px; left: 12px; height: 36px; padding: 0 13px 0 10px; font-size: 11px; }
   .theme-picker-panel { top: 56px; left: 12px; width: 200px; }
 }

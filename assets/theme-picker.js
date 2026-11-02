@@ -27,7 +27,7 @@
     btn.type = 'button';
     btn.className = 'theme-picker-btn';
     btn.setAttribute('aria-label', 'change theme');
-    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="7.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="16.2" cy="10.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="14.6" cy="15.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="9.4" cy="15.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="7.8" cy="10.5" r="1.3" fill="currentColor" stroke="none"/></svg>';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="7.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="16.2" cy="10.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="14.6" cy="15.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="9.4" cy="15.5" r="1.3" fill="currentColor" stroke="none"/><circle cx="7.8" cy="10.5" r="1.3" fill="currentColor" stroke="none"/></svg><span>Theme</span>';
 
     var panel = document.createElement('div');
     panel.className = 'theme-picker-panel';
