@@ -329,6 +329,8 @@
   }
   .sources-list .row { display: flex; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.06); }
   .sources-list .row .yr { color: var(--accent); flex: 0 0 70px; }
+  .sources-list .row a { color: var(--ink-dim); text-decoration: underline; text-decoration-color: rgba(140,145,131,0.4); text-underline-offset: 2px; }
+  .sources-list .row a:hover { color: var(--accent); text-decoration-color: var(--accent); }
 
   .chapter {
     position: relative;
@@ -994,34 +996,34 @@
 <details class="sources">
   <summary>sources</summary>
   <div class="sources-list">
-      <div class="row"><span class="yr">1950</span><span>Global Carbon Project / OWID (fossil CO₂, 1950)</span></div>
-      <div class="row"><span class="yr">1952</span><span>UK government report; Britannica; History.co.uk</span></div>
-      <div class="row"><span class="yr">1958</span><span>NOAA/Scripps Mauna Loa record</span></div>
-      <div class="row"><span class="yr">1969</span><span>NBC News; Ohio History Connection; History.com</span></div>
-      <div class="row"><span class="yr">1970</span><span>EarthDay.org; Global Carbon Project; NASA GISTEMP</span></div>
-      <div class="row"><span class="yr">1973–74</span><span>Nature (Molina &amp; Rowland, 1974); UCI retrospective</span></div>
-      <div class="row"><span class="yr">1990</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; EPA</span></div>
-      <div class="row"><span class="yr">1984</span><span>Lung India (1996); Government of Madhya Pradesh figures; Tribune India</span></div>
-      <div class="row"><span class="yr">1985</span><span>Nature (Farman et al., 1985)</span></div>
-      <div class="row"><span class="yr">1986</span><span>JAEA; UN Chernobyl Forum (2005); RFE/RL</span></div>
-      <div class="row"><span class="yr">1989</span><span>USGS (Piatt &amp; Ford, 1996); NOAA DARRP</span></div>
-      <div class="row"><span class="yr">1987</span><span>UN Treaty Collection; UNEP Ozone Secretariat</span></div>
-      <div class="row"><span class="yr">1992</span><span>Britannica; Cairo Review climate-diplomacy timeline</span></div>
-      <div class="row"><span class="yr">2000</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP</span></div>
-      <div class="row"><span class="yr">1997–2005</span><span>Clinton White House archive; UN treaty record</span></div>
-      <div class="row"><span class="yr">2005</span><span>NOAA National Hurricane Center (2023 revision); IPCC AR4</span></div>
-      <div class="row"><span class="yr">2008–09</span><span>Global Carbon Project; ORNL/EarthSky</span></div>
-      <div class="row"><span class="yr">2010</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; US Marine Mammal Commission</span></div>
-      <div class="row"><span class="yr">2012</span><span>NSIDC Sea Ice Today; NASA Earth Observatory</span></div>
-      <div class="row"><span class="yr">2015</span><span>Britannica; WMO; NASA GISTEMP (real figure)</span></div>
-      <div class="row"><span class="yr">2019</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; MAAP; IPBES (2019)</span></div>
-      <div class="row"><span class="yr">2021</span><span>Global Carbon Project; NOAA Mauna Loa; The Chemical Engineer (COP26 coverage)</span></div>
-      <div class="row"><span class="yr">2022</span><span>WWF Target 3 guide; Global Policy Journal</span></div>
-      <div class="row"><span class="yr">2023</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; Copernicus (separate baseline)</span></div>
-      <div class="row"><span class="yr">2024</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; Copernicus</span></div>
-      <div class="row"><span class="yr">2025</span><span>NASA GISTEMP; NOAA Climate.gov (citing NSIDC)</span></div>
-      <div class="row"><span class="yr">Wildlife index</span><span>WWF Living Planet Report, 2022 edition (1970 to 2018)</span></div>
-      <div class="row"><span class="yr">Closing</span><span>EPA Acid Rain Program Results; NPR, "The Cuyahoga River was so polluted, it used to catch fire. Now it's making a comeback" (2024)</span></div>
+      <div class="row"><span class="yr">1950</span><span><a href="https://ourworldindata.org/co2-emissions" target="_blank" rel="noopener">Global Carbon Project / OWID (fossil CO₂, 1950)</a></span></div>
+      <div class="row"><span class="yr">1952</span><span>UK government report; <a href="https://www.britannica.com" target="_blank" rel="noopener">Britannica</a>; <a href="https://www.history.co.uk" target="_blank" rel="noopener">History.co.uk</a></span></div>
+      <div class="row"><span class="yr">1958</span><span><a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA/Scripps Mauna Loa record</a></span></div>
+      <div class="row"><span class="yr">1969</span><span><a href="https://www.nbcnews.com" target="_blank" rel="noopener">NBC News</a>; <a href="https://ohiohistory.org" target="_blank" rel="noopener">Ohio History Connection</a>; <a href="https://www.history.com" target="_blank" rel="noopener">History.com</a></span></div>
+      <div class="row"><span class="yr">1970</span><span><a href="https://www.earthday.org/history/" target="_blank" rel="noopener">EarthDay.org</a>; <a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a></span></div>
+      <div class="row"><span class="yr">1973–74</span><span><a href="https://www.nature.com/articles/249810a0" target="_blank" rel="noopener">Nature (Molina &amp; Rowland, 1974)</a>; UCI retrospective</span></div>
+      <div class="row"><span class="yr">1990</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA Mauna Loa</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a>; <a href="https://www.epa.gov/acidrain/acid-rain-program-results" target="_blank" rel="noopener">EPA</a></span></div>
+      <div class="row"><span class="yr">1984</span><span>Lung India (1996); Government of Madhya Pradesh figures; <a href="https://www.tribuneindia.com" target="_blank" rel="noopener">Tribune India</a></span></div>
+      <div class="row"><span class="yr">1985</span><span><a href="https://www.nature.com/articles/315207a0" target="_blank" rel="noopener">Nature (Farman et al., 1985)</a></span></div>
+      <div class="row"><span class="yr">1986</span><span><a href="https://www.iaea.org" target="_blank" rel="noopener">JAEA</a>; <a href="https://www.iaea.org/newscenter/focus/chernobyl" target="_blank" rel="noopener">UN Chernobyl Forum (2005)</a>; <a href="https://www.rferl.org" target="_blank" rel="noopener">RFE/RL</a></span></div>
+      <div class="row"><span class="yr">1989</span><span><a href="https://www.usgs.gov" target="_blank" rel="noopener">USGS (Piatt &amp; Ford, 1996)</a>; <a href="https://darrp.noaa.gov" target="_blank" rel="noopener">NOAA DARRP</a></span></div>
+      <div class="row"><span class="yr">1987</span><span><a href="https://treaties.un.org" target="_blank" rel="noopener">UN Treaty Collection</a>; <a href="https://ozone.unep.org" target="_blank" rel="noopener">UNEP Ozone Secretariat</a></span></div>
+      <div class="row"><span class="yr">1992</span><span><a href="https://www.britannica.com" target="_blank" rel="noopener">Britannica</a>; <a href="https://www.thecairoreview.com" target="_blank" rel="noopener">Cairo Review climate-diplomacy timeline</a></span></div>
+      <div class="row"><span class="yr">2000</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA Mauna Loa</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a></span></div>
+      <div class="row"><span class="yr">1997–2005</span><span><a href="https://clintonwhitehouse4.archives.gov" target="_blank" rel="noopener">Clinton White House archive</a>; <a href="https://unfccc.int/kyoto_protocol" target="_blank" rel="noopener">UN treaty record</a></span></div>
+      <div class="row"><span class="yr">2005</span><span><a href="https://www.nhc.noaa.gov" target="_blank" rel="noopener">NOAA National Hurricane Center (2023 revision)</a>; <a href="https://www.ipcc.ch/report/ar4/" target="_blank" rel="noopener">IPCC AR4</a></span></div>
+      <div class="row"><span class="yr">2008–09</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://earthsky.org" target="_blank" rel="noopener">ORNL/EarthSky</a></span></div>
+      <div class="row"><span class="yr">2010</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA Mauna Loa</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a>; <a href="https://www.mmc.gov" target="_blank" rel="noopener">US Marine Mammal Commission</a></span></div>
+      <div class="row"><span class="yr">2012</span><span><a href="https://nsidc.org/sea-ice-today" target="_blank" rel="noopener">NSIDC Sea Ice Today</a>; <a href="https://earthobservatory.nasa.gov" target="_blank" rel="noopener">NASA Earth Observatory</a></span></div>
+      <div class="row"><span class="yr">2015</span><span><a href="https://www.britannica.com" target="_blank" rel="noopener">Britannica</a>; <a href="https://wmo.int" target="_blank" rel="noopener">WMO</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP (real figure)</a></span></div>
+      <div class="row"><span class="yr">2019</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA Mauna Loa</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a>; <a href="https://maaproject.org" target="_blank" rel="noopener">MAAP</a>; <a href="https://www.ipbes.net/global-assessment" target="_blank" rel="noopener">IPBES (2019)</a></span></div>
+      <div class="row"><span class="yr">2021</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA Mauna Loa</a>; <a href="https://www.thechemicalengineer.com" target="_blank" rel="noopener">The Chemical Engineer (COP26 coverage)</a></span></div>
+      <div class="row"><span class="yr">2022</span><span><a href="https://www.worldwildlife.org" target="_blank" rel="noopener">WWF Target 3 guide</a>; <a href="https://www.globalpolicyjournal.com" target="_blank" rel="noopener">Global Policy Journal</a></span></div>
+      <div class="row"><span class="yr">2023</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA Mauna Loa</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a>; <a href="https://climate.copernicus.eu" target="_blank" rel="noopener">Copernicus (separate baseline)</a></span></div>
+      <div class="row"><span class="yr">2024</span><span><a href="https://globalcarbonproject.org/carbonbudget/" target="_blank" rel="noopener">Global Carbon Project</a>; <a href="https://gml.noaa.gov/ccgg/trends/" target="_blank" rel="noopener">NOAA Mauna Loa</a>; <a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a>; <a href="https://climate.copernicus.eu" target="_blank" rel="noopener">Copernicus</a></span></div>
+      <div class="row"><span class="yr">2025</span><span><a href="https://data.giss.nasa.gov/gistemp/" target="_blank" rel="noopener">NASA GISTEMP</a>; <a href="https://www.climate.gov" target="_blank" rel="noopener">NOAA Climate.gov (citing NSIDC)</a></span></div>
+      <div class="row"><span class="yr">Wildlife index</span><span><a href="https://www.worldwildlife.org/publications/living-planet-report-2022" target="_blank" rel="noopener">WWF Living Planet Report, 2022 edition (1970 to 2018)</a></span></div>
+      <div class="row"><span class="yr">Closing</span><span><a href="https://www.epa.gov/acidrain/acid-rain-program-results" target="_blank" rel="noopener">EPA Acid Rain Program Results</a>; <a href="https://www.npr.org/2024/10/12/nx-s1-5123532/cuyahoga-river-cleanup-sturgeon-cleveland-ohio" target="_blank" rel="noopener">NPR, "The Cuyahoga River was so polluted, it used to catch fire. Now it's making a comeback" (2024)</a></span></div>
   </div>
 </details>
 
