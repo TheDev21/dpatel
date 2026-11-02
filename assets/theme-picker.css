@@ -39,6 +39,20 @@
   font-family: 'Press Start 2P', 'Bebas Neue', monospace;
   letter-spacing: 0;
 }
+/* Press Start 2P is much wider per-character than the regular script font,
+   so the normal clamp() sizing overflows narrow screens; size it down and
+   let it wrap instead of forcing a single line off the edges */
+:root[data-theme="retro"] h1 {
+  font-size: clamp(14px, 6vw, 32px) !important;
+  white-space: normal;
+  line-height: 1.5;
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+:root[data-theme="retro"] .logo-row {
+  flex-wrap: wrap;
+  padding: 0 8px;
+}
 :root[data-theme="retro"] body {
   background-image:
     repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
@@ -190,4 +204,7 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
 @media (max-width: 500px) {
   .theme-picker-btn { top: 12px; left: 12px; height: 36px; padding: 0 13px 0 10px; font-size: 11px; }
   .theme-picker-panel { top: 56px; left: 12px; width: 200px; }
+  /* keep the fixed Theme/feedback buttons from sitting on top of the title
+     on narrow screens, where the header has less room to clear them */
+  .logo-row { margin-top: 54px; }
 }
