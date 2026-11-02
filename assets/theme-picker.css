@@ -1,0 +1,109 @@
+/* Weird Little Games - shared theme system
+   Overrides the site's existing CSS custom properties per [data-theme] on <html>.
+   Each game keeps its own hand-built colors; this only reskins the shared shell
+   (homepage, privacy/support pages, the feedback widget). */
+
+:root[data-theme="retro"] {
+  --pink: #f1e4c3;
+  --pink-deep: #e8d4a8;
+  --ink: #3b2a1a;
+  --ink-dim: #8a6f4e;
+  --card-bg: #fff8e8;
+  --orange: #d9731f;
+  --red: #b23a2e;
+  --navy: #2e4a3e;
+  --gold: #c99a2e;
+  --teal: #2f6e62;
+  --violet: #6b4a7a;
+  --olive: #5a6b2e;
+  --venmo: #2f6e62;
+  --venmo-dark: #234f46;
+}
+
+:root[data-theme="mono"] {
+  --pink: #efefed;
+  --pink-deep: #dcdcd9;
+  --ink: #161616;
+  --ink-dim: #6e6e6e;
+  --card-bg: #fcfcfb;
+  --orange: #2a2a2a;
+  --red: #000000;
+  --navy: #0a0a0a;
+  --gold: #4d4d4d;
+  --teal: #333333;
+  --violet: #1f1f1f;
+  --olive: #3a3a3a;
+  --venmo: #2a2a2a;
+  --venmo-dark: #000000;
+}
+
+body { transition: background-color 0.3s ease, color 0.3s ease; }
+
+/* ---------- theme picker widget ---------- */
+.theme-picker-btn {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 80;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 1.5px solid var(--ink);
+  cursor: pointer;
+  box-shadow: 2px 2px 0 rgba(35,32,29,0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: transform 0.15s ease;
+}
+.theme-picker-btn:hover { transform: translateY(-1px) rotate(12deg); }
+.theme-picker-btn svg { width: 20px; height: 20px; }
+
+.theme-picker-panel {
+  position: fixed;
+  top: 68px;
+  left: 20px;
+  z-index: 81;
+  background: var(--card-bg);
+  border: 1.5px solid var(--ink);
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 3px 3px 0 rgba(35,32,29,0.16);
+  display: none;
+  font-family: 'DM Mono', monospace;
+}
+.theme-picker-panel.open { display: block; }
+.theme-picker-title {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  margin-bottom: 10px;
+}
+.theme-swatch-row { display: flex; gap: 10px; }
+.theme-swatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  padding: 0;
+  position: relative;
+  transition: transform 0.15s ease;
+}
+.theme-swatch:hover { transform: scale(1.1); }
+.theme-swatch.active { border-color: var(--ink); }
+.theme-swatch.active::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px dashed var(--ink-dim);
+}
+
+@media (max-width: 500px) {
+  .theme-picker-btn { top: 12px; left: 12px; width: 36px; height: 36px; }
+  .theme-picker-panel { top: 56px; left: 12px; }
+}
