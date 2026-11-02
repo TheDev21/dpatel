@@ -699,14 +699,11 @@
     top: 50%;
     left: 50%;
     z-index: 81;
-    width: min(720px, calc(100vw - 48px));
-    height: min(640px, calc(100vh - 48px));
-    display: flex;
-    flex-direction: column;
+    width: min(480px, calc(100vw - 48px));
     background: var(--card-bg);
     border: 1.5px solid var(--ink);
     border-radius: 16px;
-    padding: 28px;
+    padding: 24px;
     box-shadow: 6px 6px 0 rgba(35,32,29,0.18);
     opacity: 0;
     pointer-events: none;
@@ -720,30 +717,28 @@
   }
   .fb-panel label {
     display: block;
-    font-size: 13px;
+    font-size: 11px;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--ink-dim);
-    margin-bottom: 12px;
-    flex: 0 0 auto;
+    margin-bottom: 10px;
   }
   .fb-panel textarea {
     width: 100%;
-    flex: 1 1 auto;
-    min-height: 0;
-    resize: none;
+    min-height: 130px;
+    resize: vertical;
     background: var(--pink);
     color: var(--ink);
     border: 1px solid rgba(35,32,29,0.2);
     border-radius: 10px;
-    padding: 16px;
+    padding: 12px;
     font-family: 'DM Mono', monospace;
-    font-size: 15px;
-    line-height: 1.6;
+    font-size: 14px;
+    line-height: 1.5;
     box-sizing: border-box;
   }
   .fb-panel textarea:focus { outline: 1.5px solid var(--orange); }
-  .fb-row { display: flex; justify-content: flex-end; gap: 10px; margin-top: 16px; flex: 0 0 auto; }
+  .fb-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
   .fb-send, .fb-cancel {
     font-family: 'DM Mono', monospace;
     font-size: 12px;
