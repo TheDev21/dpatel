@@ -77,6 +77,7 @@
         save(t.id);
         list.querySelectorAll('.theme-option').forEach(function (el) { el.classList.remove('active'); });
         opt.classList.add('active');
+        panel.classList.remove('open');
       });
 
       list.appendChild(opt);
