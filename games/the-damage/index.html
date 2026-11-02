@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Damage - Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%230c0f0a'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%233a4432' stroke-width='2'/%3E%3Cpath d='M9 13 Q16 9 23 13' stroke='%233a4432' stroke-width='1.4' fill='none'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12160f;
+    --bg2: #171d13;
+    --ink: #e8e4d8;
+    --ink-dim: #8c9183;
+    --accent: #7fae6e;
+    --warn: #c96a3f;
+    --era-sepia: 0.55;
+    --era-sat: 1.05;
+    --era-bright: 0.68;
+    --era-grain: 0.08;
+  }
+  /* color grading shifts gradually from a warm, grainy mid-century look
+     toward a cooler, clearer treatment as the timeline reaches the present */
+  body.era-1 { --era-sepia: 0.6; --era-sat: 1.0; --era-bright: 0.66; --era-grain: 0.1; }
+  body.era-2 { --era-sepia: 0.5; --era-sat: 1.05; --era-bright: 0.68; --era-grain: 0.08; }
+  body.era-3 { --era-sepia: 0.38; --era-sat: 1.1; --era-bright: 0.7; --era-grain: 0.06; }
+  body.era-4 { --era-sepia: 0.22; --era-sat: 1.15; --era-bright: 0.73; --era-grain: 0.04; }
+  body.era-5 { --era-sepia: 0.08; --era-sat: 1.2; --era-bright: 0.76; --era-grain: 0.02; }
+  body { transition: background-color 1.2s ease; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+  a { color: inherit; }
+
+  .corner-badge {
+    position: fixed;
+    top: 55px;
+    left: 26px;
+    z-index: 50;
+    transform: rotate(-25deg);
+    transform-origin: top left;
+    text-align: center;
+    color: var(--ink);
+    text-decoration: underline;
+    font-family: 'Pacifico', cursive;
+    font-weight: 400;
+    font-size: 40px;
+    line-height: 1.05;
+    transition: color 0.15s ease;
+  }
+  .corner-badge:hover { animation: badgeWobble 1.6s ease; color: var(--accent); }
+  @keyframes badgeWobble {
+    0%, 100% { transform: rotate(-25deg); }
+    15% { transform: rotate(-12deg); }
+    30% { transform: rotate(-36deg); }
+    45% { transform: rotate(-16deg); }
+    60% { transform: rotate(-32deg); }
+    75% { transform: rotate(-21deg); }
+    90% { transform: rotate(-27deg); }
+  }
+  @media (max-width: 960px) {
+    .corner-badge { position: absolute; top: 30px; left: 14px; font-size: 22px; }
+  }
+
+  .year-tracker {
+    position: fixed;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+    z-index: 50;
+    text-align: right;
+    font-size: 11px;
+    color: var(--ink-dim);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+  .year-tracker.show { opacity: 0.85; }
+  .year-tracker .y { font-family: Georgia, serif; font-size: 20px; color: var(--accent); }
+  @media (max-width: 700px) {
+    .year-tracker {
+      top: 14px;
+      right: 14px;
+      left: auto;
+      transform: none;
+      font-size: 9px;
+      background: rgba(10,12,8,0.55);
+      padding: 4px 8px;
+      border-radius: 6px;
+      backdrop-filter: blur(2px);
+    }
+    .year-tracker .y { font-size: 14px; }
+    .year-tracker #yearTrackerChapter { display: none; }
+  }
+
+  .beat {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px;
+    overflow: hidden;
+  }
+  .beat .content {
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .beat.in .content { opacity: 1; transform: translateY(0); }
+
+  .beat .bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transform: scale(1.06);
+    filter: sepia(var(--era-sepia)) saturate(var(--era-sat)) brightness(var(--era-bright));
+    transition: opacity 1.4s ease, transform 2.4s ease, filter 1.4s ease;
+  }
+  .beat::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    opacity: var(--era-grain);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+    transition: opacity 1.4s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .beat::after { display: none; }
+  }
+  .beat.in .bg { opacity: 1; transform: scale(1); }
+  .beat .edge-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .beat .edge-fade.top { top: 0; height: 140px; background: linear-gradient(180deg, var(--bg), transparent); }
+  .beat .edge-fade.bottom { bottom: 0; height: 140px; background: linear-gradient(0deg, var(--bg), transparent); }
+  .beat .scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, rgba(10,12,8,0.75), rgba(10,12,8,0.4) 40%, rgba(10,12,8,0.85));
+  }
+
+  .year {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(54px, 13vw, 140px);
+    line-height: 1;
+    color: var(--ink);
+    letter-spacing: 0.01em;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.6);
+  }
+  .stat {
+    margin-top: 18px;
+    font-size: clamp(15px, 2.4vw, 19px);
+    color: var(--ink-dim);
+    max-width: 560px;
+    line-height: 1.6;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  }
+  .stat b { color: var(--ink); font-weight: 600; }
+  .stat2 {
+    margin-top: 10px;
+    font-size: clamp(12px, 1.9vw, 14px);
+    color: var(--ink-dim);
+    opacity: 0.75;
+    max-width: 520px;
+    line-height: 1.6;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  }
+  .stat2 b { color: var(--warn); font-weight: 600; }
+  .source {
+    margin-top: 14px;
+    font-size: clamp(10px, 1.4vw, 11px);
+    letter-spacing: 0.04em;
+    color: var(--ink-dim);
+    opacity: 0.55;
+    text-transform: uppercase;
+  }
+
+  .beat.warn .year { color: var(--warn); }
+
+  .beat.event .year {
+    font-size: clamp(32px, 6vw, 56px);
+    color: var(--accent);
+  }
+  .beat.event .stat { max-width: 620px; font-size: clamp(16px, 2.6vw, 21px); color: var(--ink); }
+  .beat.event .stat2 { max-width: 620px; opacity: 0.85; }
+
+  .beat.bigstat { min-height: 80vh; }
+  .beat.bigstat .year { font-size: clamp(16px, 2vw, 18px); color: var(--ink-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+  .beat.bigstat .stat {
+    font-family: Georgia, serif;
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 700;
+    color: var(--accent);
+    max-width: 700px;
+    line-height: 1.05;
+  }
+  .beat.bigstat .stat b { color: var(--accent); }
+  .beat.bigstat .stat2 { max-width: 480px; margin-top: 20px; }
+
+  .beat.quiet .content { max-width: 480px; }
+  .beat.quiet .year { font-size: clamp(24px, 4vw, 36px); color: var(--ink-dim); }
+  .beat.quiet .stat { font-size: clamp(14px, 2vw, 17px); font-style: italic; color: var(--ink); }
+  .beat.quiet .stat2 { font-size: clamp(12px, 1.6vw, 14px); }
+
+  .beat.disaster {
+    min-height: 100vh;
+    background: radial-gradient(ellipse at 50% 35%, rgba(201,106,63,0.14) 0%, var(--bg) 65%);
+  }
+  .beat.disaster .content { max-width: 640px; }
+  .disaster-label {
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--warn);
+    margin-bottom: 14px;
+  }
+  .beat.disaster .year {
+    font-size: clamp(30px, 5.5vw, 50px);
+    color: var(--ink);
+  }
+  .beat.disaster .stat {
+    font-family: Georgia, serif;
+    font-size: clamp(19px, 3vw, 26px);
+    color: var(--ink);
+    max-width: 620px;
+    line-height: 1.35;
+  }
+  .toll {
+    margin: 28px auto 0;
+    max-width: 480px;
+  }
+  .toll-label {
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  .toll-bar {
+    position: relative;
+    height: 10px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  .toll-fill {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(201,106,63,0.35), var(--warn));
+    border-radius: 6px;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: transform 1.2s ease;
+  }
+  .beat.disaster.in .toll-fill { transform: scaleX(1); }
+  .toll-range {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--ink-dim);
+  }
+  .response-tag {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 8px 16px;
+    border: 1px solid rgba(127,174,110,0.35);
+    border-radius: 20px;
+    font-size: 12px;
+    color: var(--accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toll-fill { transition: none; transform: scaleX(1); }
+  }
+
+  .fine-print {
+    max-width: 480px;
+    margin: 90px auto 0;
+    padding: 0 24px;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    opacity: 0.6;
+  }
+
+  .sources {
+    max-width: 640px;
+    margin: 0 auto 80px;
+    padding: 0 24px;
+  }
+  .sources summary {
+    cursor: pointer;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    text-align: center;
+  }
+  .sources summary:hover { color: var(--accent); }
+  .sources-list {
+    margin-top: 24px;
+    font-size: 12px;
+    color: var(--ink-dim);
+    line-height: 1.8;
+  }
+  .sources-list .row { display: flex; gap: 10px; padding: 6px 0; border-top: 1px solid rgba(255,255,255,0.06); }
+  .sources-list .row .yr { color: var(--accent); flex: 0 0 70px; }
+
+  .chapter {
+    position: relative;
+    min-height: 40vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 110px 24px;
+    background: linear-gradient(180deg, var(--bg) 0%, var(--bg2) 22%, var(--bg2) 78%, var(--bg) 100%);
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .chapter.in { opacity: 1; }
+  .chapter-num {
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .chapter-title {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(26px, 5vw, 44px);
+    margin-top: 10px;
+  }
+  .chapter-range {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--ink-dim);
+  }
+
+  .titlecard {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: radial-gradient(ellipse at 50% 40%, #1a2014 0%, var(--bg) 75%);
+  }
+  .titlecard-inner {
+    opacity: 0;
+    transform: translateY(14px);
+    animation: titleIn 1.6s ease 0.3s forwards;
+  }
+  .titlecard-name {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    font-size: clamp(42px, 10vw, 110px);
+    color: var(--ink);
+  }
+  .titlecard-cue {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-top: 28px;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    opacity: 0;
+    animation: titleIn 1s ease 1.4s forwards, bob 2.4s ease-in-out 2.4s infinite;
+  }
+  @keyframes titleIn { to { opacity: 1; transform: translateY(0); } }
+  @keyframes bob { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+  @media (prefers-reduced-motion: reduce) {
+    .titlecard-inner, .titlecard-cue { animation: none; opacity: 1; transform: none; }
+  }
+
+  .chapter-sub {
+    margin-top: 20px;
+    max-width: 520px;
+    font-size: clamp(13px, 1.8vw, 15px);
+    color: var(--ink-dim);
+    line-height: 1.7;
+  }
+
+  .chart-beat {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px;
+    text-align: center;
+  }
+  .chart-beat svg { max-width: 780px; width: 100%; height: auto; }
+  .chart-line {
+    stroke-dasharray: 1700;
+    stroke-dashoffset: 1700;
+    transition: stroke-dashoffset 2s ease;
+  }
+  .chart-beat.in .chart-line { stroke-dashoffset: 0; }
+  @media (prefers-reduced-motion: reduce) {
+    .chart-line { transition: none; stroke-dashoffset: 0; }
+  }
+  .chart-label {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-top: 10px;
+  }
+
+  .beat.pause .scrim {
+    background: linear-gradient(180deg, rgba(10,12,8,0.5), rgba(10,12,8,0.3) 30%, rgba(10,12,8,0.6));
+  }
+  .pause-line {
+    font-size: clamp(16px, 2.8vw, 22px);
+    color: var(--ink);
+    max-width: 580px;
+    line-height: 1.7;
+    margin-top: 6px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.6);
+  }
+  .pause-line.in { opacity: 1; transform: translateY(0); }
+  .pause-line.small { color: var(--ink-dim); font-size: clamp(13px, 2vw, 15px); }
+
+  .recap {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 24px;
+  }
+  .recap-title {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    font-size: clamp(22px, 4vw, 32px);
+    letter-spacing: 0.02em;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .recap.in .recap-title { opacity: 1; transform: translateY(0); }
+  .recap-table {
+    width: 100%;
+    max-width: 640px;
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 12px;
+  }
+  .recap-head {
+    display: contents;
+  }
+  .recap-head span {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    padding-bottom: 10px;
+  }
+  .recap-head span:nth-child(2) { text-align: right; color: var(--accent); }
+  .recap-head span:last-child { text-align: right; color: var(--warn); }
+  .recap-row {
+    display: contents;
+  }
+  .recap-row span {
+    padding: 14px 14px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    font-size: clamp(13px, 2vw, 15px);
+    line-height: 1.4;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .recap-row span:not(:first-child) { border-left: 1px solid rgba(255,255,255,0.06); }
+  .recap-row.in span { opacity: 1; transform: translateY(0); }
+  .recap-row span:first-child { text-align: left; color: var(--ink-dim); }
+  .recap-row span:nth-child(2) { text-align: right; color: var(--ink); font-weight: 600; }
+  .recap-row span:last-child { text-align: right; color: var(--warn); font-weight: 600; }
+  @media (max-width: 640px) {
+    .recap-table { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, 1fr); }
+    .recap-row span, .recap-head span { font-size: 12px; }
+  }
+
+  .closing {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 120px 24px;
+  }
+  .closing .line {
+    font-size: clamp(18px, 3vw, 26px);
+    color: var(--ink);
+    max-width: 520px;
+    line-height: 1.6;
+  }
+  .closing .back {
+    margin-top: 48px;
+    font-size: 13px;
+    color: var(--ink-dim);
+    text-decoration: underline;
+  }
+  .closing .back:hover { color: var(--accent); }
+
+  .divider {
+    width: 1px;
+    height: 60px;
+    background: var(--ink-dim);
+    opacity: 0.25;
+    margin: 0 auto;
+  }
+
+</style>
+<script src="/assets/halloween/theme.js?v=19" defer></script>
+</head>
+<body>
+
+<div class="titlecard">
+  <div class="titlecard-inner">
+    <div class="titlecard-name">THE DAMAGE</div>
+  </div>
+  <div class="titlecard-cue">scroll to begin ↓</div>
+</div>
+
+<a class="corner-badge" href="https://weirdlittlegames.lol">Weird<br>Little<br>Games.</a>
+
+<div class="year-tracker" id="yearTracker"><div class="y" id="yearTrackerYear">1950</div><div id="yearTrackerChapter"></div></div>
+
+<div class="chapter" data-beat>
+  <div class="chapter-num">Chapter 01</div>
+  <div class="chapter-title">The world begins to change</div>
+  <div class="chapter-range">1950s – 1960s</div>
+  <div class="chapter-sub">Coal smoke over cities. A population under 2.5 billion. No satellites watching from above, no continuous instrument record of the air itself. What follows is 76 years of what changed, told through the measurements that exist and the events that are actually documented, not guessed at.</div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/1950.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">1950</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>5.93 billion tons</b> that year. The postwar industrial boom is just getting started. Coal alone accounts for 3.88 of those billion tons.</div>
+    <div class="stat2">Mauna Loa's CO<sub>2</sub> record doesn't begin until 1958, so there's no direct instrument reading for 1950's atmospheric concentration, only reconstructions from ice cores.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">1952</div>
+    <div class="stat">The Great Smog of London (Dec 5-9) kills an estimated <b>4,000 people</b> in its immediate aftermath. Later revised estimates put the toll at 10,000 to 12,000.</div>
+    <div class="stat2">High-sulphur coal smoke trapped under a stagnant cold fog. It led directly to the UK's Clean Air Act of 1956.</div>
+  </div>
+</div>
+
+<div class="beat event bigstat" data-beat>
+  <div class="content">
+    <div class="year">1958, Mauna Loa Observatory</div>
+    <div class="stat">~315 ppm</div>
+    <div class="stat2">Charles David Keeling begins the first continuous CO<sub>2</sub> measurement in history. It's still running today, known as the "Keeling Curve," the longest direct atmospheric record that exists. The chart below starts at 1959, the first full calendar year with a complete annual mean; 1958's own reading is a partial year, not a gap in the record.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">1962</div>
+    <div class="stat">Rachel Carson publishes <i>Silent Spring</i>, documenting the ecological damage of pesticides like DDT.</div>
+    <div class="stat2">Widely credited with launching the modern environmental movement, a full decade before the US banned DDT in 1972.</div>
+  </div>
+</div>
+
+<div class="chapter" data-beat>
+  <div class="chapter-num">Chapter 02</div>
+  <div class="chapter-title">The damage becomes visible</div>
+  <div class="chapter-range">1969 - 1986</div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">1969</div>
+    <div class="stat">The Santa Barbara oil spill (Jan 28) releases an estimated 3.5 to 4.2 million gallons of crude. The Cuyahoga River catches fire (Jun 22), not its first fire, but the one that stuck.</div>
+    <div class="stat2">No authentic photo of the 1969 Cuyahoga fire exists. Period coverage used a photo from an earlier 1952 fire. Both events are widely credited with helping inspire the first Earth Day and the 1972 Clean Water Act.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/1970.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">1970</div>
+    <div class="stat">The first Earth Day. <b>20 million</b> people turn out. Emissions: <b>14.9 billion tons</b> that year.</div>
+    <div class="stat2">Nixon signs the Clean Air Act amendments (Dec 31), giving the newly created EPA its first major enforcement tool. Temperature anomaly: roughly +0.03°C against the 1951–1980 baseline.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">1973–74</div>
+    <div class="stat">Molina &amp; Rowland publish the mechanism by which CFCs destroy stratospheric ozone, work that would win the 1995 Nobel Prize in Chemistry.</div>
+    <div class="stat2">This is the theory. The observed proof wouldn't come until 1985, and the policy response not until 1987: three distinct milestones, eleven years apart.</div>
+  </div>
+</div>
+
+<div class="beat event disaster" data-beat>
+  <div class="content">
+    <div class="disaster-label">Industrial disaster</div>
+    <div class="year">Bhopal, 1984</div>
+    <div class="stat">Roughly 40 tons of methyl isocyanate escapes a Union Carbide subsidiary plant overnight, Dec 2-3.</div>
+    <div class="toll">
+      <div class="toll-label">Death toll, by period and method of counting</div>
+      <div class="toll-bar"><div class="toll-fill"></div></div>
+      <div class="toll-range"><span>3,787 (early count)</span><span>20,000+ (survivor groups)</span></div>
+    </div>
+    <div class="stat2">In between: 5,295 (compensated deaths), 5,800 (the 2002 BMJ "official" figure), 15,000+ (later government/ICMR-linked estimates). We're showing the range rather than picking one.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">1985</div>
+    <div class="stat">Farman, Gardiner &amp; Shanklin publish direct evidence of an Antarctic ozone hole: a ~40% springtime ozone decline over Halley Bay.</div>
+    <div class="stat2">This is the observed confirmation of the mechanism Molina &amp; Rowland proposed in 1973–74.</div>
+  </div>
+</div>
+
+<div class="beat event disaster" data-beat>
+  <div class="content">
+    <div class="disaster-label">Nuclear accident</div>
+    <div class="year">Chernobyl, 1986</div>
+    <div class="stat">Reactor 4 explodes at the Chernobyl plant, Ukrainian SSR, Apr 25-26. Immediate deaths: ~30 among plant staff and emergency workers.</div>
+    <div class="toll">
+      <div class="toll-label">Longer-term death toll, by estimate (methodology and scope vary enormously)</div>
+      <div class="toll-bar"><div class="toll-fill"></div></div>
+      <div class="toll-range"><span>~4,000 (UN Forum, 2005)</span><span>~1 million (NY Acad. Sci., 2009)</span></div>
+    </div>
+    <div class="stat2">In between: 30,000-60,000 (2006 TORCH Report), ~200,000 (Greenpeace). These are genuinely disputed, not a single settled number. 350,000+ people were evacuated or resettled.</div>
+  </div>
+</div>
+
+<div class="chapter" data-beat>
+  <div class="chapter-num">Chapter 03</div>
+  <div class="chapter-title">We learn, but don't stop</div>
+  <div class="chapter-range">1987 – 2009</div>
+</div>
+
+<div class="beat event quiet" data-beat>
+  <div class="content">
+    <div class="year">1987</div>
+    <div class="stat">For once, the world moved fast.</div>
+    <div class="stat2">The Montreal Protocol is adopted on <b>September 16, 1987</b>, committing nations to phase out ozone-depleting chemicals. It enters into force January 1, 1989, and is the only UN treaty ever ratified by every country on Earth. From discovery (1985) to treaty took just two years, one of the fastest "science led to action" examples in this entire timeline.</div>
+  </div>
+</div>
+
+<div class="beat event disaster" data-beat>
+  <div class="content">
+    <div class="disaster-label">Oil spill</div>
+    <div class="year">Prince William Sound, 1989</div>
+    <div class="stat">The Exxon Valdez runs aground Mar 24, spilling ~11 million gallons of crude across ~1,300 miles of Alaskan shoreline.</div>
+    <div class="toll">
+      <div class="toll-label">Estimated seabird deaths (one USGS study, disclosed uncertainty)</div>
+      <div class="toll-bar"><div class="toll-fill"></div></div>
+      <div class="toll-range"><span>100,000 (low bound)</span><span>690,000 (high bound)</span></div>
+    </div>
+    <div class="stat2">~250,000 is that same study's own central estimate, built from carcass-recovery-rate extrapolation, not a lowball competing with a higher outside claim.</div>
+    <div class="response-tag">↳ Led to: US Oil Pollution Act of 1990, requiring double-hull tankers</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/1990.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">1990</div>
+    <div class="stat">The IPCC's first assessment report confirms what scientists already knew. Emissions: <b>22.7 billion tons</b> that year.</div>
+    <div class="stat2">Atmospheric CO<sub>2</sub>: <b>354 ppm</b>. Temperature anomaly: <b>+0.45°C</b>. The same year, the US Clean Air Act's Acid Rain Program creates the first large-scale cap-and-trade system. SO2 emissions would fall roughly 50% by 2010.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">1992</div>
+    <div class="stat">The Rio Earth Summit (Jun 3–14): 178 nations attend. Produces the Rio Declaration, Agenda 21, and opens the UNFCCC for signature.</div>
+    <div class="stat2">The convention itself set no binding emissions targets. Those came five years later, with Kyoto.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">1997–2005</div>
+    <div class="stat">The Kyoto Protocol is adopted in Kyoto (Dec 1997), committing industrialized nations to a collective 5.2% emissions cut vs. 1990 levels.</div>
+    <div class="stat2">It doesn't enter into force until Feb 2005, an 8-year gap between agreement and legal effect. The US never ratified it.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/2000.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">2000</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>25.5 billion tons</b> that year. Atmospheric CO<sub>2</sub>: <b>369.7 ppm</b>.</div>
+    <div class="stat2">Temperature anomaly: <b>+0.39°C</b> against the 1951–1980 baseline.</div>
+  </div>
+</div>
+
+<div class="beat event disaster" data-beat>
+  <div class="content">
+    <div class="disaster-label">Hurricane</div>
+    <div class="year">Katrina, 2005</div>
+    <div class="stat">Hurricane Katrina makes landfall in August, breaching New Orleans' levee system.</div>
+    <div class="toll">
+      <div class="toll-label">Confirmed death toll (NOAA's 2023 methodology revision)</div>
+      <div class="toll-bar"><div class="toll-fill"></div></div>
+      <div class="toll-range"><span>1,392 (NOAA, 2023 revised)</span><span>~1,833 (original IPCC AR4 figure)</span></div>
+    </div>
+    <div class="stat2">Louisiana's coastal wetland loss since the 1930s (over 1,900 square miles, mostly from levee and canal construction) plausibly worsened the flooding, but did not cause the storm itself.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">2008–09</div>
+    <div class="stat">The global financial crisis produces a real but small emissions dip: global CO<sub>2</sub> fell only ~1.4% in 2009, less than half of what forecasters expected.</div>
+    <div class="stat2">By 2010, emissions rebounded ~5.9% to a then-record high. A shock produces a dip; the dip doesn't last. (Watch this pattern repeat with COVID, below.)</div>
+  </div>
+</div>
+
+<div class="chapter" data-beat>
+  <div class="chapter-num">Chapter 04</div>
+  <div class="chapter-title">The consequences accelerate</div>
+  <div class="chapter-range">2010 – 2020</div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/2010.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">2010</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>33.3 billion tons</b> that year. Atmospheric CO<sub>2</sub>: <b>390.1 ppm</b>.</div>
+    <div class="stat2">Temperature anomaly: <b>+0.72°C</b> against the 1951-1980 baseline.</div>
+  </div>
+</div>
+
+<div class="beat event disaster" data-beat>
+  <div class="content">
+    <div class="disaster-label">Oil spill</div>
+    <div class="year">Deepwater Horizon, 2010</div>
+    <div class="stat">The Deepwater Horizon rig blows out Apr 20, spilling into the Gulf of Mexico until the well is capped Jul 15, the largest marine oil spill in US history.</div>
+    <div class="stat2">Long-term ecological recovery remains genuinely disputed: BP's own reporting says wildlife is returning to pre-spill levels, while independent researchers (NWF 2015, a 2025 NOAA-linked study) found dolphins, turtles, and deep-sea corals still struggling years later. We're showing both positions rather than picking one.</div>
+  </div>
+</div>
+
+<div class="beat event bigstat" data-beat>
+  <div class="content">
+    <div class="year">September 2012</div>
+    <div class="stat">3.41M km²</div>
+    <div class="stat2">The lowest Arctic sea ice extent in the satellite record at the time, 18% below the previous 2007 record, confirmed by NSIDC's own 5-day trailing-average minimum (Sep 16, reached using NSIDC's standard methodology; NASA's independent recalculation puts it at 3.44M km², a small, disclosed difference in method, not a contradiction).</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">2015</div>
+    <div class="stat">The Paris Agreement is adopted (COP21, Dec 12), with 196 parties committing to hold warming "well below 2°C."</div>
+    <div class="stat2">2015 was also confirmed as the hottest year on record at the time. Real GISTEMP anomaly: +0.898°C, boosted by a strong El Niño layered on top of the long-term warming trend.</div>
+  </div>
+</div>
+
+<div class="beat warn" data-beat>
+  <div class="bg" style="background-image:url('img/2019.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">2019</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>37.1 billion tons.</b> Atmospheric CO<sub>2</sub>: <b>411.65 ppm</b>. Temperature anomaly: <b>+0.98°C</b>.</div>
+    <div class="stat2">Amazon fires draw international attention from August. Brazil's INPE counted 40,000+ fires by late August, though satellite analysis (MAAP) found much of the burned area had already been deforested since 2017. The IPBES Global Assessment finds ~1 million of 8 million species at risk of extinction: a threat, not yet a fact.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ---------- 2020: the pause ---------- -->
+<div class="beat pause" data-beat>
+  <div class="bg" style="background-image:url('img/2020.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year" style="font-size: clamp(44px, 10vw, 100px);">2020</div>
+    <div class="pause-line" data-line>Then everyone stayed home.</div>
+    <div class="pause-line" data-line>Global CO<sub>2</sub> emissions fell to <b>35.2 billion tons</b>, a drop of about <b>5.2%</b> from 2019, the largest annual drop on record.</div>
+    <div class="pause-line" data-line>Nitrogen dioxide levels over major cities dropped sharply within weeks, visible from satellites.</div>
+    <div class="pause-line" data-line>The Himalayas became visible from parts of Punjab for the first time in decades, widely reported at the time.</div>
+    <div class="pause-line small" data-line>It took the entire world stopping. Temperature anomaly that year: +1.01°C, effectively tied with 2016 as the warmest year measured to that point.</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="chapter" data-beat>
+  <div class="chapter-num">Chapter 05</div>
+  <div class="chapter-title">The world we're leaving</div>
+  <div class="chapter-range">2021 – 2026</div>
+</div>
+
+<div class="beat warn" data-beat>
+  <div class="bg" style="background-image:url('img/2021.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">2021</div>
+    <div class="stat">Emissions rebounded to <b>36.9 billion tons</b> (+4.9%), nearly erasing the 2020 drop in under twelve months, the same shape as 2008 to 2010's shock-dip-rebound.</div>
+    <div class="stat2">Atmospheric CO<sub>2</sub>: <b>416.4 ppm</b>. The Glasgow Climate Pact (COP26) becomes the first UN document to directly mention fossil fuels. Its "phase-down" language, weakened from an earlier draft's "phase-out," does not name oil or gas specifically.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">2022</div>
+    <div class="stat">The Kunming-Montreal Global Biodiversity Framework (COP15) sets a "30x30" target: protect 30% of land and sea by 2030.</div>
+    <div class="stat2">At adoption, roughly 17% of terrestrial and 10% of marine areas were protected. Real growth, but a long way from the goal, and marine-protection growth didn't accelerate until the 2010s.</div>
+  </div>
+</div>
+
+<div class="beat warn" data-beat>
+  <div class="bg" style="background-image:url('img/2023.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">2023</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>38.1 billion tons.</b> A new record. Atmospheric CO<sub>2</sub>: <b>421.1 ppm</b>. Temperature anomaly (GISTEMP): <b>+1.17°C</b>.</div>
+    <div class="stat2">Copernicus separately reported 2023 at ~1.48°C above its own 1850-1900 baseline, a different, not directly comparable, measurement. COP28 (Dubai) agreed to "transition away from fossil fuels," a forward-looking pledge, not evidence emissions had already fallen. 2024 broke the record again.</div>
+  </div>
+</div>
+
+<div class="beat" data-beat>
+  <div class="bg" style="background-image:url('img/now.jpg')"></div>
+  <div class="scrim"></div>
+  <div class="edge-fade top"></div>
+  <div class="edge-fade bottom"></div>
+  <div class="content">
+    <div class="year">2024</div>
+    <div class="stat">Global CO<sub>2</sub> emissions: <b>38.6 billion tons</b>, the latest complete year on record. Atmospheric CO<sub>2</sub>: <b>424.6 ppm</b>.</div>
+    <div class="stat2">Temperature anomaly: <b>+1.29°C</b> above the 1951-1980 baseline, the warmest year ever measured on this series. Copernicus separately confirmed 2024 as the first calendar year above +1.5°C versus its 1850-1900 baseline, a single-year milestone, not the same thing as breaching the Paris Agreement's long-term multi-decade goal.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">2025</div>
+    <div class="stat">Temperature anomaly: <b>+1.19°C</b>, a complete, confirmed year. Arctic sea ice posts its 7th-lowest minimum on record; 2012 still holds the all-time low.</div>
+    <div class="stat2">NSIDC: the 18 lowest sea-ice extents on record have all occurred in the last 18 years. 2025's CO<sub>2</sub> emissions total isn't published yet, so we're not estimating it.</div>
+  </div>
+</div>
+
+<div class="beat event" data-beat>
+  <div class="content">
+    <div class="year">2026</div>
+    <div class="stat">No completed annual data exists for 2026 yet.</div>
+    <div class="stat2">Any 2026 figure found in a raw data feed this year is provisional, not a finished observation, and we're not presenting it as one.</div>
+  </div>
+</div>
+
+<div class="chart-beat" data-beat>
+  <div class="content">
+    <div class="chapter-title" style="font-size: clamp(20px,3.5vw,28px);">Fossil CO₂ emissions, 1950 to 2024</div>
+    <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="260" x2="780" y2="260" stroke="var(--ink-dim)" stroke-opacity="0.25"/>
+      <polyline class="chart-line" points="20.0,240.0 30.3,237.0 40.5,236.4 50.8,235.1 61.1,234.2 71.4,229.8 81.6,226.6 91.9,224.8 102.2,223.3 112.4,220.3 122.7,216.7 133.0,216.5 143.2,214.3 153.5,210.8 163.8,207.0 174.1,203.8 184.3,200.1 194.6,197.5 204.9,193.0 215.1,187.3 225.4,179.6 235.7,175.5 245.9,170.7 256.2,164.9 266.5,165.5 276.8,165.5 287.0,159.6 297.3,156.3 307.6,151.8 317.8,148.6 328.1,149.2 338.4,152.8 348.6,153.8 358.9,152.6 369.2,148.9 379.5,144.3 389.7,142.3 400.0,137.8 410.3,132.3 420.5,130.4 430.8,126.9 441.1,123.7 451.4,128.3 461.6,126.7 471.9,125.2 482.2,121.6 492.4,116.7 502.7,115.8 513.0,116.3 523.2,112.7 533.5,108.1 543.8,106.9 554.1,103.1 564.3,93.7 574.6,87.3 584.9,80.6 595.1,73.9 605.4,67.8 615.7,64.1 625.9,67.7 636.2,55.6 646.5,47.7 656.8,44.5 667.0,42.4 677.3,41.1 687.6,41.5 697.8,41.6 708.1,37.7 718.4,32.6 728.6,30.2 738.9,43.2 749.2,31.7 759.5,27.2 769.7,23.4 780.0,20.0"
+        fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+      <circle cx="738.9" cy="43.2" r="4" fill="var(--warn)"/>
+      <text x="710" y="35" fill="var(--warn)" font-size="10" text-anchor="middle">2020 dip</text>
+      <text x="20" y="276" fill="var(--ink-dim)" font-size="11">1950: 5.9 Bt</text>
+      <text x="780" y="276" fill="var(--ink-dim)" font-size="11" text-anchor="end">2024: 38.6 Bt</text>
+    </svg>
+    <div class="chart-label">Global fossil CO₂ emissions, billions of tons/year, every measured year from 1950 to 2024. The 2020 dip (pandemic restrictions, -5.2%) had mostly reversed by 2021. Source: Global Carbon Project / OWID. 2025 total not yet published.</div>
+  </div>
+</div>
+
+<div class="chart-beat" data-beat>
+  <div class="content">
+    <div class="chapter-title" style="font-size: clamp(20px,3.5vw,28px);">Atmospheric CO₂, 1959 to 2025</div>
+    <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="260" x2="780" y2="260" stroke="var(--ink-dim)" stroke-opacity="0.25"/>
+      <polyline class="chart-line" points="20.0,240.0 31.5,238.2 43.0,236.7 54.5,235.1 66.1,234.1 77.6,232.8 89.1,232.0 100.6,229.4 112.1,227.8 123.6,226.0 135.2,222.9 146.7,220.8 158.2,219.6 169.7,217.3 181.2,212.9 192.7,211.9 204.2,210.1 215.8,208.3 227.3,204.7 238.8,201.6 250.3,198.8 261.8,195.0 273.3,192.3 284.8,189.6 296.4,186.3 307.9,182.9 319.4,180.0 330.9,177.5 342.4,174.2 353.9,169.5 365.5,166.5 377.0,164.0 388.5,161.5 400.0,159.9 411.5,158.6 423.0,155.1 434.5,151.1 446.1,147.6 457.6,145.4 469.1,139.5 480.6,136.2 492.1,133.9 503.6,130.7 515.2,126.5 526.7,121.5 538.2,118.1 549.7,113.6 561.2,109.4 572.7,105.6 584.2,102.0 595.8,98.4 607.3,93.6 618.8,90.1 630.3,85.8 641.8,80.5 653.3,76.4 664.8,72.0 676.4,65.3 687.9,60.7 699.4,56.8 710.9,51.0 722.4,46.0 733.9,41.6 745.5,37.4 757.0,32.4 768.5,25.4 780.0,20.0"
+        fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+      <text x="20" y="276" fill="var(--ink-dim)" font-size="11">1959: 316 ppm</text>
+      <text x="780" y="276" fill="var(--ink-dim)" font-size="11" text-anchor="end">2025: 427 ppm</text>
+    </svg>
+    <div class="chart-label">Annual mean atmospheric CO₂, parts per million, NOAA/Scripps Mauna Loa Observatory. This is a direct instrument record that only exists from 1958 onward; nothing before that date is shown here. Source: NOAA Mauna Loa.</div>
+  </div>
+</div>
+
+<div class="chart-beat" data-beat>
+  <div class="content">
+    <div class="chapter-title" style="font-size: clamp(20px,3.5vw,28px);">Temperature anomaly, 1950 to 2025</div>
+    <svg viewBox="0 0 800 280" xmlns="http://www.w3.org/2000/svg">
+      <line x1="20" y1="236.4" x2="780" y2="236.4" stroke="var(--ink-dim)" stroke-opacity="0.25"/>
+      <text x="25" y="233" fill="var(--ink-dim)" font-size="9">0°C</text>
+      <polyline class="chart-line" points="20.0,236.4 30.1,220.9 40.3,209.0 50.4,198.6 60.5,230.1 70.7,231.2 80.8,238.5 90.9,203.5 101.1,201.7 111.2,205.9 121.3,214.2 131.5,202.1 141.6,205.9 151.7,202.5 161.9,240.0 172.0,226.3 182.1,219.0 192.3,214.1 202.4,222.7 212.5,202.7 222.7,206.4 232.8,222.2 242.9,209.1 253.1,186.7 263.2,221.1 273.3,212.5 283.5,224.9 293.6,184.1 303.7,200.6 313.9,186.2 324.0,172.6 334.1,162.6 344.3,189.9 354.4,163.8 364.5,187.5 374.7,193.0 384.8,183.8 394.9,162.8 405.1,152.7 415.2,169.9 425.3,143.9 435.5,150.1 445.6,177.3 455.7,175.9 465.9,163.7 476.0,144.2 486.1,161.0 496.3,141.2 506.4,120.2 516.5,153.8 526.7,152.2 536.8,131.5 546.9,117.5 557.1,119.1 567.2,131.3 577.3,109.9 587.5,115.6 597.6,112.1 607.7,130.0 617.9,113.3 628.0,103.2 638.1,120.5 648.3,114.7 658.4,110.2 668.5,99.5 678.7,77.4 688.8,60.5 698.9,74.9 709.1,84.4 719.2,65.3 729.3,61.2 739.5,84.7 749.6,78.3 759.7,36.8 769.9,20.0 780.0,33.7"
+        fill="none" stroke="var(--warn)" stroke-width="2.5"/>
+      <text x="20" y="276" fill="var(--ink-dim)" font-size="11">1950: −0.18°C</text>
+      <text x="780" y="276" fill="var(--ink-dim)" font-size="11" text-anchor="end">2024 peak: +1.29°C</text>
+    </svg>
+    <div class="chart-label">Anomaly vs. NASA GISTEMP's 1951-1980 baseline, °C, one consistent baseline across the whole series. The 0°C line marks that baseline average, not "no warming." 2025 (+1.19°C) is a complete year but below 2024's peak. Source: NASA GISTEMP.</div>
+  </div>
+</div>
+
+<div class="recap" data-recap>
+  <div class="recap-title">1950 vs 2024</div>
+  <div class="recap-table">
+    <div class="recap-head">
+      <span></span>
+      <span>1950</span>
+      <span>2024</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Atmospheric CO<sub>2</sub> (annual mean)</span>
+      <span>no instrument record<sup>†</sup></span>
+      <span>424.6 ppm</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Global CO<sub>2</sub> emissions / year</span>
+      <span>5.93 billion tons</span>
+      <span>38.6 billion tons</span>
+    </div>
+    <div class="recap-row" data-row>
+      <span>Temp. anomaly (1951–80 baseline)</span>
+      <span>−0.18°C</span>
+      <span>+1.29°C</span>
+    </div>
+  </div>
+  <div class="source" style="margin-top: 20px; max-width: 560px;">† Mauna Loa's direct CO<sub>2</sub> measurements begin in 1958. There's no instrument reading for 1950, only ice-core reconstructions, which use a different method and aren't shown here to avoid mixing the two.</div>
+
+  <div style="margin-top: 44px; max-width: 640px; width: 100%; border-top: 1px dashed rgba(255,255,255,0.15); padding-top: 24px;">
+    <div style="font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); text-align: center; margin-bottom: 14px;">A separate index, not directly comparable</div>
+    <div class="recap-table" style="grid-template-columns: minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);">
+      <div class="recap-row in">
+        <span>Wildlife populations, WWF Living Planet Index, 2022 edition (1970 to 2018)</span>
+        <span>baseline</span>
+        <span>down 69%</span>
+      </div>
+    </div>
+    <div class="source" style="margin-top: 14px; max-width: 560px;">This is one figure from one edition (the 2022 Living Planet Report, covering 1970 to 2018), a modeled composite across roughly 5,000 monitored vertebrate populations, not a census. Later editions report different figures over different periods; we're not combining them into a single number. Its baseline year (1970) also differs from the climate rows above, so it can't be read on the same axis as CO₂ or temperature.</div>
+  </div>
+</div>
+
+<details class="sources">
+  <summary>sources</summary>
+  <div class="sources-list">
+      <div class="row"><span class="yr">1950</span><span>Global Carbon Project / OWID (fossil CO₂, 1950)</span></div>
+      <div class="row"><span class="yr">1952</span><span>UK government report; Britannica; History.co.uk</span></div>
+      <div class="row"><span class="yr">1958</span><span>NOAA/Scripps Mauna Loa record</span></div>
+      <div class="row"><span class="yr">1969</span><span>NBC News; Ohio History Connection; History.com</span></div>
+      <div class="row"><span class="yr">1970</span><span>EarthDay.org; Global Carbon Project; NASA GISTEMP</span></div>
+      <div class="row"><span class="yr">1973–74</span><span>Nature (Molina &amp; Rowland, 1974); UCI retrospective</span></div>
+      <div class="row"><span class="yr">1990</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; EPA</span></div>
+      <div class="row"><span class="yr">1984</span><span>Lung India (1996); Government of Madhya Pradesh figures; Tribune India</span></div>
+      <div class="row"><span class="yr">1985</span><span>Nature (Farman et al., 1985)</span></div>
+      <div class="row"><span class="yr">1986</span><span>JAEA; UN Chernobyl Forum (2005); RFE/RL</span></div>
+      <div class="row"><span class="yr">1989</span><span>USGS (Piatt &amp; Ford, 1996); NOAA DARRP</span></div>
+      <div class="row"><span class="yr">1987</span><span>UN Treaty Collection; UNEP Ozone Secretariat</span></div>
+      <div class="row"><span class="yr">1992</span><span>Britannica; Cairo Review climate-diplomacy timeline</span></div>
+      <div class="row"><span class="yr">2000</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP</span></div>
+      <div class="row"><span class="yr">1997–2005</span><span>Clinton White House archive; UN treaty record</span></div>
+      <div class="row"><span class="yr">2005</span><span>NOAA National Hurricane Center (2023 revision); IPCC AR4</span></div>
+      <div class="row"><span class="yr">2008–09</span><span>Global Carbon Project; ORNL/EarthSky</span></div>
+      <div class="row"><span class="yr">2010</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; US Marine Mammal Commission</span></div>
+      <div class="row"><span class="yr">2012</span><span>NSIDC Sea Ice Today; NASA Earth Observatory</span></div>
+      <div class="row"><span class="yr">2015</span><span>Britannica; WMO; NASA GISTEMP (real figure)</span></div>
+      <div class="row"><span class="yr">2019</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; MAAP; IPBES (2019)</span></div>
+      <div class="row"><span class="yr">2021</span><span>Global Carbon Project; NOAA Mauna Loa; The Chemical Engineer (COP26 coverage)</span></div>
+      <div class="row"><span class="yr">2022</span><span>WWF Target 3 guide; Global Policy Journal</span></div>
+      <div class="row"><span class="yr">2023</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; Copernicus (separate baseline)</span></div>
+      <div class="row"><span class="yr">2024</span><span>Global Carbon Project; NOAA Mauna Loa; NASA GISTEMP; Copernicus</span></div>
+      <div class="row"><span class="yr">2025</span><span>NASA GISTEMP; NOAA Climate.gov (citing NSIDC)</span></div>
+      <div class="row"><span class="yr">Wildlife index</span><span>WWF Living Planet Report, 2022 edition (1970 to 2018)</span></div>
+      <div class="row"><span class="yr">Closing</span><span>EPA Acid Rain Program Results; NPR, "The Cuyahoga River was so polluted, it used to catch fire. Now it's making a comeback" (2024)</span></div>
+  </div>
+</details>
+
+<div class="closing">
+  <div class="line">What we damaged: a stable climate, intact ecosystems, clean air over most cities.</div>
+  <div class="line" style="margin-top: 20px;">What we've managed to fix: the ozone layer is healing after Montreal. US power-plant SO<sub>2</sub> emissions, the main driver of acid rain, are down about 95% from 1990 under the EPA's own Acid Rain Program. Ohio's Cuyahoga River, which caught fire in 1969, now supports 60 or more fish species including lake sturgeon, though it's still not fully cleared for swimming and remains an EPA "area of concern."</div>
+  <div class="line" style="margin-top: 20px;">What happens next isn't written yet. It's still being measured, one year at a time.</div>
+  <div class="fine-print" style="margin-top: 60px;">Every figure here comes from a cited scientific dataset, historical record, or published estimate. We distinguish direct measurements from modeled estimates and reconstructions, and say where the evidence is disputed or incomplete instead of picking a number.</div>
+  <a class="back" href="https://weirdlittlegames.lol">back to the games</a>
+</div>
+
+<script>
+  var beats = document.querySelectorAll('[data-beat]');
+  var lines = document.querySelectorAll('[data-line]');
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      entry.target.classList.toggle('in', entry.isIntersecting);
+    });
+  }, { threshold: 0.35 });
+
+  beats.forEach(function (b) { io.observe(b); });
+
+  // ---------- floating year/chapter tracker + era color grading ----------
+  (function () {
+    var tracker = document.getElementById('yearTracker');
+    var yearEl = document.getElementById('yearTrackerYear');
+    var chapterEl = document.getElementById('yearTrackerChapter');
+    var currentChapter = '';
+    var currentEra = 0;
+    document.querySelectorAll('[data-beat]').forEach(function (b) {
+      if (b.classList.contains('chapter')) {
+        var titleEl = b.querySelector('.chapter-title');
+        currentChapter = titleEl ? titleEl.textContent : '';
+        currentEra += 1;
+        b.dataset.trackChapter = currentChapter;
+        b.dataset.trackEra = currentEra;
+        return;
+      }
+      var y = b.querySelector('.year');
+      if (y) { b.dataset.trackYear = y.textContent; b.dataset.trackChapter = currentChapter; b.dataset.trackEra = currentEra; }
+    });
+    var trackIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        if (entry.target.dataset.trackYear) {
+          yearEl.textContent = entry.target.dataset.trackYear;
+          chapterEl.textContent = entry.target.dataset.trackChapter || '';
+          tracker.classList.add('show');
+        }
+        if (entry.target.dataset.trackEra) {
+          document.body.className = document.body.className.replace(/\bera-\d\b/g, '').trim();
+          document.body.classList.add('era-' + Math.min(5, entry.target.dataset.trackEra));
+        }
+      });
+    }, { threshold: 0.5 });
+    document.querySelectorAll('[data-beat]').forEach(function (b) {
+      if (b.querySelector('.year') || b.dataset.trackEra) trackIo.observe(b);
+    });
+    window.addEventListener('scroll', function () {
+      if (window.scrollY < 200) tracker.classList.remove('show');
+    }, { passive: true });
+    var recapSection = document.querySelector('[data-recap]');
+    if (recapSection) {
+      // position check instead of a pure IntersectionObserver: a large jump
+      // (page-down, deep link, fast flick) can leap clean over the recap
+      // section between two observer checks and never register an entry
+      window.addEventListener('scroll', function () {
+        var recapTop = recapSection.getBoundingClientRect().top + window.scrollY;
+        if (window.scrollY + window.innerHeight * 0.5 > recapTop) tracker.classList.remove('show');
+      }, { passive: true });
+    }
+  })();
+
+  // stagger the pause-section lines once that beat comes into view
+  var pauseBeat = document.querySelector('.beat.pause');
+  var lineIo = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        lines.forEach(function (line, i) {
+          setTimeout(function () { line.classList.add('in'); }, i * 450);
+        });
+        lineIo.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  if (pauseBeat) lineIo.observe(pauseBeat);
+
+  // ---------- 1950 vs now recap ----------
+  var recap = document.querySelector('[data-recap]');
+  var recapRows = document.querySelectorAll('[data-row]');
+  var recapIo = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        recapRows.forEach(function (row, i) {
+          setTimeout(function () { row.classList.add('in'); }, i * 180);
+        });
+        recapIo.disconnect();
+      }
+    });
+  }, { threshold: 0.3 });
+  if (recap) recapIo.observe(recap);
+</script>
+</body>
+</html>
