@@ -43,7 +43,7 @@
    so the normal clamp() sizing overflows narrow screens; size it down and
    let it wrap instead of forcing a single line off the edges */
 :root[data-theme="retro"] h1 {
-  font-size: clamp(14px, 6vw, 32px) !important;
+  font-size: clamp(11px, 4.6vw, 32px) !important;
   white-space: normal;
   line-height: 1.5;
   max-width: 100%;
@@ -206,5 +206,5 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
   .theme-picker-panel { top: 56px; left: 12px; width: 200px; }
   /* keep the fixed Theme/feedback buttons from sitting on top of the title
      on narrow screens, where the header has less room to clear them */
-  .logo-row { margin-top: 54px; }
+  .logo-row { margin-top: 18px; }
 }
