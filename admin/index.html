@@ -4,55 +4,78 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Feedback</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>Feedback — Weird Little Games</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16.5' r='13.5' fill='%23fffaf7' stroke='%2323201d' stroke-width='2.6'/%3E%3Cellipse cx='10' cy='13.2' rx='4' ry='5' fill='%2323201d' transform='rotate(-5 10 13.2)'/%3E%3Cellipse cx='22' cy='12.8' rx='4.3' ry='5.4' fill='%2323201d' transform='rotate(5 22 12.8)'/%3E%3Cpath d='M6 8 L10 6.6' stroke='%23ff5a1f' stroke-width='1.8' stroke-linecap='round'/%3E%3Cpath d='M26 7.5 L21.8 6.4' stroke='%23ff5a1f' stroke-width='1.8' stroke-linecap='round'/%3E%3Cellipse cx='16' cy='23.5' rx='6.2' ry='5.4' fill='%2323201d' transform='rotate(-2 16 23.5)'/%3E%3Cellipse cx='16' cy='25' rx='2.8' ry='1.6' fill='%23ff5a1f'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Pacifico&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #12160f;
-    --bg2: #171d13;
-    --ink: #e8e4d8;
-    --ink-dim: #8c9183;
-    --accent: #7fae6e;
-    --warn: #c96a3f;
+    --pink: #fbeae4;
+    --ink: #23201d;
+    --ink-dim: #766f68;
+    --card-bg: #fffaf7;
+    --orange: #ff5a1f;
+    --red: #ff2d55;
+    --teal: #1f8a70;
   }
   * { box-sizing: border-box; }
   html, body { margin: 0; }
   body {
     min-height: 100vh;
-    background: var(--bg);
+    background: var(--pink);
+    background-image:
+      radial-gradient(circle at 8% 4%, rgba(255,90,31,0.10), transparent 32%),
+      radial-gradient(circle at 92% 96%, rgba(106,79,176,0.10), transparent 32%);
     color: var(--ink);
     font-family: 'DM Mono', monospace;
-    padding: 60px 20px;
+    padding: 40px 24px 100px;
+  }
+  h1, .display { font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.02em; font-weight: 400; }
+  a { color: inherit; text-decoration: none; }
+
+  .logo-row { display: flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .logo-row a { font-size: 32px; }
+  .logo-row .display { font-size: 32px; }
+  .tagline { text-align: center; color: var(--ink-dim); font-size: 13px; margin: 0 0 50px; }
+
+  .card {
+    background: var(--card-bg);
+    border: 1.5px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: 3px 3px 0 rgba(35,32,29,0.14);
   }
 
   .login-box {
     max-width: 340px;
-    margin: 80px auto;
+    margin: 40px auto;
+    padding: 28px;
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 12px;
   }
-  .login-box h1 {
-    font-size: 16px;
-    letter-spacing: 0.08em;
+  .login-box h2 {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--ink-dim);
     text-align: center;
-    margin-bottom: 10px;
+    margin: 0 0 6px;
+    font-weight: 500;
   }
   .login-box input {
-    background: var(--bg2);
-    border: 1px solid rgba(255,255,255,0.14);
+    background: var(--pink);
+    border: 1px solid rgba(35,32,29,0.2);
     color: var(--ink);
     padding: 10px 12px;
     border-radius: 8px;
     font-family: 'DM Mono', monospace;
     font-size: 14px;
   }
-  .login-box input:focus { outline: 1px solid var(--accent); }
+  .login-box input:focus { outline: 1.5px solid var(--orange); }
   .login-box button {
-    background: var(--accent);
-    color: #12160f;
+    background: var(--orange);
+    color: #fff;
     border: none;
     padding: 10px 12px;
     border-radius: 8px;
@@ -61,37 +84,61 @@
     font-weight: 600;
     cursor: pointer;
   }
+  .login-box button.secondary {
+    background: transparent;
+    color: var(--ink-dim);
+    border: 1px solid rgba(35,32,29,0.2);
+  }
   .login-box button:disabled { opacity: 0.6; cursor: default; }
-  .login-error { color: var(--warn); font-size: 12px; text-align: center; min-height: 16px; }
+  .login-error { color: var(--red); font-size: 12px; text-align: center; min-height: 16px; }
+  .login-note { color: var(--ink-dim); font-size: 11px; text-align: center; line-height: 1.5; }
+  .toggle-link { color: var(--orange); font-size: 12px; text-align: center; cursor: pointer; text-decoration: underline; }
 
-  .wrap { max-width: 760px; margin: 0 auto; display: none; }
+  .wrap { max-width: 720px; margin: 0 auto; display: none; }
   .wrap.show { display: block; }
-  .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
-  .top-row h1 { font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); margin: 0; }
-  .signout { background: none; border: 1px solid rgba(255,255,255,0.14); color: var(--ink-dim); padding: 6px 12px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; }
-  .signout:hover { color: var(--warn); }
+  .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+  .top-row h2 { font-family: 'DM Mono', monospace; font-size: 13px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); margin: 0; font-weight: 500; }
+  .signout {
+    background: var(--card-bg);
+    border: 1px solid rgba(35,32,29,0.2);
+    color: var(--ink-dim);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .signout:hover { color: var(--red); }
 
   .empty { color: var(--ink-dim); text-align: center; padding: 60px 0; }
 
-  .item { border-top: 1px solid rgba(255,255,255,0.08); padding: 18px 0; }
+  .item { padding: 18px 20px; margin-bottom: 12px; }
   .item-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
-  .item-meta .page { color: var(--accent); }
+  .item-meta .page { color: var(--teal); }
   .item-msg { font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
 </style>
 </head>
 <body>
 
-<div class="login-box" id="loginBox">
-  <h1>Feedback login</h1>
+<div class="logo-row">
+  <a href="https://weirdlittlegames.lol" class="display">Weird Little Games</a>
+</div>
+<p class="tagline">feedback inbox</p>
+
+<div class="login-box card" id="loginBox">
+  <h2 id="formTitle">Log in</h2>
   <input type="email" id="loginEmail" placeholder="email" autocomplete="username">
   <input type="password" id="loginPassword" placeholder="password" autocomplete="current-password">
   <button id="loginBtn" type="button">Log in</button>
+  <button id="signupBtn" type="button" class="secondary" style="display:none;">Create account</button>
   <div class="login-error" id="loginError"></div>
+  <div class="toggle-link" id="toggleMode">first time here? create the admin account</div>
+  <div class="login-note" id="loginNote" style="display:none;">This creates the one account allowed to read feedback. Only do this once.</div>
 </div>
 
 <div class="wrap" id="wrap">
   <div class="top-row">
-    <h1>Feedback</h1>
+    <h2>Feedback</h2>
     <button class="signout" id="signoutBtn" type="button">Sign out</button>
   </div>
   <div id="list"><div class="empty">Loading...</div></div>
@@ -115,9 +162,24 @@
   var loginEmail = document.getElementById('loginEmail');
   var loginPassword = document.getElementById('loginPassword');
   var loginBtn = document.getElementById('loginBtn');
+  var signupBtn = document.getElementById('signupBtn');
   var loginError = document.getElementById('loginError');
   var signoutBtn = document.getElementById('signoutBtn');
   var listEl = document.getElementById('list');
+  var toggleMode = document.getElementById('toggleMode');
+  var loginNote = document.getElementById('loginNote');
+  var formTitle = document.getElementById('formTitle');
+
+  var signupMode = false;
+  toggleMode.addEventListener('click', function () {
+    signupMode = !signupMode;
+    loginBtn.style.display = signupMode ? 'none' : 'block';
+    signupBtn.style.display = signupMode ? 'block' : 'none';
+    loginNote.style.display = signupMode ? 'block' : 'none';
+    formTitle.textContent = signupMode ? 'Create admin account' : 'Log in';
+    toggleMode.textContent = signupMode ? 'already have an account? log in' : 'first time here? create the admin account';
+    loginError.textContent = '';
+  });
 
   function fmtDate(iso) {
     try {
@@ -146,7 +208,7 @@
         return;
       }
       listEl.innerHTML = rows.map(function (r) {
-        return '<div class="item">' +
+        return '<div class="item card">' +
           '<div class="item-meta"><span class="page">' + escapeHtml(r.page || 'unknown') + '</span><span>' + fmtDate(r.created_at) + '</span></div>' +
           '<div class="item-msg">' + escapeHtml(r.message) + '</div>' +
           '</div>';
@@ -191,8 +253,36 @@
     });
   });
 
+  signupBtn.addEventListener('click', function () {
+    var c = getClient();
+    if (!c) { loginError.textContent = 'Could not load Supabase.'; return; }
+    var email = loginEmail.value.trim();
+    var password = loginPassword.value;
+    if (!email || !password) return;
+    signupBtn.disabled = true;
+    signupBtn.textContent = 'Creating...';
+    loginError.textContent = '';
+    c.auth.signUp({ email: email, password: password }).then(function (res) {
+      signupBtn.disabled = false;
+      signupBtn.textContent = 'Create account';
+      if (res.error) {
+        loginError.textContent = res.error.message || 'Could not create account.';
+        return;
+      }
+      if (res.data && res.data.session) {
+        showLoggedIn();
+      } else {
+        loginError.textContent = 'Account created. Check email to confirm, then log in.';
+      }
+    }).catch(function () {
+      signupBtn.disabled = false;
+      signupBtn.textContent = 'Create account';
+      loginError.textContent = 'Something went wrong.';
+    });
+  });
+
   loginPassword.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') loginBtn.click();
+    if (e.key === 'Enter') (signupMode ? signupBtn : loginBtn).click();
   });
 
   signoutBtn.addEventListener('click', function () {
