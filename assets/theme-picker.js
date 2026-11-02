@@ -48,14 +48,22 @@
       var preview = document.createElement('div');
       preview.className = 'theme-preview';
       preview.style.background = t.bg;
-      var card = document.createElement('div');
-      card.className = 'tp-card';
-      card.style.background = t.card;
-      var accent = document.createElement('div');
-      accent.className = 'tp-accent';
-      accent.style.background = t.accent;
-      card.appendChild(accent);
-      preview.appendChild(card);
+
+      var titleBar = document.createElement('div');
+      titleBar.className = 'tp-title';
+      titleBar.style.background = t.accent;
+      preview.appendChild(titleBar);
+
+      var cardsRow = document.createElement('div');
+      cardsRow.className = 'tp-cards';
+      for (var i = 0; i < 4; i++) {
+        var card = document.createElement('div');
+        card.className = 'tp-card';
+        card.style.background = t.card;
+        card.style.setProperty('--tp-accent', t.accent);
+        cardsRow.appendChild(card);
+      }
+      preview.appendChild(cardsRow);
 
       var name = document.createElement('span');
       name.className = 'theme-name';

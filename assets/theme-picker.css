@@ -125,16 +125,16 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
   color: var(--ink-dim);
   margin-bottom: 12px;
 }
-.theme-option-list { display: flex; flex-direction: column; gap: 10px; }
+.theme-option-list { display: flex; flex-direction: column; gap: 12px; }
 .theme-option {
   display: flex;
-  align-items: center;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
   width: 100%;
   background: none;
   border: 1.5px solid transparent;
   border-radius: 8px;
-  padding: 6px;
+  padding: 8px;
   cursor: pointer;
   text-align: left;
   transition: border-color 0.15s ease, background 0.15s ease;
@@ -143,30 +143,43 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
 .theme-option.active { border-color: var(--ink); }
 
 .theme-preview {
-  flex: 0 0 auto;
-  width: 56px;
-  height: 36px;
+  width: 100%;
+  height: 62px;
   border-radius: 6px;
   border: 1px solid rgba(0,0,0,0.15);
   position: relative;
   overflow: hidden;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.theme-preview .tp-title {
+  width: 55%;
+  height: 7px;
+  border-radius: 2px;
+  margin: 0 auto 8px;
+}
+.theme-preview .tp-cards {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
 }
 .theme-preview .tp-card {
-  position: absolute;
-  left: 10px;
-  top: 8px;
-  width: 30px;
-  height: 20px;
+  width: 22%;
+  height: 24px;
   border-radius: 3px;
-  border: 1px solid rgba(0,0,0,0.2);
+  border: 1px solid rgba(0,0,0,0.15);
+  position: relative;
+  overflow: hidden;
 }
-.theme-preview .tp-accent {
+.theme-preview .tp-card::after {
+  content: '';
   position: absolute;
-  left: 13px;
-  top: 12px;
-  width: 14px;
-  height: 4px;
-  border-radius: 2px;
+  left: 15%;
+  top: 40%;
+  width: 70%;
+  height: 18%;
+  border-radius: 1px;
+  background: var(--tp-accent, currentColor);
 }
 
 .theme-name { font-size: 12px; color: var(--ink); }
