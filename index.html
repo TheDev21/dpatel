@@ -760,7 +760,6 @@
 
 </style>
 <script src="/assets/halloween/theme.js?v=19" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
 </head>
 <body>
 
@@ -1351,6 +1350,23 @@
       if (e.key === 'Escape') closePanel();
     });
 
+    // loaded on demand rather than via a static <script defer>, so a slow
+    // or blocked CDN request surfaces a specific error instead of silently
+    // racing the first click
+    var sdkPromise = null;
+    function loadSdk() {
+      if (typeof supabase !== 'undefined') return Promise.resolve();
+      if (sdkPromise) return sdkPromise;
+      sdkPromise = new Promise(function (resolve, reject) {
+        var s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
+        s.onload = function () { resolve(); };
+        s.onerror = function () { sdkPromise = null; reject(new Error('sdk-load-failed')); };
+        document.head.appendChild(s);
+      });
+      return sdkPromise;
+    }
+
     sendBtn.addEventListener('click', function () {
       var message = textarea.value.trim();
       if (!message) return;
@@ -1358,26 +1374,31 @@
       sendBtn.textContent = 'Sending...';
       status.className = 'fb-status';
 
-      function fail() {
-        status.textContent = "Couldn't send, try again.";
+      function fail(msg) {
+        status.textContent = msg || "Couldn't send, try again.";
         status.className = 'fb-status show error';
         sendBtn.disabled = false;
         sendBtn.textContent = 'Send';
       }
 
-      try {
-        if (typeof supabase === 'undefined') { fail(); return; }
+      loadSdk().then(function () {
         var client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        client.from('feedback').insert({ message: message, page: 'homepage' }).then(function (res) {
-          if (res.error) { fail(); return; }
-          status.textContent = 'Sent! Thank you.';
-          status.className = 'fb-status show';
-          textarea.value = '';
-          sendBtn.disabled = false;
-          sendBtn.textContent = 'Send';
-          setTimeout(function () { closePanel(); status.className = 'fb-status'; }, 1800);
-        }).catch(fail);
-      } catch (e) { fail(); }
+        return client.from('feedback').insert({ message: message, page: 'homepage' });
+      }).then(function (res) {
+        if (res.error) { fail(); return; }
+        status.textContent = 'Sent! Thank you.';
+        status.className = 'fb-status show';
+        textarea.value = '';
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+        setTimeout(function () { closePanel(); status.className = 'fb-status'; }, 1800);
+      }).catch(function (e) {
+        if (e && e.message === 'sdk-load-failed') {
+          fail("Couldn't load, check your connection or ad blocker.");
+        } else {
+          fail();
+        }
+      });
     });
   })();
 </script>
