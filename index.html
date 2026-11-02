@@ -707,7 +707,7 @@
     box-shadow: 6px 6px 0 rgba(35,32,29,0.18);
     opacity: 0;
     pointer-events: none;
-    transform: translate(calc(-50% + 480px), calc(-50% - 380px)) scale(0.25);
+    transform: translate(calc(-50% + var(--fb-ox, 480px)), calc(-50% + var(--fb-oy, -380px))) scale(0.08);
     transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
   }
   .fb-panel.open {
@@ -756,8 +756,6 @@
   .fb-status.error { color: var(--red); }
   @media (max-width: 500px) {
     .fb-btn { top: 12px; right: 12px; padding: 8px 13px; font-size: 11px; }
-    .fb-panel { transform: translate(calc(-50% + 140px), calc(-50% - 300px)) scale(0.25); }
-    .fb-panel.open { transform: translate(-50%, -50%) scale(1); }
   }
 
 </style>
@@ -1322,12 +1320,24 @@
     var status = document.getElementById('fbStatus');
     if (!btn || !panel) return;
 
+    function setOriginFromButton() {
+      var r = btn.getBoundingClientRect();
+      var btnCx = r.left + r.width / 2;
+      var btnCy = r.top + r.height / 2;
+      var vpCx = window.innerWidth / 2;
+      var vpCy = window.innerHeight / 2;
+      panel.style.setProperty('--fb-ox', (btnCx - vpCx) + 'px');
+      panel.style.setProperty('--fb-oy', (btnCy - vpCy) + 'px');
+    }
+
     function openPanel() {
+      setOriginFromButton();
       panel.classList.add('open');
       backdrop.classList.add('open');
       setTimeout(function () { textarea.focus(); }, 200);
     }
     function closePanel() {
+      setOriginFromButton();
       panel.classList.remove('open');
       backdrop.classList.remove('open');
     }
