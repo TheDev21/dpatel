@@ -130,10 +130,7 @@
   <input type="email" id="loginEmail" placeholder="email" autocomplete="username">
   <input type="password" id="loginPassword" placeholder="password" autocomplete="current-password">
   <button id="loginBtn" type="button">Log in</button>
-  <button id="signupBtn" type="button" class="secondary" style="display:none;">Create account</button>
   <div class="login-error" id="loginError"></div>
-  <div class="toggle-link" id="toggleMode">first time here? create the admin account</div>
-  <div class="login-note" id="loginNote" style="display:none;">This creates the one account allowed to read feedback. Only do this once.</div>
 </div>
 
 <div class="wrap" id="wrap">
@@ -162,24 +159,9 @@
   var loginEmail = document.getElementById('loginEmail');
   var loginPassword = document.getElementById('loginPassword');
   var loginBtn = document.getElementById('loginBtn');
-  var signupBtn = document.getElementById('signupBtn');
   var loginError = document.getElementById('loginError');
   var signoutBtn = document.getElementById('signoutBtn');
   var listEl = document.getElementById('list');
-  var toggleMode = document.getElementById('toggleMode');
-  var loginNote = document.getElementById('loginNote');
-  var formTitle = document.getElementById('formTitle');
-
-  var signupMode = false;
-  toggleMode.addEventListener('click', function () {
-    signupMode = !signupMode;
-    loginBtn.style.display = signupMode ? 'none' : 'block';
-    signupBtn.style.display = signupMode ? 'block' : 'none';
-    loginNote.style.display = signupMode ? 'block' : 'none';
-    formTitle.textContent = signupMode ? 'Create admin account' : 'Log in';
-    toggleMode.textContent = signupMode ? 'already have an account? log in' : 'first time here? create the admin account';
-    loginError.textContent = '';
-  });
 
   function fmtDate(iso) {
     try {
@@ -253,36 +235,8 @@
     });
   });
 
-  signupBtn.addEventListener('click', function () {
-    var c = getClient();
-    if (!c) { loginError.textContent = 'Could not load Supabase.'; return; }
-    var email = loginEmail.value.trim();
-    var password = loginPassword.value;
-    if (!email || !password) return;
-    signupBtn.disabled = true;
-    signupBtn.textContent = 'Creating...';
-    loginError.textContent = '';
-    c.auth.signUp({ email: email, password: password }).then(function (res) {
-      signupBtn.disabled = false;
-      signupBtn.textContent = 'Create account';
-      if (res.error) {
-        loginError.textContent = res.error.message || 'Could not create account.';
-        return;
-      }
-      if (res.data && res.data.session) {
-        showLoggedIn();
-      } else {
-        loginError.textContent = 'Account created. Check email to confirm, then log in.';
-      }
-    }).catch(function () {
-      signupBtn.disabled = false;
-      signupBtn.textContent = 'Create account';
-      loginError.textContent = 'Something went wrong.';
-    });
-  });
-
   loginPassword.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') (signupMode ? signupBtn : loginBtn).click();
+    if (e.key === 'Enter') loginBtn.click();
   });
 
   signoutBtn.addEventListener('click', function () {
