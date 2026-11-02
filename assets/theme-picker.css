@@ -3,21 +3,63 @@
    Each game keeps its own hand-built colors; this only reskins the shared shell
    (homepage, privacy/support pages, the feedback widget). */
 
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 :root[data-theme="retro"] {
-  --pink: #f1e4c3;
-  --pink-deep: #e8d4a8;
-  --ink: #3b2a1a;
-  --ink-dim: #8a6f4e;
-  --card-bg: #fff8e8;
-  --orange: #d9731f;
-  --red: #b23a2e;
-  --navy: #2e4a3e;
-  --gold: #c99a2e;
-  --teal: #2f6e62;
-  --violet: #6b4a7a;
-  --olive: #5a6b2e;
-  --venmo: #2f6e62;
-  --venmo-dark: #234f46;
+  --pink: #100e1a;
+  --pink-deep: #1a1729;
+  --ink: #eafbe0;
+  --ink-dim: #7fa87a;
+  --card-bg: #1c1930;
+  --orange: #5ef2a0;
+  --red: #ff4d7a;
+  --navy: #0a0912;
+  --gold: #ffe14d;
+  --teal: #4de3ff;
+  --violet: #b06bff;
+  --olive: #8fdb4d;
+  --venmo: #4de3ff;
+  --venmo-dark: #2bb8d6;
+}
+:root[data-theme="retro"] .card,
+:root[data-theme="retro"] .wrap,
+:root[data-theme="retro"] .thumb,
+:root[data-theme="retro"] .theme-picker-btn,
+:root[data-theme="retro"] .theme-picker-panel,
+:root[data-theme="retro"] .fb-panel,
+:root[data-theme="retro"] .fb-btn {
+  border-radius: 0 !important;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5) !important;
+  image-rendering: pixelated;
+}
+:root[data-theme="retro"] h1,
+:root[data-theme="retro"] .display,
+:root[data-theme="retro"] .theme-picker-title,
+:root[data-theme="retro"] .theme-name {
+  font-family: 'Press Start 2P', 'Bebas Neue', monospace;
+  letter-spacing: 0;
+}
+:root[data-theme="retro"] body {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.025) 0px, rgba(255,255,255,0.025) 1px, transparent 1px, transparent 3px);
+}
+/* game thumbnails get a retro/CRT filter + scanline overlay, no per-card edits needed */
+:root[data-theme="retro"] .thumb {
+  position: relative;
+  filter: saturate(1.6) contrast(1.2) hue-rotate(-8deg) brightness(0.92);
+}
+:root[data-theme="retro"] .thumb::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 1px, transparent 1px, transparent 3px);
+  mix-blend-mode: multiply;
+}
+
+:root[data-theme="mono"] .thumb {
+  filter: grayscale(1) contrast(1.08);
 }
 
 :root[data-theme="mono"] {
@@ -59,7 +101,7 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
   transition: transform 0.15s ease;
 }
 .theme-picker-btn:hover { transform: translateY(-1px) rotate(12deg); }
-.theme-picker-btn svg { width: 20px; height: 20px; }
+.theme-picker-btn svg { width: 20px; height: 20px; color: var(--ink); }
 
 .theme-picker-panel {
   position: fixed;
@@ -69,10 +111,11 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
   background: var(--card-bg);
   border: 1.5px solid var(--ink);
   border-radius: 14px;
-  padding: 14px;
+  padding: 16px;
   box-shadow: 3px 3px 0 rgba(35,32,29,0.16);
   display: none;
   font-family: 'DM Mono', monospace;
+  width: 232px;
 }
 .theme-picker-panel.open { display: block; }
 .theme-picker-title {
@@ -80,30 +123,55 @@ body { transition: background-color 0.3s ease, color 0.3s ease; }
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--ink-dim);
-  margin-bottom: 10px;
+  margin-bottom: 12px;
 }
-.theme-swatch-row { display: flex; gap: 10px; }
-.theme-swatch {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
+.theme-option-list { display: flex; flex-direction: column; gap: 10px; }
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  padding: 6px;
   cursor: pointer;
-  border: 2px solid transparent;
-  padding: 0;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.theme-option:hover { background: rgba(0,0,0,0.04); }
+.theme-option.active { border-color: var(--ink); }
+
+.theme-preview {
+  flex: 0 0 auto;
+  width: 56px;
+  height: 36px;
+  border-radius: 6px;
+  border: 1px solid rgba(0,0,0,0.15);
   position: relative;
-  transition: transform 0.15s ease;
+  overflow: hidden;
 }
-.theme-swatch:hover { transform: scale(1.1); }
-.theme-swatch.active { border-color: var(--ink); }
-.theme-swatch.active::after {
-  content: '';
+.theme-preview .tp-card {
   position: absolute;
-  inset: -6px;
-  border-radius: 50%;
-  border: 1px dashed var(--ink-dim);
+  left: 10px;
+  top: 8px;
+  width: 30px;
+  height: 20px;
+  border-radius: 3px;
+  border: 1px solid rgba(0,0,0,0.2);
 }
+.theme-preview .tp-accent {
+  position: absolute;
+  left: 13px;
+  top: 12px;
+  width: 14px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.theme-name { font-size: 12px; color: var(--ink); }
 
 @media (max-width: 500px) {
   .theme-picker-btn { top: 12px; left: 12px; width: 36px; height: 36px; }
-  .theme-picker-panel { top: 56px; left: 12px; }
+  .theme-picker-panel { top: 56px; left: 12px; width: 200px; }
 }

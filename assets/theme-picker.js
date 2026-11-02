@@ -1,8 +1,8 @@
 (function () {
   var THEMES = [
-    { id: 'peach', label: 'Regular', bg: '#fbeae4', accent: '#ff5a1f' },
-    { id: 'mono', label: 'Black & White', bg: '#f0f0ef', accent: '#1a1a1a' },
-    { id: 'retro', label: 'Retro', bg: '#f1e4c3', accent: '#d9731f' }
+    { id: 'peach', label: 'Regular', bg: '#fbeae4', card: '#fffaf7', accent: '#ff5a1f' },
+    { id: 'mono', label: 'Black & White', bg: '#efefed', card: '#fcfcfb', accent: '#161616' },
+    { id: 'retro', label: 'Retro (pixel)', bg: '#100e1a', card: '#1c1930', accent: '#5ef2a0' }
   ];
   var STORAGE_KEY = 'wlg-theme';
 
@@ -36,27 +36,45 @@
     title.textContent = 'pick a theme';
     panel.appendChild(title);
 
-    var row = document.createElement('div');
-    row.className = 'theme-swatch-row';
+    var list = document.createElement('div');
+    list.className = 'theme-option-list';
 
     THEMES.forEach(function (t) {
-      var sw = document.createElement('button');
-      sw.type = 'button';
-      sw.className = 'theme-swatch' + (t.id === current ? ' active' : '');
-      sw.style.background = 'linear-gradient(135deg, ' + t.bg + ' 50%, ' + t.accent + ' 50%)';
-      sw.setAttribute('aria-label', t.label);
-      sw.title = t.label;
-      sw.dataset.themeId = t.id;
-      sw.addEventListener('click', function () {
+      var opt = document.createElement('button');
+      opt.type = 'button';
+      opt.className = 'theme-option' + (t.id === current ? ' active' : '');
+      opt.dataset.themeId = t.id;
+
+      var preview = document.createElement('div');
+      preview.className = 'theme-preview';
+      preview.style.background = t.bg;
+      var card = document.createElement('div');
+      card.className = 'tp-card';
+      card.style.background = t.card;
+      var accent = document.createElement('div');
+      accent.className = 'tp-accent';
+      accent.style.background = t.accent;
+      card.appendChild(accent);
+      preview.appendChild(card);
+
+      var name = document.createElement('span');
+      name.className = 'theme-name';
+      name.textContent = t.label;
+
+      opt.appendChild(preview);
+      opt.appendChild(name);
+
+      opt.addEventListener('click', function () {
         applyTheme(t.id);
         save(t.id);
-        row.querySelectorAll('.theme-swatch').forEach(function (el) { el.classList.remove('active'); });
-        sw.classList.add('active');
+        list.querySelectorAll('.theme-option').forEach(function (el) { el.classList.remove('active'); });
+        opt.classList.add('active');
       });
-      row.appendChild(sw);
+
+      list.appendChild(opt);
     });
 
-    panel.appendChild(row);
+    panel.appendChild(list);
 
     btn.addEventListener('click', function () {
       panel.classList.toggle('open');
