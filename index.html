@@ -663,10 +663,98 @@
   }
   .notice.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+  .fb-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 80;
+    background: var(--card-bg);
+    color: var(--ink-dim);
+    border: 1.5px solid var(--ink);
+    border-radius: 20px;
+    padding: 9px 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(35,32,29,0.14);
+    transition: color 0.15s ease, transform 0.15s ease;
+  }
+  .fb-btn:hover { color: var(--orange); transform: translateY(-1px); }
+
+  .fb-panel {
+    position: fixed;
+    top: 64px;
+    right: 20px;
+    z-index: 81;
+    width: min(320px, calc(100vw - 40px));
+    background: var(--card-bg);
+    border: 1.5px solid var(--ink);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 3px 3px 0 rgba(35,32,29,0.16);
+    display: none;
+  }
+  .fb-panel.open { display: block; }
+  .fb-panel label {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 8px;
+  }
+  .fb-panel textarea {
+    width: 100%;
+    min-height: 90px;
+    resize: vertical;
+    background: var(--pink);
+    color: var(--ink);
+    border: 1px solid rgba(35,32,29,0.2);
+    border-radius: 8px;
+    padding: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    box-sizing: border-box;
+  }
+  .fb-panel textarea:focus { outline: 1.5px solid var(--orange); }
+  .fb-row { display: flex; justify-content: flex-end; gap: 8px; margin-top: 10px; }
+  .fb-send, .fb-cancel {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid rgba(35,32,29,0.2);
+    background: transparent;
+    color: var(--ink-dim);
+  }
+  .fb-send { background: var(--orange); color: #fff; border-color: var(--orange); font-weight: 600; }
+  .fb-send:disabled { opacity: 0.5; cursor: default; }
+  .fb-status { margin-top: 10px; font-size: 12px; color: var(--teal); display: none; }
+  .fb-status.show { display: block; }
+  .fb-status.error { color: var(--red); }
+  @media (max-width: 500px) {
+    .fb-btn { top: 12px; right: 12px; padding: 8px 13px; font-size: 11px; }
+    .fb-panel { top: 52px; right: 12px; }
+  }
+
 </style>
 <script src="/assets/halloween/theme.js?v=19" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js" defer></script>
 </head>
 <body>
+
+<button class="fb-btn" id="fbBtn" type="button">feedback</button>
+<div class="fb-panel" id="fbPanel">
+  <label for="fbText">Tell me what you think</label>
+  <textarea id="fbText" maxlength="4000" placeholder="Bugs, ideas, anything..."></textarea>
+  <div class="fb-row">
+    <button class="fb-cancel" id="fbCancel" type="button">Cancel</button>
+    <button class="fb-send" id="fbSend" type="button">Send</button>
+  </div>
+  <div class="fb-status" id="fbStatus"></div>
+</div>
+
 <div class="wrap">
 
   <div class="logo-row">
@@ -1197,6 +1285,56 @@
     }
   });
 
+  // ---------- feedback widget ----------
+  (function () {
+    var SUPABASE_URL = 'https://qnkkobpjswuxgijfhqae.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFua2tvYnBqc3d1eGdpamZocWFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MzA5NDcsImV4cCI6MjEwOTIwNjk0N30.YXoi6MDCAzM6secMSXbDEBsprwytGwbdSJuUOR82tcw';
+
+    var btn = document.getElementById('fbBtn');
+    var panel = document.getElementById('fbPanel');
+    var textarea = document.getElementById('fbText');
+    var sendBtn = document.getElementById('fbSend');
+    var cancelBtn = document.getElementById('fbCancel');
+    var status = document.getElementById('fbStatus');
+    if (!btn || !panel) return;
+
+    btn.addEventListener('click', function () {
+      panel.classList.toggle('open');
+      if (panel.classList.contains('open')) textarea.focus();
+    });
+    cancelBtn.addEventListener('click', function () {
+      panel.classList.remove('open');
+    });
+
+    sendBtn.addEventListener('click', function () {
+      var message = textarea.value.trim();
+      if (!message) return;
+      sendBtn.disabled = true;
+      sendBtn.textContent = 'Sending...';
+      status.className = 'fb-status';
+
+      function fail() {
+        status.textContent = "Couldn't send, try again.";
+        status.className = 'fb-status show error';
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send';
+      }
+
+      try {
+        if (typeof supabase === 'undefined') { fail(); return; }
+        var client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        client.from('feedback').insert({ message: message, page: 'homepage' }).then(function (res) {
+          if (res.error) { fail(); return; }
+          status.textContent = 'Sent! Thank you.';
+          status.className = 'fb-status show';
+          textarea.value = '';
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'Send';
+          setTimeout(function () { panel.classList.remove('open'); status.className = 'fb-status'; }, 1800);
+        }).catch(fail);
+      } catch (e) { fail(); }
+    });
+  })();
 </script>
 </body>
 </html>
