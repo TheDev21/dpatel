@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Feedback</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #12160f;
+    --bg2: #171d13;
+    --ink: #e8e4d8;
+    --ink-dim: #8c9183;
+    --accent: #7fae6e;
+    --warn: #c96a3f;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    padding: 60px 20px;
+  }
+
+  .login-box {
+    max-width: 340px;
+    margin: 80px auto;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .login-box h1 {
+    font-size: 16px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    text-align: center;
+    margin-bottom: 10px;
+  }
+  .login-box input {
+    background: var(--bg2);
+    border: 1px solid rgba(255,255,255,0.14);
+    color: var(--ink);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+  }
+  .login-box input:focus { outline: 1px solid var(--accent); }
+  .login-box button {
+    background: var(--accent);
+    color: #12160f;
+    border: none;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .login-box button:disabled { opacity: 0.6; cursor: default; }
+  .login-error { color: var(--warn); font-size: 12px; text-align: center; min-height: 16px; }
+
+  .wrap { max-width: 760px; margin: 0 auto; display: none; }
+  .wrap.show { display: block; }
+  .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 28px; }
+  .top-row h1 { font-size: 16px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-dim); margin: 0; }
+  .signout { background: none; border: 1px solid rgba(255,255,255,0.14); color: var(--ink-dim); padding: 6px 12px; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: 12px; cursor: pointer; }
+  .signout:hover { color: var(--warn); }
+
+  .empty { color: var(--ink-dim); text-align: center; padding: 60px 0; }
+
+  .item { border-top: 1px solid rgba(255,255,255,0.08); padding: 18px 0; }
+  .item-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--ink-dim); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .item-meta .page { color: var(--accent); }
+  .item-msg { font-size: 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+</style>
+</head>
+<body>
+
+<div class="login-box" id="loginBox">
+  <h1>Feedback login</h1>
+  <input type="email" id="loginEmail" placeholder="email" autocomplete="username">
+  <input type="password" id="loginPassword" placeholder="password" autocomplete="current-password">
+  <button id="loginBtn" type="button">Log in</button>
+  <div class="login-error" id="loginError"></div>
+</div>
+
+<div class="wrap" id="wrap">
+  <div class="top-row">
+    <h1>Feedback</h1>
+    <button class="signout" id="signoutBtn" type="button">Sign out</button>
+  </div>
+  <div id="list"><div class="empty">Loading...</div></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+  var SUPABASE_URL = 'https://qnkkobpjswuxgijfhqae.supabase.co';
+  var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFua2tvYnBqc3d1eGdpamZocWFlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM2MzA5NDcsImV4cCI6MjEwOTIwNjk0N30.YXoi6MDCAzM6secMSXbDEBsprwytGwbdSJuUOR82tcw';
+
+  var client = null;
+  function getClient() {
+    if (!client && typeof supabase !== 'undefined') {
+      client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    }
+    return client;
+  }
+
+  var loginBox = document.getElementById('loginBox');
+  var wrap = document.getElementById('wrap');
+  var loginEmail = document.getElementById('loginEmail');
+  var loginPassword = document.getElementById('loginPassword');
+  var loginBtn = document.getElementById('loginBtn');
+  var loginError = document.getElementById('loginError');
+  var signoutBtn = document.getElementById('signoutBtn');
+  var listEl = document.getElementById('list');
+
+  function fmtDate(iso) {
+    try {
+      var d = new Date(iso);
+      return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    } catch (e) { return iso; }
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+
+  function loadFeedback() {
+    var c = getClient();
+    if (!c) { listEl.innerHTML = '<div class="empty">Could not load Supabase.</div>'; return; }
+    c.from('feedback').select('*').order('created_at', { ascending: false }).then(function (res) {
+      if (res.error) {
+        listEl.innerHTML = '<div class="empty">Could not load feedback: ' + escapeHtml(res.error.message) + '</div>';
+        return;
+      }
+      var rows = res.data || [];
+      if (rows.length === 0) {
+        listEl.innerHTML = '<div class="empty">No feedback yet.</div>';
+        return;
+      }
+      listEl.innerHTML = rows.map(function (r) {
+        return '<div class="item">' +
+          '<div class="item-meta"><span class="page">' + escapeHtml(r.page || 'unknown') + '</span><span>' + fmtDate(r.created_at) + '</span></div>' +
+          '<div class="item-msg">' + escapeHtml(r.message) + '</div>' +
+          '</div>';
+      }).join('');
+    }).catch(function () {
+      listEl.innerHTML = '<div class="empty">Could not load feedback.</div>';
+    });
+  }
+
+  function showLoggedIn() {
+    loginBox.style.display = 'none';
+    wrap.classList.add('show');
+    loadFeedback();
+  }
+
+  function showLoggedOut() {
+    wrap.classList.remove('show');
+    loginBox.style.display = 'flex';
+  }
+
+  loginBtn.addEventListener('click', function () {
+    var c = getClient();
+    if (!c) { loginError.textContent = 'Could not load Supabase.'; return; }
+    var email = loginEmail.value.trim();
+    var password = loginPassword.value;
+    if (!email || !password) return;
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Logging in...';
+    loginError.textContent = '';
+    c.auth.signInWithPassword({ email: email, password: password }).then(function (res) {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Log in';
+      if (res.error) {
+        loginError.textContent = 'Wrong email or password.';
+        return;
+      }
+      showLoggedIn();
+    }).catch(function () {
+      loginBtn.disabled = false;
+      loginBtn.textContent = 'Log in';
+      loginError.textContent = 'Something went wrong.';
+    });
+  });
+
+  loginPassword.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') loginBtn.click();
+  });
+
+  signoutBtn.addEventListener('click', function () {
+    var c = getClient();
+    if (c) c.auth.signOut();
+    showLoggedOut();
+  });
+
+  window.addEventListener('load', function () {
+    var c = getClient();
+    if (!c) { showLoggedOut(); return; }
+    c.auth.getSession().then(function (res) {
+      if (res.data && res.data.session) {
+        showLoggedIn();
+      } else {
+        showLoggedOut();
+      }
+    }).catch(function () { showLoggedOut(); });
+  });
+</script>
+</body>
+</html>

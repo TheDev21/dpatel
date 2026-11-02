@@ -681,20 +681,38 @@
   }
   .fb-btn:hover { color: var(--orange); transform: translateY(-1px); }
 
+  .fb-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 79;
+    background: rgba(35,32,29,0.35);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .fb-backdrop.open { opacity: 1; pointer-events: auto; }
+
   .fb-panel {
     position: fixed;
-    top: 64px;
-    right: 20px;
+    top: 50%;
+    left: 50%;
     z-index: 81;
-    width: min(320px, calc(100vw - 40px));
+    width: min(380px, calc(100vw - 40px));
     background: var(--card-bg);
     border: 1.5px solid var(--ink);
-    border-radius: 12px;
-    padding: 16px;
-    box-shadow: 3px 3px 0 rgba(35,32,29,0.16);
-    display: none;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 4px 4px 0 rgba(35,32,29,0.18);
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(calc(-50% + 480px), calc(-50% - 380px)) scale(0.25);
+    transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease;
   }
-  .fb-panel.open { display: block; }
+  .fb-panel.open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translate(-50%, -50%) scale(1);
+  }
   .fb-panel label {
     display: block;
     font-size: 11px;
@@ -735,7 +753,8 @@
   .fb-status.error { color: var(--red); }
   @media (max-width: 500px) {
     .fb-btn { top: 12px; right: 12px; padding: 8px 13px; font-size: 11px; }
-    .fb-panel { top: 52px; right: 12px; }
+    .fb-panel { transform: translate(calc(-50% + 140px), calc(-50% - 300px)) scale(0.25); }
+    .fb-panel.open { transform: translate(-50%, -50%) scale(1); }
   }
 
 </style>
@@ -745,6 +764,7 @@
 <body>
 
 <button class="fb-btn" id="fbBtn" type="button">feedback</button>
+<div class="fb-backdrop" id="fbBackdrop"></div>
 <div class="fb-panel" id="fbPanel">
   <label for="fbText">Tell me what you think</label>
   <textarea id="fbText" maxlength="4000" placeholder="Bugs, ideas, anything..."></textarea>
@@ -1292,18 +1312,30 @@
 
     var btn = document.getElementById('fbBtn');
     var panel = document.getElementById('fbPanel');
+    var backdrop = document.getElementById('fbBackdrop');
     var textarea = document.getElementById('fbText');
     var sendBtn = document.getElementById('fbSend');
     var cancelBtn = document.getElementById('fbCancel');
     var status = document.getElementById('fbStatus');
     if (!btn || !panel) return;
 
-    btn.addEventListener('click', function () {
-      panel.classList.toggle('open');
-      if (panel.classList.contains('open')) textarea.focus();
-    });
-    cancelBtn.addEventListener('click', function () {
+    function openPanel() {
+      panel.classList.add('open');
+      backdrop.classList.add('open');
+      setTimeout(function () { textarea.focus(); }, 200);
+    }
+    function closePanel() {
       panel.classList.remove('open');
+      backdrop.classList.remove('open');
+    }
+
+    btn.addEventListener('click', function () {
+      if (panel.classList.contains('open')) closePanel(); else openPanel();
+    });
+    cancelBtn.addEventListener('click', closePanel);
+    backdrop.addEventListener('click', closePanel);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closePanel();
     });
 
     sendBtn.addEventListener('click', function () {
@@ -1330,7 +1362,7 @@
           textarea.value = '';
           sendBtn.disabled = false;
           sendBtn.textContent = 'Send';
-          setTimeout(function () { panel.classList.remove('open'); status.className = 'fb-status'; }, 1800);
+          setTimeout(function () { closePanel(); status.className = 'fb-status'; }, 1800);
         }).catch(fail);
       } catch (e) { fail(); }
     });
